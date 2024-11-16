@@ -238,7 +238,7 @@ class MemberWalletService
         return true;
     }
 
-    public function queryBalance($params)
+    public function queryBalance($params, $is_sign = true)
     {
         // 查询用户是否存在
         $member = Member::where('status', 1)->where('id', $params['merchant_id'])->find();
@@ -247,9 +247,11 @@ class MemberWalletService
         }
 
         // 签名验证
-        $signService = new SignService();
-        if (!$signService->checkSign($params, $member->api_key)) {
-            throw new \Exception('签名错误');
+        if ($is_sign) {
+            $signService = new SignService();
+            if (!$signService->checkSign($params, $member->api_key)) {
+                throw new \Exception('签名错误');
+            }
         }
 
         $wallet = $this->getWalletInfo($params['merchant_id']);

@@ -32,10 +32,6 @@ class OrderOutService
             throw new \Exception('通道未开通');
         }
 
-        if (!$channel_id) {
-            throw new \Exception('未开通支付通道');
-        }
-
         $params['channel_id'] = $channel_id;
         $params['type'] = self::TYPE_OUT;
 
@@ -530,7 +526,7 @@ class OrderOutService
      * @return array
      * @throws \Exception
      */
-    public function queryOrder($params)
+    public function queryOrder($params, $is_sign = true, $is_eno = false)
     {
         // 获取用户
         $member = Member::where('status', OrderInService::STATUS_OPEN)->find($params['merchant_id']);
@@ -538,12 +534,22 @@ class OrderOutService
             throw new \Exception('用户不存在');
         }
         // 签名验证
-        $signService = new SignService();
-        if (!$signService->checkSign($params, $member->api_key)){
-            throw new \Exception('签名错误');
+        if ($is_sign){
+            $signService = new SignService();
+            if (!$signService->checkSign($params, $member->api_key)){
+                throw new \Exception('签名错误');
+            }
+        }
+        if ($is_eno){
+            $order = OrderOut::where('member_id', $params['merchant_id'])
+                ->whereRaw('(e_no = :e_no or member_order_no = :member_order_no)',
+                    ['e_no' => $params['merchant_order_no'], 'member_order_no' => $params['merchant_order_no']])
+                ->find();
+        }else{
+            $order = OrderOut::where('member_id', $params['merchant_id'])->where('member_order_no', $params['merchant_order_no'])->find();
+
         }
 
-        $order = OrderOut::where('member_id', $params['merchant_id'])->where('member_order_no', $params['merchant_order_no'])->find();
         if (!$order){
             throw new \Exception('订单不存在');
         }
