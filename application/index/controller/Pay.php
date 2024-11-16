@@ -32,6 +32,11 @@ class Pay extends Frontend
             $this->redirect('/404.html');
         }
 
+        // 过期时不显示
+        if (strtotime($order['create_time']) + 3600 < time()) {
+            $this->redirect('/404.html');
+        }
+
 
         $key =  'order_in_info_' . $order['order_no'];
         $response = Cache::get($key);
@@ -50,7 +55,7 @@ class Pay extends Frontend
         $data = [
             'order_id' => $order['order_no'],
             'amount' => 'R$ ' . number_format($order['amount'], 2, '.', ''),
-            'expire_time' => date('Y-m-d H:i:s', time() + 3600),
+            'expire_time' => date('Y-m-d H:i:s', strtotime($order['create_time']) + 3600),
             'qrcode'=> $qrcode,
             'pix_code' => $pix_code,
         ];
