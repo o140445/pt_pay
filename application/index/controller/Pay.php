@@ -21,7 +21,7 @@ class Pay extends Frontend
             $this->redirect('/404.html');
         }
 
-        $order = OrderIn::where('order_no', $order_id)->with(['area'])->find();
+        $order = OrderIn::where('order_no', $order_id)->where('status', OrderIn::STATUS_UNPAID)->find();
         if (!$order) {
 //            $this->error('订单不存在');
             $this->redirect('/404.html');
