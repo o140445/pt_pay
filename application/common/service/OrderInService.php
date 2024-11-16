@@ -239,7 +239,7 @@ class OrderInService
         $walletService->addBalanceByType($order->member_id, $order->actual_amount, MemberWalletModel::CHANGE_TYPE_PAY_ADD, $order->order_no, '代收完成');
 
         // 计算提成
-        $commission = $this->calculateCommission($order, 0);
+        $commission = $this->calculateCommission($order);
 
         // 计算利润
         $this->calculateProfit($order, $commission);
@@ -280,7 +280,7 @@ class OrderInService
      * @param $order
      * @return float
      */
-    public function calculateCommission($order, $amount){
+    public function calculateCommission($order){
         $member = Member::where('status', OrderInService::STATUS_OPEN)->find($order->member_id);
         if (!$member || !$member->agency_id){
             return 0;
@@ -303,13 +303,13 @@ class OrderInService
             return 0;
         }
 
-        $amount += $order->amount * $memberProjectChannel->rate / 100 + $memberProjectChannel->fixed_rate;
+        $amount = $order->true_amount * $memberProjectChannel->rate / 100 + $memberProjectChannel->fixed_rate;
 
         $walletService = new MemberWalletService();
         $walletService->addBalanceByType($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_ADD, $order->order_no, '代收提成');
 
         if ($agent->agency_id){
-            $amount += $this->getSecondCommission($order, $amount, $agent->id);
+            $amount += $this->getSecondCommission($order, $agent->id);
         }
 
         return $amount;
@@ -318,7 +318,7 @@ class OrderInService
     /**
      * 获取二级代理提成
      */
-    public function getSecondCommission($order, $amount, $agent_id)
+    public function getSecondCommission($order, $agent_id)
     {
         $agent = Member::where('status', OrderInService::STATUS_OPEN)->find($agent_id);
         if (!$agent || !$agent->agency_id){
@@ -342,7 +342,7 @@ class OrderInService
             return 0;
         }
 
-        $amount = $amount * $memberProjectChannel->rate / 100 + $memberProjectChannel->fixed_rate;
+        $amount = $order->true_amount * $memberProjectChannel->rate / 100 + $memberProjectChannel->fixed_rate;
 
         $walletService = new MemberWalletService();
         $walletService->addBalanceByType($agent->id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_ADD, $order->order_no, '代收提成');
