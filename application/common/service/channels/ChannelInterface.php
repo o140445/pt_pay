@@ -24,4 +24,7 @@ interface ChannelInterface
 
     // getNotifyType
     public function getNotifyType($params) : string;
+
+    // getPayInfo
+    public function getPayInfo($orderIn) : array;
 }

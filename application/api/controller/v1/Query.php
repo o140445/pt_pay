@@ -92,4 +92,30 @@ class Query extends Api
 
         $this->success('查询成功', $wallet);
     }
+
+
+
+    /**
+     * 查询代收单信息
+     */
+    public function inpayinfo()
+    {
+        // 检查请求类型
+        if (!$this->request->isPost()) {
+            $this->error('请求方式错误');
+        }
+
+        $params = $this->request->post();
+        if (empty($params['merchant_id']) || empty($params['sign']) || empty($params['nonce']) || empty($params['merchant_order_no'])) {
+            $this->error('参数错误');
+        }
+        try {
+            $orderService = new OrderInService();
+            $res = $orderService->getOrderInfo($params);
+        }catch (\Exception $e) {
+            $this->error($e->getMessage());
+        }
+
+        $this->success('查询成功', $res);
+    }
 }

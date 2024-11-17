@@ -67,4 +67,10 @@ class OrderIn extends Model
     {
         return $this->hasOne('OrderRequestLog', 'order_no', 'order_no');
     }
+
+    // channel
+    public function channel()
+    {
+        return $this->hasOne('Channel', 'id', 'channel_id');
+    }
 }

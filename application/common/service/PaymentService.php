@@ -59,4 +59,10 @@ class PaymentService
     {
         return $this->channel->getNotifyType($data);
     }
+
+    // 获取支付信息
+    public function getPayInfo($orderIn)
+    {
+        return $this->channel->getPayInfo($orderIn);
+    }
 }

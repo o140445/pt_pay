@@ -4,6 +4,7 @@ namespace app\common\service\channels;
 
 use app\common\model\merchant\OrderIn;
 use app\common\model\merchant\OrderOut;
+use app\common\model\merchant\OrderRequestLog;
 use app\common\service\HookService;
 use fast\Http;
 use think\Cache;
@@ -240,5 +241,17 @@ class AcaciaPayChannel implements ChannelInterface
         }
 
         return '';
+    }
+
+    public function getPayInfo($order) : array
+    {
+        $response = OrderRequestLog::where('order_no', $order['order_no'])->where('request_type', OrderRequestLog::REQUEST_TYPE_REQUEST)->find();
+        $response_data = json_decode($response['response_data'], true);
+
+        return [
+            'order_no' => $order['order_no'],
+            'qrcode'=> "data:image/png;base64," . $response_data['qrcode'],
+            'pix_code' => $response_data['copia_e_cola'],
+        ];
     }
 }

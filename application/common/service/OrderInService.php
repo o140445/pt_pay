@@ -464,4 +464,46 @@ class OrderInService
             'msg' => $order->error_msg,
         ];
     }
+
+    /**
+     * 查询订单
+     * getOrderInfo
+     */
+    public function getOrderInfo($params, $is_sign = true, $is_or_eno = false)
+    {
+
+        $merchant = Member::find((int) $params['merchant_id']);
+        if (!$merchant){
+            throw new \Exception('商户不存在');
+        }
+
+        // 签名验证
+        if ($is_sign){
+            $signService = new SignService();
+            if (!$signService->checkSign($params, $merchant->api_key)){
+                throw new \Exception('签名错误');
+            }
+        }
+        if ($is_or_eno){
+            $order = OrderIn::where('member_id', $params['merchant_id'])
+                ->with('channel')
+                ->whereRaw('(e_no = :e_no or member_order_no = :member_order_no)',
+                    ['e_no' => $params['merchant_order_no'], 'member_order_no' => $params['merchant_order_no']])
+                ->find();
+        }else{
+            $order = OrderIn::with('channel')
+                ->where('member_id', $params['merchant_id'])
+                ->where('member_order_no', $params['merchant_order_no'])
+                ->find();
+        }
+        if (!$order){
+            throw new \Exception('订单不存在');
+        }
+
+        $paymentService = new PaymentService($order->channel->code);
+        $res = $paymentService->getPayInfo($order);
+
+        return $res;
+    }
+
 }
