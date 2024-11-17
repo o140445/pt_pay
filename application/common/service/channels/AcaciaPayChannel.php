@@ -246,6 +246,9 @@ class AcaciaPayChannel implements ChannelInterface
     public function getPayInfo($order) : array
     {
         $response = OrderRequestLog::where('order_no', $order['order_no'])->where('request_type', OrderRequestLog::REQUEST_TYPE_REQUEST)->find();
+        if (! $response) {
+            throw new \Exception('支付信息获取失败！');
+        }
         $response_data = json_decode($response['response_data'], true);
 
         return [

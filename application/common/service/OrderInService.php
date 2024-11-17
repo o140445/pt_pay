@@ -489,17 +489,18 @@ class OrderInService
                 ->with('channel')
                 ->whereRaw('(e_no = :e_no or member_order_no = :member_order_no)',
                     ['e_no' => $params['merchant_order_no'], 'member_order_no' => $params['merchant_order_no']])
+                ->where('status', OrderIn::STATUS_UNPAID)
                 ->find();
         }else{
             $order = OrderIn::with('channel')
                 ->where('member_id', $params['merchant_id'])
                 ->where('member_order_no', $params['merchant_order_no'])
+                ->where('status', OrderIn::STATUS_UNPAID)
                 ->find();
         }
         if (!$order){
-            throw new \Exception('订单不存在');
+            throw new \Exception('订单不存在,或已支付');
         }
-
         $paymentService = new PaymentService($order->channel->code);
         $res = $paymentService->getPayInfo($order);
 
