@@ -251,15 +251,25 @@
                     2、将排序后的参数拼接成URL键值对的格式，例如 a=b&c=d，参数值不要进行url编码。
                     <br>
                     3、如果有对象参数，先对对象参数进ASCII码从小到大排序，然后再进行URL键值对拼接，例如
-                    {
-                    "a": "b",
-                    "c": "d",
-                    "e": {
-                    "f": "g",
-                    "h": "i"
-                    }
-                    }
-                    拼接后为 f=g&h=i ,再和第一部分拼接，例如 a=b&c=d&e=f=g&h=i
+                    <pre id="sample_response3"> {
+    "amount":"5",
+    "merchant_id":"90001",
+    "product_id":"1001",
+    "merchant_order_no":"112370",
+    "notify_url":"https://www.xxx.com/api/v1/notify",
+    "nonce":"11",
+    "extra":{
+        "pix_key":"PiterXXXX0@gmail.com",
+        "pix_type":"EMAIL",
+        "pix_name":"ss"
+    },
+    "sign":"8F526D51D78D9A362C42F870D2B88724"
+}
+amount=5&merchant_id=90001&merchant_order_no=112370&nonce=11&notify_url=https://www.xxx.com/api/v1/notify
+&product_id=1001&pix_key=PiterXXXX0@gmail.com&pix_name=ss&pix_type=EMAIL
+</pre>
+
+
                     <br>
                     4、再将拼接好的字符串与商户密钥KEY进行MD5加密得出sign签名参数，sign = md5 ( aa=b&c=d&e=f=g&h=i + KEY )
                     （注意：+ 为各语言的拼接符，不是字符！），md5结果为大写。
