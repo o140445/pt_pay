@@ -409,7 +409,7 @@ class OrderInService
         if (!$rse){
             $rse = Http::postJson($order->notify_url, $data);
         }
-        Log::write('代付通知下游：data' . json_encode($data) . 'result' . $rse, 'info');
+        Log::write('代收通知下游：data' . json_encode($data) . 'result' . $rse, 'info');
         $code = $rse == 'success' ? OrderNotifyLog::STATUS_NOTIFY_SUCCESS : OrderNotifyLog::STATUS_NOTIFY_FAIL;
 
         $log = new OrderNotifyLog();
