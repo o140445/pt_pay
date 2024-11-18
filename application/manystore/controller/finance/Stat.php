@@ -50,7 +50,7 @@ class Stat extends ManystoreBase
         $member = Member::find($id);
         // 如果是代理商，获取代理商下的商户
         if ($member->is_agency) {
-            $member_ids = $this->model->where('agency_id', $id)->column('member_id');
+            $member_ids = Member::where('agency_id', $id)->column('member_id');
         }else{
             $member_ids = [$id];
         }
