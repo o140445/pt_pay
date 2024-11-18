@@ -110,7 +110,7 @@ class OrderSandboxService
         $signService = new SignService();
         $data['sign'] = $signService->makeSign($data, $member->api_key);
 
-        $rse = Http::post($order->notify_url, $data);
+        $rse = Http::postJson($order->notify_url, $data);
         $code = $rse == 'success' ? OrderNotifyLog::STATUS_NOTIFY_SUCCESS : OrderNotifyLog::STATUS_NOTIFY_FAIL;
 
         // 修改通知次数和状态

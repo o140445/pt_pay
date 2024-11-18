@@ -250,8 +250,9 @@
                     <br>
                     2、将排序后的参数拼接成URL键值对的格式，例如 a=b&c=d，参数值不要进行url编码。
                     <br>
-                    3、如果有对象参数，先对对象参数进ASCII码从小到大排序，然后再进行URL键值对拼接，例如
-                    <pre id="sample_response3"> {
+                    3、如果有extra参数，先不包含extra的排序，拼接完成。
+                    再将extra参数排序，拼接到拼接好的字符串后面，extra参数值不要进行url编码。
+                    <pre> {
     "amount":"5",
     "merchant_id":"90001",
     "product_id":"1001",
@@ -265,8 +266,8 @@
     },
     "sign":"8F526D51D78D9A362C42F870D2B88724"
 }
-amount=5&merchant_id=90001&merchant_order_no=112370&nonce=11&notify_url=https://www.xxx.com/api/v1/notify
-&product_id=1001&pix_key=PiterXXXX0@gmail.com&pix_name=ss&pix_type=EMAIL
+"amount=5&merchant_id=90001&merchant_order_no=112370&nonce=11&notify_url=https://www.xxx.com/api/v1/notify
+&product_id=1001&pix_key=PiterXXXX0@gmail.com&pix_name=ss&pix_type=EMAIL"
 </pre>
 
 
