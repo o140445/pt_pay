@@ -63,6 +63,9 @@ class Auth extends ManystoreAuth
         $manystore->last_login_time = date('Y-m-d H:i:s');
 //        $manystore->loginip = request()->ip();
         $manystore->token = Random::uuid();
+
+        // 每次登录google验证都要重新验证
+        $manystore->is_verify_google = 0;
         $manystore->save();
         Session::set("manystore", $manystore->toArray());
         $this->keeplogin($keeptime);

@@ -158,6 +158,12 @@ class ManystoreBase extends Controller
                     Hook::listen('manystore_nopermission', $this);
                     $this->error(__('You have no permission'), '');
                 }
+
+                // 判断是否绑定google验证器
+                $user = $this->auth->getUserinfo();
+                if ($user['is_bind_google'] == 1 && $user['is_verify_google'] == 0) {
+                    $this->error(__('Please bind Google Authenticator first'), url('security/index'));
+                }
             }
 
         }
