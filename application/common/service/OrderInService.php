@@ -11,6 +11,7 @@ use app\common\model\merchant\OrderNotifyLog;
 use app\common\model\merchant\OrderRequestLog;
 use app\common\model\merchant\Profit;
 use fast\Http;
+use think\Log;
 
 class OrderInService
 {
@@ -408,6 +409,7 @@ class OrderInService
         if (!$rse){
             $rse = Http::postJson($order->notify_url, $data);
         }
+        Log::write('代付通知下游：data' . json_encode($data) . 'result' . $rse, 'info');
         $code = $rse == 'success' ? OrderNotifyLog::STATUS_NOTIFY_SUCCESS : OrderNotifyLog::STATUS_NOTIFY_FAIL;
 
         $log = new OrderNotifyLog();
@@ -415,7 +417,7 @@ class OrderInService
         $log->notify_url = $order->notify_url;
         $log->notify_data = json_encode($data);
         $log->notify_status = $code;
-        $log->notify_result = $rse;
+        $log->notify_result = $rse ?? '';
         $log->notify_type = 1;
         $log->save();
 

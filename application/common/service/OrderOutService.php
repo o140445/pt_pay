@@ -2,6 +2,7 @@
 
 namespace app\common\service;
 
+use think\Log;
 use app\common\model\merchant\Channel;
 use app\common\model\merchant\Member;
 use app\common\model\merchant\MemberProjectChannel;
@@ -504,6 +505,7 @@ class OrderOutService
         if (!$rse){
             $rse = Http::postJson($order->notify_url, $data);
         }
+        Log::write('代付通知下游：data' . json_encode($data) . 'result' . $rse, 'info');
         $code = $rse == 'success' ? OrderNotifyLog::STATUS_NOTIFY_SUCCESS : OrderNotifyLog::STATUS_NOTIFY_FAIL;
 
         $log = new OrderNotifyLog();
@@ -511,7 +513,7 @@ class OrderOutService
         $log->notify_url = $order->notify_url;
         $log->notify_data = json_encode($data);
         $log->notify_status = $code;
-        $log->notify_result = $rse;
+        $log->notify_result = $rse ?? '';
         $log->notify_type = 2;
         $log->save();
 
