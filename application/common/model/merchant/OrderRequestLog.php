@@ -20,5 +20,6 @@ class OrderRequestLog  extends Model
     const ORDER_TYPE_OUT = 2;
 
     const REQUEST_TYPE_REQUEST = 1; // 请求
-    const REQUEST_TYPE_RESPONSE = 2; // 响应
+    const REQUEST_TYPE_CALLBACK = 2; // 回调
+    const REQUEST_TYPE_VOUCHER = 3; // 凭证
 }

@@ -63,7 +63,7 @@ class AcaciaPayChannel implements ChannelInterface
         if (isset($response['msg'])) {
             return [
                 'status' => 0,
-                'msg' => '下单失败',
+                'msg' => 'Excepção de pagamento, por favor tente de novo mais tarde',
             ];
         }
 
@@ -75,7 +75,7 @@ class AcaciaPayChannel implements ChannelInterface
         return [
             'status' => 1, // 状态 1成功 0失败
             'pay_url' => $pay_url, // 支付地址
-            'msg' => '下单成功', // 消息
+            'msg' => '', // 消息
             'order_id' => $response['tx_id'], // 订单号
             'e_no' => '',
             'request_data' => json_encode($data), // 请求数据
@@ -136,14 +136,14 @@ class AcaciaPayChannel implements ChannelInterface
         if (isset($res['msg'])) {
             return [
                 'status' => 0,
-                'msg' => '下单失败',
+                'msg' => 'Excepção de pagamento, por favor tente de novo mais tarde',
             ];
         }
 
         return [
             'status' => 1, // 状态 1成功 0失败
             'order_id' => $res['tx_id'], // 订单号
-            'msg' =>  '下单成功', // 消息
+            'msg' =>  '', // 消息
             'e_no' => '', // 业务订单号息
             'request_data' => json_encode($params), // 请求数据
             'response_data' => json_encode($res), // 响应数据
@@ -180,7 +180,7 @@ class AcaciaPayChannel implements ChannelInterface
             'status' => $status, // 状态 2成功 3失败 4退款
             'e_no' => '', // 业务订单号
             'data' => json_encode($params), // 数据
-            'msg' => $status == OrderOut::STATUS_PAID ? '支付成功' : '支付失败', // 消息
+            'msg' => $status == OrderOut::STATUS_PAID ? 'sucesso' : 'falham', // 消息
         ];
     }
 
@@ -213,7 +213,7 @@ class AcaciaPayChannel implements ChannelInterface
             'status' => $status, // 状态 2成功 3失败 4退款
             'e_no' =>  '', // 业务订单号
             'data' => json_encode($params), // 数据
-            'msg' => $status == OrderOut::STATUS_PAID ? '支付成功' : '支付失败', // 消息
+            'msg' => $status == OrderOut::STATUS_PAID ? 'sucesso' : 'falham', // 消息
         ];
     }
 
@@ -255,6 +255,73 @@ class AcaciaPayChannel implements ChannelInterface
             'order_no' => $order['order_no'],
             'qrcode'=> "data:image/png;base64," . $response_data['qrcode'],
             'pix_code' => $response_data['copia_e_cola'],
+        ];
+    }
+
+    /**
+     * 获取凭证
+     */
+    public function getVoucher($channel, $order) : array
+    {
+        $url = $channel['gateway'].'/api/generate/receipt/'.$order['channel_order_no'];
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'partnerId' => $channel['mch_id'],
+            'authKey' => $channel['mch_key'],
+        ];
+
+        $response = Http::getJson($url,$headers);
+        Log::write('AcaciaPayChannel 获取凭证: '.json_encode($response) . ' order_no: ' . $order['order_no'], 'info');
+        if (isset($response['error'])) {
+            return [
+                'status' => 0,
+                'msg' => $response['error'],
+            ];
+        }
+
+        if (isset($response['msg'])) {
+            return [
+                'status' => 0,
+                'msg' => '获取凭证失败',
+            ];
+        }
+
+        return [
+            'status' => 1, // 状态 1成功 0失败
+            'msg' => '获取凭证成功', // 消息
+            'data' => $response, // 数据
+        ];
+
+    }
+
+    /**
+     * 解析凭证
+     */
+    public function parseVoucher($voucher) : array
+    {
+
+        //{
+        //    "tx_id": "595f42802f4579b58b44c2b0d21abe",
+        //    "copia_e_cola": "00020126850014br.gov.bcb.pix2563pix.voluti.com.br/qr/v3/at/a62c3200-8944-48c1-aca8-af816ed0ee925204000053039865802BR5925MEGA_SERVICOS,_TECNOLOGIA6002SP62070503***6304D208",
+        //    "qrcode": "iVBORw0KGgoAAAANSUhEUgAAAUAAAAFACAIAAABC8jL9AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAJKkl...etc",
+        //    "amount": "5.00",
+        //    "method_code": "pix",
+        //    "user_id": "123",
+        //    "status": "paid",
+        //    "payer_name": "付款人姓名",
+        //    "ispb": "付款人CPF",
+        //    "e2e": "E00416968202411051528kRNvgsChncG",
+        //    "created_at": "05/11/2024 12:27",
+        //    "updated_at": "05/11/2024 20:28"
+        //}
+
+        return [
+            'pay_date' => $voucher['created_at'], // 支付时间
+            'payer_name' => $voucher['payer_name'], // 付款人姓名
+            'payer_account' => $voucher['ispb'], // 付款人CPF
+            'e_no' => $voucher['e2e'], // 业务订单号
+            'type' => 'isbank', // 业务订单号
         ];
     }
 }

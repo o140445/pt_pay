@@ -65,4 +65,16 @@ class PaymentService
     {
         return $this->channel->getPayInfo($orderIn);
     }
+
+    // 获取凭证
+    public function getVoucher($channel, $data)
+    {
+        return $this->channel->getVoucher($channel, $data);
+    }
+
+    // 解析凭证
+    public function parseVoucher($data)
+    {
+        return $this->channel->parseVoucher($data);
+    }
 }

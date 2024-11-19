@@ -66,5 +66,11 @@ class OrderOut extends Model
         return $this->hasOne('ConfigArea', 'id', 'area_id');
     }
 
+    // channel
+    public function channel()
+    {
+        return $this->hasOne('Channel', 'id', 'channel_id');
+    }
+
 
 }

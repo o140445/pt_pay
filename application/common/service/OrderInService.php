@@ -182,7 +182,7 @@ class OrderInService
         $log = new OrderRequestService();
         $log->create(
             $order->order_no,
-            OrderRequestLog::REQUEST_TYPE_RESPONSE,
+            OrderRequestLog::REQUEST_TYPE_CALLBACK,
             OrderRequestLog::ORDER_TYPE_IN,
             json_encode($params),
              '');
@@ -210,7 +210,7 @@ class OrderInService
     public function failOrder($order, $data)
     {
         $order->status = OrderIn::STATUS_FAILED;
-        $order->error_msg = isset($data['msg']) &&  !empty($data['msg']) ? $data['msg'] : '支付失败';
+        $order->error_msg = isset($data['msg']) &&  !empty($data['msg']) ? $data['msg'] : 'O pagamento falhou';
 
         $order->save();
     }

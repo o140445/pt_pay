@@ -252,4 +252,33 @@ class Http
         curl_close($curl);
         return $response;
     }
+
+    /**
+     * 发送一个GET请求
+     * @param string $url     请求URL
+     * @param array  $header  请求头
+     */
+    public static function getJson($url, $header = [])
+    {
+        // json
+        $header = array_merge([
+            'Content-Type' => 'application/json',
+        ], $header);
+
+        try {
+            $client = new \GuzzleHttp\Client();
+
+            $response = $client->request('GET', $url, [
+                'headers' => $header,
+            ]);
+        }catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $responseBodyAsString = $response->getBody()->getContents();
+            return json_decode($responseBodyAsString, true);
+        }catch (\Exception $e) {
+            return ['code' => 0, 'msg' => $e->getMessage()];
+        }
+
+        return json_decode($response->getBody(), true);
+    }
 }

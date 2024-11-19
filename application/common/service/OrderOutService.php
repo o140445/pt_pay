@@ -2,6 +2,8 @@
 
 namespace app\common\service;
 
+use think\Cache;
+use think\Config;
 use think\Log;
 use app\common\model\merchant\Channel;
 use app\common\model\merchant\Member;
@@ -187,7 +189,7 @@ class OrderOutService
         $log = new OrderRequestService();
         $log->create(
             $order->order_no,
-            OrderRequestLog::REQUEST_TYPE_RESPONSE,
+            OrderRequestLog::REQUEST_TYPE_CALLBACK,
             OrderRequestLog::ORDER_TYPE_OUT,
             json_encode($res),
             '');
@@ -255,7 +257,7 @@ class OrderOutService
     public function failOrder($order, $data)
     {
         $order->status = OrderOut::STATUS_FAILED;
-        $order->error_msg = isset($data['msg']) && $data['msg'] ? $data['msg'] : '支付失败';
+        $order->error_msg = isset($data['msg']) && $data['msg'] ? $data['msg'] : 'O pagamento falhou';
         $order->save();
 
         // 解冻
@@ -547,11 +549,12 @@ class OrderOutService
         }
         if ($is_eno){
             $order = OrderOut::where('member_id', $params['merchant_id'])
+                ->with('channel')
                 ->whereRaw('(e_no = :e_no or member_order_no = :member_order_no)',
                     ['e_no' => $params['merchant_order_no'], 'member_order_no' => $params['merchant_order_no']])
                 ->find();
         }else{
-            $order = OrderOut::where('member_id', $params['merchant_id'])->where('member_order_no', $params['merchant_order_no'])->find();
+            $order = OrderOut::where('member_id', $params['merchant_id'])->where('member_order_no', $params['merchant_order_no'])->with('channel')->find();
 
         }
 
@@ -568,6 +571,96 @@ class OrderOutService
             'pay_date' => $order->pay_success_date ?? '',
             'msg' => $order->error_msg ?? 'OK',
         ];
+    }
+
+
+    /**
+     * 获取凭证
+     * @param $order
+     * @return array
+     */
+    public function getVoucher($order)
+    {
+
+        // 查询是否已经生成凭证
+        $response = OrderRequestLog::where('order_no', $order['order_no'])->where('request_type', OrderRequestLog::REQUEST_TYPE_VOUCHER)->find();
+
+        if (!$response){
+            $paymentService = new PaymentService($order->channel->code);
+            $response = $paymentService->getVoucher($order->channel, $order);
+            if (!$response['status']){
+                throw new \Exception($response['msg']);
+            }
+
+            // 保存
+            $log = new OrderRequestService();
+            $log->create(
+                $order->order_no,
+                OrderRequestLog::REQUEST_TYPE_VOUCHER,
+                OrderRequestLog::ORDER_TYPE_OUT,
+                '',
+                json_encode($response['data'])
+            );
+
+            // 修改E_NO
+            $order->e_no = $response['data']['e2e'];
+            $order->save();
+            $response['response_data'] = json_encode($response['data']);
+        }
+
+        Cache::set('voucher_'.$order->order_no,  $response['response_data'], 600);
+
+
+        return json_decode($response['response_data'], true);
+
+    }
+
+    /**
+     * 获取凭证数据
+     * @param $order_no
+     * @return array
+     * @throws \Exception
+     */
+    public function getVoucherData($order_no)
+    {
+
+        $order = OrderOut::with('channel')
+            ->where('order_no', $order_no)
+            ->where('status', OrderOut::STATUS_PAID)
+            ->find();
+
+        if (!$order){
+            throw new \Exception('order not found');
+        }
+
+        $data = Cache::get('voucher_'.$order_no);
+        if (!$data){
+            $data = $this->getVoucher($order);
+            Cache::set('voucher_'.$order_no, json_encode($data), 600);
+        }else{
+            $data = json_decode($data, true);
+        }
+
+        // 解析数据
+        $paymentService = new PaymentService($order->channel->code);
+        $voucher = $paymentService->parseVoucher($data);
+
+        $extra = json_decode($order->extra, true);
+
+        $res = [
+            'amount' => 'R$ ' . $order->amount,
+            'order_no' => $order->order_no,
+            'e_no' => $voucher['e_no'],
+            'date' => $voucher['pay_date'],
+            'payer_name' => $voucher['payer_name'],
+            'payer_account' => $voucher['payer_account'],
+            'payer_type' => $voucher['type'],
+            // 收款
+            'payee_name' => $extra['pix_name'] ?? '',
+            'payee_account' => $extra['pix_key'] ?? '',
+        ];
+
+        return $res;
     }
 
 }

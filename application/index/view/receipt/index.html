@@ -28,7 +28,29 @@
         .info {
             margin-bottom: 10px;
         }
-
+        .fontSmall {
+            font-size: 16px;
+        }
+        /* 默认布局：PC端一行显示 */
+        .main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        /* 移动端布局：每个信息换行显示 */
+        @media (max-width: 768px) {
+            .main {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+            }
+            .main strong {
+                margin-bottom: 5px;
+            }
+            .main span {
+                display: block;
+            }
+        }
     </style>
 </head>
 <body>
@@ -36,17 +58,45 @@
     <h1>Recibo de Pagamento</h1>
     <h3>{$data.amount}</h3>
     <div style="text-align: left;">
-
-        <p class="info"><strong>Tempo de transação:</strong> {$data.payment_time}</p>
-        <p class="info"><strong>ID da Transação:</strong> {$data.e_no}</p>
+        <div class="info fontSmall main">
+            <strong>Tempo de transação:</strong>
+            <span>{$data.date}</span>
+        </div>
+        <div class="info fontSmall main">
+            <strong>ID da Transação:</strong>
+            <span>{$data.e_no}</span>
+        </div>
 
         <div style="border-bottom: 1px solid #ddd; margin: 20px 0;"></div>
-        <p class="info"><strong>CPF/CNPJ do Pagador:</strong> {$data.payer_account}</p>
-        <p class="info"><strong>Nome do Pagador:</strong> {$data.payer_name}</p>
+        <h3>Recebedor</h3>
+
+        {if $data.payer_type == 'isbank'}
+        <div class="info fontSmall main">
+            <strong>ISPB:</strong>
+            <span>{$data.payer_account}</span>
+        </div>
+        {/if}
+        {if $data.payer_type == 'pix'}
+        <div class="info fontSmall main">
+            <strong>Chave Pix:</strong>
+            <span>{$data.payer_account}</span>
+        </div>
+        {/if}
+        <div class="info fontSmall main">
+            <strong>Nome:</strong>
+            <span>{$data.payer_name}</span>
+        </div>
 
         <div style="border-bottom: 1px solid #ddd; margin: 20px 0;"></div>
-        <p class="info"><strong>Conta do Recebedor:</strong> {$data.payee_account}</p>
-        <p class="info"><strong>CPF/CNPJ do Recebedor:</strong> {$data.payee_name}</p>
+        <h3>Identificação</h3>
+        <div class="info fontSmall main">
+            <strong>Pix Key:</strong>
+            <span>{$data.payee_account}</span>
+        </div>
+        <div class="info fontSmall main">
+            <strong>Nome:</strong>
+            <span>{$data.payee_name}</span>
+        </div>
     </div>
 </div>
 </body>

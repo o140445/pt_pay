@@ -27,4 +27,11 @@ interface ChannelInterface
 
     // getPayInfo
     public function getPayInfo($orderIn) : array;
+
+    // getVoucher
+    public function getVoucher($channel, $params) : array;
+
+    // parseVoucher
+    public function parseVoucher($params) : array;
+
 }
