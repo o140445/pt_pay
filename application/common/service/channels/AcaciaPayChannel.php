@@ -180,7 +180,7 @@ class AcaciaPayChannel implements ChannelInterface
             'status' => $status, // 状态 2成功 3失败 4退款
             'e_no' => '', // 业务订单号
             'data' => json_encode($params), // 数据
-            'msg' => $status == OrderOut::STATUS_PAID ? 'sucesso' : 'falham', // 消息
+            'msg' => $status == OrderOut::STATUS_PAID ? 'sucesso' : 'canceled', // 消息
         ];
     }
 
@@ -213,7 +213,7 @@ class AcaciaPayChannel implements ChannelInterface
             'status' => $status, // 状态 2成功 3失败 4退款
             'e_no' =>  '', // 业务订单号
             'data' => json_encode($params), // 数据
-            'msg' => $status == OrderOut::STATUS_PAID ? 'sucesso' : 'falham', // 消息
+            'msg' => $status == OrderOut::STATUS_PAID ? 'sucesso' : '失败/取消', // 消息
         ];
     }
 
