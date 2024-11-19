@@ -147,7 +147,7 @@ class Bot extends Api
                 $this->error('订单未支付');
             }
 
-            $data['url'] =  Config::get('pay_url').'/index/receipt/index?order_no='.$order['order_no'];
+            $data['url'] =  Config::get('pay_url').'/index/receipt/index?order_id='.$order['order_no'];
 
         }catch (\Exception $e) {
             $this->error($e->getMessage());
