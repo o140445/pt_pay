@@ -62,7 +62,14 @@ class Order extends Backend
         try {
             // 冻结余额
             $withdrawService = new WithdrawService();
-            $wallet = $withdrawService->create($params['member_id'], $params['amount'], $params['usdt_amount'], $params['usdt_address'], $params['remark']);
+            $wallet = $withdrawService->create(
+                $params['member_id'],
+                $params['amount'],
+                $params['usdt_amount'],
+                $params['usdt_address'],
+                $params['rate'],
+                $params['remark']
+            );
         } catch (\Exception $e) {
             Db::rollback();
             $this->error($e->getMessage());
@@ -105,14 +112,18 @@ class Order extends Backend
         Db::startTrans();
         try {
 
-            // 汇率和usdt_amount 是必填的 并且都要大于0
-            if (!isset($params['usdt_amount']) || $params['usdt_amount'] <= 0) {
-                throw new \Exception('USDT金额错误');
+            if ($params['status'] == 1) {
+                // 汇率和usdt_amount 是必填的 并且都要大于0
+                if (!isset($params['usdt_amount']) || $params['usdt_amount'] <= 0) {
+                    throw new \Exception('USDT金额错误');
+                }
+
+                if (!isset($params['rate']) || empty($params['rate'])) {
+                    throw new \Exception('汇率错误');
+                }
+
             }
 
-            if (!isset($params['rate']) || empty($params['rate'])) {
-                throw new \Exception('汇率错误');
-            }
 
             // 冻结余额
             $withdrawService = new WithdrawService();
@@ -122,6 +133,7 @@ class Order extends Backend
                 $params['status'],
                 $params['usdt_amount'],
                 $params['usdt_address'],
+                $params['rate'],
                 $params['remark']
             );
         } catch (\Exception $e) {

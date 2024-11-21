@@ -17,7 +17,7 @@ class WithdrawService
      *
      * @return bool
      */
-    public function create($member_id, $amount, $usdt_amount = '', $usdt_address = '', $remark = '手动提现')
+    public function create($member_id, $amount, $usdt_amount = '', $usdt_address = '', $rate=0, $remark = '手动提现')
     {
         $walletService = new MemberWalletService();
         $amount = abs($amount);
@@ -38,6 +38,7 @@ class WithdrawService
             'usdt_amount' => $usdt_amount,
             'usdt_address' => $usdt_address,
             'order_no' => $order_no,
+            'rate' => $rate,
             'remark' => $remark,
         ];
 
@@ -64,7 +65,7 @@ class WithdrawService
      *
      * @return bool
      */
-    public function edit($id, $amount, $status, $usdt_amount = "", $usdt_address = "", $remark = "")
+    public function edit($id, $amount, $status, $usdt_amount = "", $usdt_address = "", $rate=0, $remark = "")
     {
         $order = WithdrawOrder::where('id', $id)->find();
         if (!$order) {
@@ -98,6 +99,7 @@ class WithdrawService
         $order->usdt_address = $usdt_address;
         $order->status = $status;
         $order->remark = $remark;
+        $order->rate = $rate;
         $res = $order->save();
         if (!$res) {
             throw new \Exception('编辑失败');
