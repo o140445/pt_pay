@@ -92,7 +92,8 @@ class Channel extends Backend
             }
 
             $params['sign'] = $this->getSign();
-            $params['extra'] = $params['extra'] ? json_encode($params['extra']) : '[]';
+
+            $params['extra'] = isset($params['extra']) ? json_encode($params['extra']) : '[]';
             $result = $this->model->allowField(true)->save($params);
             Db::commit();
         } catch (ValidateException|PDOException|Exception $e) {
