@@ -41,7 +41,7 @@ class AuthBankPayChannel implements ChannelInterface
 
     public function getNotifyType($params): string
     {
-        // TODO: Implement getNotifyType() method.
+        return '';
     }
 
     public function getPayInfo($orderIn): array
