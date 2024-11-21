@@ -104,6 +104,16 @@ class Order extends Backend
         // 事务
         Db::startTrans();
         try {
+
+            // 汇率和usdt_amount 是必填的 并且都要大于0
+            if (!isset($params['usdt_amount']) || $params['usdt_amount'] <= 0) {
+                throw new \Exception('USDT金额错误');
+            }
+
+            if (!isset($params['rate']) || empty($params['rate'])) {
+                throw new \Exception('汇率错误');
+            }
+
             // 冻结余额
             $withdrawService = new WithdrawService();
             $result = $withdrawService->edit(

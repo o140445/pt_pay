@@ -33,6 +33,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'member_id', title: __('Member_id')},
                         {field: 'amount', title: __('Amount'), operate:false},
                         {field: 'usdt_amount', title: __('Usdt_amount'), operate:false},
+                        {field: 'rate', title: __('汇率'), operate:false},
                         {field: 'usdt_address', title: __('Usdt_address'), operate: false, table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'status', title: __('Status'), searchList: {
                             '0': __('待审核'),

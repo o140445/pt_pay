@@ -86,7 +86,7 @@ class Order extends ManystoreBase
         try {
             // 冻结余额
             $withdrawService = new WithdrawService();
-            $wallet = $withdrawService->create(STORE_ID, $params['amount'], $params['usdt_amount'], $params['usdt_address'], $params['remark']);
+            $wallet = $withdrawService->create(STORE_ID, $params['amount'], 0, $params['usdt_address'], $params['remark']);
         } catch (\Exception $e) {
             Db::rollback();
             $this->error($e->getMessage());
@@ -131,7 +131,7 @@ class Order extends ManystoreBase
                 $ids,
                 $params['amount'],
                 1,
-                $params['usdt_amount'],
+                0,
                 $params['usdt_address'],
                 $params['remark']
             );
