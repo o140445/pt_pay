@@ -61,7 +61,7 @@ class AuthBankPayChannel implements ChannelInterface
 
     public function response(): string
     {
-        // TODO: Implement response() method.
+        return 'ok';
     }
 
 
