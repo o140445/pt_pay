@@ -18,7 +18,7 @@ class SignatureValidator implements ValidatorInterface
         }
 
         if (!isset($data['sign'])) {
-            $this->errorMessage = "参数签名是必需的";
+            $this->errorMessage = "Sign Not Found";
             return false;
         }
 
@@ -40,7 +40,7 @@ class SignatureValidator implements ValidatorInterface
         }
 
         if (!$signService->checkSign($signData, $secret)) {
-            $this->errorMessage = "签名验证失败";
+            $this->errorMessage = "Sign Error";
             return false;
         }
         return true;

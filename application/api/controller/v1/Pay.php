@@ -55,7 +55,7 @@ class Pay extends Api
     public function in()
     {
         if (!$this->request->isPost()) {
-            $this->error('请求方式错误');
+            $this->error('Request method error');
         }
 
         $params = $this->request->post();
@@ -66,7 +66,7 @@ class Pay extends Api
             empty($params['sign']) ||
             empty($params['notify_url']) ||
             empty($params['nonce'])) {
-            $this->error('参数错误');
+            $this->error('Parameter error');
         }
 
         // 写请求日志
@@ -74,7 +74,7 @@ class Pay extends Api
 
         // 加锁同一个单号同时只能有一个请求
         $lock = $params['merchant_order_no'] . '_lock';
-        Cache::get($lock) && $this->error('请勿重复提交');
+        Cache::get($lock) && $this->error('Submit repeatedly');
 
         Cache::set($lock, 1, 10);
 
@@ -150,7 +150,7 @@ class Pay extends Api
     {
 
         if (!$this->request->isPost()) {
-            $this->error('请求方式错误');
+            $this->error('Request method error');
         }
 
         $params = $this->request->post();
@@ -162,7 +162,7 @@ class Pay extends Api
             empty($params['notify_url']) ||
             empty($params['nonce']) ||
             empty($params['extra'])) {
-            $this->error('参数错误');
+            $this->error('Parameter error');
         }
 
         // 写请求日志
@@ -170,7 +170,7 @@ class Pay extends Api
 
         // 加锁同一个单号同时只能有一个请求
         $lock = $params['merchant_order_no'] . '_lock';
-        Cache::get($lock) && $this->error('请勿重复提交');
+        Cache::get($lock) && $this->error('Submit repeatedly');
 
         Cache::set($lock, 1, 10);
 

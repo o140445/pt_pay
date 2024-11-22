@@ -11,12 +11,12 @@ class OrderDataValidator implements ValidatorInterface
 
     public function validate(array $data): bool {
         if (!isset($data['merchant_order_no'])) {
-            $this->errorMessage = "订单ID是必需的";
+            $this->errorMessage = "Merchant Order No Not Found";
             return false;
         }
 
         if (!isset($data['amount']) || $data['amount'] <= 0) {
-            $this->errorMessage = "订单金额是必需的";
+            $this->errorMessage = "Amount Error";
             return false;
         }
 
@@ -33,7 +33,7 @@ class OrderDataValidator implements ValidatorInterface
         }
 
         if ($order) {
-            $this->errorMessage = "订单号已存在";
+            $this->errorMessage = "Merchant Order No Exists";
             return false;
         }
 

@@ -13,13 +13,13 @@ class ProjectValidator implements ValidatorInterface
 
     public function validate(array $data): bool {
         if (!isset($data['product_id'])) {
-            $this->errorMessage = "产品ID是必需的";
+            $this->errorMessage = "Product ID Not Found";
             return false;
         }
 
         $product = Project::where('status', OrderInService::STATUS_OPEN)->find($data['product_id']);
         if (!$product) {
-            $this->errorMessage = "产品不存在";
+            $this->errorMessage = "Product Not Found";
             return false;
         }
 
@@ -37,7 +37,7 @@ class ProjectValidator implements ValidatorInterface
             // 代付扩展字段检查
             foreach ($extend as $item) {
                 if (!isset($extra[$item['value']])) {
-                    $this->errorMessage = $item['title'] . "是必需的";
+                    $this->errorMessage = $item['value'] . " Required";
                     return false;
                 }
             }

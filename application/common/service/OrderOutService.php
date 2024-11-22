@@ -32,7 +32,7 @@ class OrderOutService
         // 订单创建检查
         $channel_id = MemberProjectChannel::where('status', OrderInService::STATUS_OPEN)->where('member_id', $params['merchant_id'])->where('project_id', $params['product_id'])->where('type', 2)->value('channel_id');
         if (!$channel_id) {
-            throw new \Exception('通道未开通');
+            throw new \Exception('Project Channel Not Found');
         }
 
         $params['channel_id'] = $channel_id;

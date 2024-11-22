@@ -36,7 +36,7 @@ class OrderInService
         $channel_id = MemberProjectChannel::where('status', OrderInService::STATUS_OPEN)->where('member_id', $params['merchant_id'])->where('project_id', $params['product_id'])->where('type', 1)->value('channel_id');
 
         if (!$channel_id) {
-            throw new \Exception('未开通支付通道');
+            throw new \Exception('Merchant channel not found');
         }
 
         $params['channel_id'] = $channel_id;
@@ -71,7 +71,7 @@ class OrderInService
         $res = $order->save();
 
         if (!$res) {
-            throw new \Exception('订单创建失败');
+            throw new \Exception('Order creation failed');
         }
 
         return $order;

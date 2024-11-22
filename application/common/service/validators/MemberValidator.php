@@ -12,24 +12,24 @@ class MemberValidator implements ValidatorInterface
 
     public function validate(array $data): bool {
         if (!isset($data['merchant_id'])) {
-            $this->errorMessage = "商户ID是必需的";
+            $this->errorMessage = "Merchant ID Not Found";
             return false;
         }
 
         $member = Member::where('status', OrderInService::STATUS_OPEN)->find($data['merchant_id']);
         if (!$member) {
-            $this->errorMessage = "商户不存在";
+            $this->errorMessage = "Merchant Not Found";
             return false;
         }
 
         //对接类型检查
         if ($member->docking_type != Member::DOCKING_TYPE_API && !isset($data['is_member'])) {
-            $this->errorMessage = "商户类型不支持API对接";
+            $this->errorMessage = "Merchant Not Support API";
             return false;
         }
 
         if ($member->docking_type == Member::DOCKING_TYPE_API && isset($data['is_member'])) {
-            $this->errorMessage = "商户类型不支持会员后台对接";
+            $this->errorMessage = "Merchant Not Support Member";
             return false;
         }
 
@@ -37,7 +37,7 @@ class MemberValidator implements ValidatorInterface
         if ($member->ip_white_list) {
             $ip = request()->ip();
             if (!in_array($ip, explode(',', $member->ip_white_list))) {
-                $this->errorMessage = "IP不在白名单中";
+                $this->errorMessage = "IP Not In White List";
                 return false;
             }
         }
@@ -45,7 +45,7 @@ class MemberValidator implements ValidatorInterface
 
         // 代理不支持创建
         if ($member->is_agency) {
-            $this->errorMessage = "代理不支持创建";
+            $this->errorMessage = "Merchant Not Support Create";
             return false;
         }
 
@@ -53,14 +53,15 @@ class MemberValidator implements ValidatorInterface
         // 沙盒模式检查
         if ( isset($data['is_sandbox'])) {
             if (!$member->is_sandbox ) {
-                $this->errorMessage = "商户不支持沙盒模式";
+                $this->errorMessage = "Merchant Not Support Sandbox";
                 return false;
             }
             return true;
         }
 
+        // 正常模式检查
         if ($member->is_sandbox) {
-            $this->errorMessage = "商户不支持正式模式";
+            $this->errorMessage = "Merchant Not Support Normal";
             return false;
         }
 
@@ -68,7 +69,7 @@ class MemberValidator implements ValidatorInterface
         if ($data['type'] == OrderOutService::TYPE_OUT) {
             $memberWallet = $member->wallet;
             if ($memberWallet->balance < $data['amount']) {
-                $this->errorMessage = "余额不足";
+                $this->errorMessage = "Balance Not Enough";
                 return false;
             }
         }
