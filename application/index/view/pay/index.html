@@ -5,22 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PIX Payment</title>
     <link rel="stylesheet" href="__CDN__/assets/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
     <link rel="icon" href="__CDN__/assets/img/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="__CDN__/assets/img/favicon.ico"/>
+    <link href="__CDN__/assets/css/index.css" rel="stylesheet">
+    <link href="__CDN__/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="__CDN__/assets/css/frontend.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
     <style>
         body {
-            background-color: #f0f2f5;
-            font-family: Arial, sans-serif;
+            background-color: #f9fafb;
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
         }
         .payment-container {
-            margin: auto;
+            background-color: #ffffff;
             padding: 30px;
-            /*border: 1px solid #ddd;*/
-            /*border-radius: 10px;*/
-            /*background-color: #fff;*/
-            /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);*/
-            max-width: 600px;
-            max-height: 100%;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+            margin-top: -15px;
+
+            @media (max-width: 576px) {
+                height: 100vh;
+            }
         }
         .qrcode {
             width: 200px;
@@ -28,57 +41,67 @@
             margin: 20px 0;
         }
         .container h1 {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            color: #333333;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .payment-details p {
+            font-size: 16px;
+            margin: 5px 0;
+            color: #555555;
         }
         .pix-code {
             display: flex;
             flex-direction: column;
             align-items: center;
             margin-top: 20px;
-            gap: 10px;
+        }
+        .btn-primary {
+            background-color: #34a853;
+            border-color: #34a853;
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+        .btn-primary:hover {
+            background-color: #2a8c43;
+            border-color: #2a8c43;
+        }
+        .pix_log img {
+            margin-top: 15px;
+            width: 120px;
         }
     </style>
 </head>
 <body>
-<div class="container payment-container text-center">
+<div class="container payment-container">
     <h1>Pagamento PIX</h1>
-
-
-    <div style="font-size: 14px;">
-
+    <div class="payment-details">
         <p><strong>Valor:</strong> {$data.amount}</p>
         <p><strong>ID do Pedido:</strong> {$data.order_id}</p>
         <p><strong>Expira em:</strong> {$data.expire_time}</p>
     </div>
     <div>
         <img src="{$data.qrcode}" alt="QR Code" class="qrcode">
+        <p>
+            Abra o app com sua chave PIX cadastrada, escolha Pagar com Pix e escaneie o QR Codeou
+            copie e cole o código.
+        </p>
     </div>
 
-    <div class="pix-code" onclick="copyPixCode()" >
-        <button type="button" class="btn btn-primary" data-clipboard-text="{$data.pix_code}">
-            <span>PIX CÓPIA É COLA</span>
-
-<!--            -->
+    <div class="pix-code">
+        <button class="btn btn-success" id="copy" data-clipboard-text="{$data.pix_code}">
+            <i class="fa fa-copy"></i>
+            PIX CÓPIA E COLA
         </button>
-        <div class="pix_log" >
-            <img src="__CDN__/assets/img/pix.png" alt="" style="width: 60%; height: 60%">
+        <div class="pix_log">
+            <img src="__CDN__/assets/img/pix.png" alt="PIX Logo">
         </div>
+
     </div>
 </div>
-<script>
-    function copyPixCode() {
 
-        // 初始化 Clipboard.js
-        var clipboard = new ClipboardJS('.btn');
-
-        // 复制成功时的提示
-        clipboard.on('success', function (e) {
-            alert('ID de transação copiado');
-        });
-        // 复制失败时的提示
-        clipboard.on('error', function (e) {
-        });
-    }
-</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

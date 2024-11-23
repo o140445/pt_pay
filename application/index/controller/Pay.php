@@ -11,6 +11,8 @@ class Pay extends Frontend
 {
     protected $noNeedLogin = ['*'];
 
+    protected $layout = 'default';
+
     /**
      * 支付页面
      */
@@ -24,16 +26,6 @@ class Pay extends Frontend
         $order = OrderIn::where('order_no', $order_id)->where('status', OrderIn::STATUS_UNPAID)->find();
         if (!$order) {
 //            $this->error('订单不存在');
-            $this->redirect('/404.html');
-        }
-
-        if ($order['status'] != 1) {
-//            $this->error('订单已支付');
-            $this->redirect('/404.html');
-        }
-
-        // 过期时不显示
-        if (strtotime($order['create_time']) + 3600 < time()) {
             $this->redirect('/404.html');
         }
 
@@ -55,7 +47,7 @@ class Pay extends Frontend
         $data = [
             'order_id' => $order['order_no'],
             'amount' => 'R$ ' . number_format($order['amount'], 2, '.', ''),
-            'expire_time' => date('Y-m-d H:i:s', strtotime($order['create_time']) + 3600),
+            'expire_time' => date('d/m/y H:i', strtotime($order['create_time']) + 3600),
             'qrcode'=> $qrcode,
             'pix_code' => $pix_code,
         ];
