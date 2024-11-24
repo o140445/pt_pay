@@ -21,4 +21,5 @@ return [
     'app\command\ChannelStat',
     'app\command\ProfitsStat',
     'app\command\SandboxOrder',
+    'app\command\ClearLogs',
 ];
