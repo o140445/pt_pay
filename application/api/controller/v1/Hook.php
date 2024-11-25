@@ -62,6 +62,8 @@ class Hook extends Api
                 $this->error($e->getMessage());
             }
             Db::commit();
+        }else{
+            Log::error('Hook error: ' . $code . ' ' . $res['msg']);
         }
 
         $this->success($res['msg']);

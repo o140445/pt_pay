@@ -231,6 +231,8 @@ class Pay extends Api
                 $this->error($e->getMessage());
             }
             Db::commit();
+        }else{
+            Log::error('代付回调请求失败 error:  data:' . json_encode($params) . ', msg:' . $res['msg']);
         }
 
         echo $res['msg']; die();

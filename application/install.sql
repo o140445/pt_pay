@@ -396,3 +396,16 @@ create TABLE if not exists `fa_order_sandbox` (
     KEY `idx_member_id` (`member_id`),
     KEY `idx_order_no` (`order_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='沙盒订单';
+
+-- 延迟代付回调
+CREATE TABLE `fa_order_out_delay` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `source` varchar(50) NOT NULL COMMENT '来源',
+    `data` text NOT NULL COMMENT '数据',
+    `status` tinyint NOT NULL DEFAULT '0' COMMENT '状态',
+    `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_create_time` (`create_time`),
+    key `idx_source` (`source`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='延迟代付回调';
