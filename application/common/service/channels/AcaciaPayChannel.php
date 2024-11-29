@@ -61,10 +61,20 @@ class AcaciaPayChannel implements ChannelInterface
         }
 
         if (isset($response['msg'])) {
-            return [
-                'status' => 0,
-                'msg' => 'Excepção de pagamento, por favor tente de novo mais tarde',
-            ];
+            $response = Http::postJson($channel['gateway'].'/api/pix', $data, $headers);
+            Log::write('AcaciaPayChannel pay response:'.json_encode($response) . ' data:'.json_encode($data) . ' headers:'.json_encode($headers), 'info');
+            if (isset($response['error'])) {
+                return [
+                    'status' => 0,
+                    'msg' => $response['error'],
+                ];
+            }
+            if (isset($response['msg'])) {
+                return [
+                    'status' => 0,
+                    'msg' => 'Excepção de pagamento, por favor tente de novo mais tarde',
+                ];
+            }
         }
 
         $pay_url = Config::get('pay_url') . '/index/pay/index?order_id=' . $params['order_no'];
@@ -133,11 +143,22 @@ class AcaciaPayChannel implements ChannelInterface
             ];
         }
 
-        if (isset($res['msg'])) {
-            return [
-                'status' => 0,
-                'msg' => 'Excepção de pagamento, por favor tente de novo mais tarde',
-            ];
+        if (isset($response['msg'])) {
+            $res = Http::postJson($url, $data, $headers);
+
+            Log::write('AcaciaPayChannel outPay response:'.json_encode($res) . ' data:'.json_encode($data) . ' headers:'.json_encode($headers), 'info');
+            if (isset($response['error'])) {
+                return [
+                    'status' => 0,
+                    'msg' => $response['error'],
+                ];
+            }
+            if (isset($response['msg'])) {
+                return [
+                    'status' => 0,
+                    'msg' => 'Excepção de pagamento, por favor tente de novo mais tarde',
+                ];
+            }
         }
 
         return [
