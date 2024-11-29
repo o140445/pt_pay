@@ -143,7 +143,7 @@ class AcaciaPayChannel implements ChannelInterface
             ];
         }
 
-        if (isset($response['msg'])) {
+        if (isset($res['msg'])) {
             $res = Http::postJson($url, $data, $headers);
 
             Log::write('AcaciaPayChannel outPay response:'.json_encode($res) . ' data:'.json_encode($data) . ' headers:'.json_encode($headers), 'info');
