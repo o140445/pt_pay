@@ -206,6 +206,7 @@ class Http
                 $response = $client->request('POST', $url, [
                     'headers' => $header,
                     'json' => $data,
+                    'timeout' => 10,
                 ]);
 
             } else {
