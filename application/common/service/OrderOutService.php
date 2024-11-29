@@ -149,6 +149,7 @@ class OrderOutService
 
 
         // 写入请求日志
+        $log = new OrderRequestService();
         $log->create(
             $order->order_no,
             OrderRequestLog::REQUEST_TYPE_REQUEST,
