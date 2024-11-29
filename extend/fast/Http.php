@@ -206,7 +206,7 @@ class Http
                 $response = $client->request('POST', $url, [
                     'headers' => $header,
                     'json' => $data,
-                    'timeout' => 20,
+                    'timeout' => 10,
                     'connect_timeout' => 10,
                 ]);
 
@@ -214,7 +214,7 @@ class Http
                 $response = $client->request('POST', $url, [
                     'headers' => $header,
                     'form_params' => $data,
-                    'timeout' => 20,
+                    'timeout' => 10,
                     'connect_timeout' => 10,
                 ]);
             }
