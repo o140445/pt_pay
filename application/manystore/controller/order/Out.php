@@ -11,6 +11,7 @@ use app\common\service\OrderOutService;
 use think\Config;
 use think\Db;
 use think\Exception;
+use think\Log;
 
 /**
  * 代付单
@@ -67,6 +68,13 @@ class Out extends ManystoreBase
     public function add($ids = null)
     {
         if ($this->request->isPost()) {
+            //修改日志路径
+            Log::init([
+                'type'  => 'File',
+                'path'  => LOG_PATH . 'pay/',
+                'level' => ['error', 'info'],
+            ]);
+
             $params = $this->request->post("row/a");
             if ($params) {
                 if (empty($params['amount'])) {
