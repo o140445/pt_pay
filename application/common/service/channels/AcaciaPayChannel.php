@@ -143,16 +143,22 @@ class AcaciaPayChannel implements ChannelInterface
             ];
         }
 
-        if (isset($res['msg'])) {
-            $res = Http::postJson($url, $data, $headers);
+        // 是否是超时 包含 cURL error 7 的错误才是超时
+        if (isset($res['msg']) ) {
 
-            Log::write('AcaciaPayChannel outPay response:'.json_encode($res) . ' data:'.json_encode($data) . ' headers:'.json_encode($headers), 'info');
-            if (isset($res['error'])) {
-                return [
-                    'status' => 0,
-                    'msg' => $res['error'],
-                ];
+            //cURL error 7: Failed to connect to acaciapay.live port 443 after 2001 ms
+            if (strpos($res['msg'], 'cURL error 7') !== false) {
+                $res = Http::postJson($url, $data, $headers);
+
+                Log::write('AcaciaPayChannel outPay response:'.json_encode($res) . ' data:'.json_encode($data) . ' headers:'.json_encode($headers), 'info');
+                if (isset($res['error'])) {
+                    return [
+                        'status' => 0,
+                        'msg' => $res['error'],
+                    ];
+                }
             }
+
             if (isset($res['msg'])) {
                 return [
                     'status' => 0,
