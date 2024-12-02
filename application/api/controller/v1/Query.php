@@ -6,11 +6,16 @@ use app\common\controller\Api;
 use app\common\service\MemberWalletService;
 use app\common\service\OrderInService;
 use app\common\service\OrderOutService;
+use think\Request;
 
 class Query extends Api
 {
     protected $noNeedLogin = '*';
 
+    public function __construct(Request $request = null)
+    {
+         $this->error('请求方式错误');
+    }
     /**
      * 查询代收单
      *
