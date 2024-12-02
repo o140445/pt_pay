@@ -226,7 +226,6 @@ class Auth extends \fast\Auth
         }
         $admin = Session::get('admin');
         if (!$admin) {
-            var_dump("Session 没有");die();
             return false;
         }
         $my = Admin::get($admin['id']);
@@ -235,7 +234,6 @@ class Auth extends \fast\Auth
         }
         //校验安全码，可用于判断关键信息发生了变更需要重新登录
         if (!isset($admin['safecode']) || $this->getEncryptSafecode($my) !== $admin['safecode']) {
-            var_dump("safecode 变化");die();
             $this->logout();
             return false;
         }
