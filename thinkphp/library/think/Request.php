@@ -1308,9 +1308,7 @@ class Request
 
         $httpAgentIp = Config::get('http_agent_ip');
 
-        if ($httpAgentIp && isset($_SERVER[$httpAgentIp])) {
-            $ip = $_SERVER[$httpAgentIp];
-        } elseif ($adv) {
+        if ($adv) {
             if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
                 $arr = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
                 $pos = array_search('unknown', $arr);
