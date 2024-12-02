@@ -238,19 +238,19 @@ class Auth extends \fast\Auth
             return false;
         }
         //判断是否同一时间同一账号只能在一个地方登录
-        if (Config::get('fastadmin.login_unique')) {
-            if ($my['token'] != $admin['token']) {
-                $this->logout();
-                return false;
-            }
-        }
+//        if (Config::get('fastadmin.login_unique')) {
+//            if ($my['token'] != $admin['token']) {
+//                $this->logout();
+//                return false;
+//            }
+//        }
         //判断管理员IP是否变动
-        if (Config::get('fastadmin.loginip_check')) {
-            if (!isset($admin['loginip']) || $admin['loginip'] != request()->ip()) {
-                $this->logout();
-                return false;
-            }
-        }
+//        if (Config::get('fastadmin.')) {
+//            if (!isset($admin['loginip']) || $admin['loginip'] != request()->ip()) {
+//                $this->logout();
+//                return false;
+//            }
+//        }
         $this->logined = true;
         return true;
     }
