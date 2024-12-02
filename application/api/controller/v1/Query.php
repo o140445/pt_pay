@@ -12,10 +12,6 @@ class Query extends Api
 {
     protected $noNeedLogin = '*';
 
-    public function __construct(Request $request = null)
-    {
-         $this->error('请求方式错误');
-    }
     /**
      * 查询代收单
      *
