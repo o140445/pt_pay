@@ -162,7 +162,7 @@ class AcaciaPayChannel implements ChannelInterface
 
         return [
             'status' => 1, // 状态 1成功 0失败
-            'order_id' => $res['tx_id'], // 订单号
+            'order_id' => $res['tx_id'] ?? '', // 订单号
             'msg' =>  '', // 消息
             'e_no' => $res['e2e_id'] ?? '', // 业务订单号
             'request_data' => json_encode($params), // 请求数据
