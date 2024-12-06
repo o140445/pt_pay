@@ -164,7 +164,7 @@ class AcaciaPayChannel implements ChannelInterface
             'status' => 1, // 状态 1成功 0失败
             'order_id' => $res['tx_id'], // 订单号
             'msg' =>  '', // 消息
-            'e_no' => $res['E33053580202412061316084462ced2b'] ?? '', // 业务订单号
+            'e_no' => $res['e2e_id'] ?? '', // 业务订单号
             'request_data' => json_encode($params), // 请求数据
             'response_data' => json_encode($res), // 响应数据
         ];
