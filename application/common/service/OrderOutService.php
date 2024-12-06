@@ -109,6 +109,7 @@ class OrderOutService
         if ($res['status'] == OrderInService::CHANNEL_RES_STATUS_SUCCESS) {
             $order->status = OrderOut::STATUS_UNPAID;
             $order->channel_order_no = $res['order_id'] ?? '';
+            $order->e_no = $res['e_no'] ?? '';
             $order->save();
 
         } else {
