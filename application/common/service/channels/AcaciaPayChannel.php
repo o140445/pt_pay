@@ -120,7 +120,7 @@ class AcaciaPayChannel implements ChannelInterface
         }
 
         $data = [
-            'userId' => $params['member_id'],
+            'userId' => $params['order_no'],
             'amount' => (float)$params['amount'],
             'pixKeyType' => $extra['pix_type'] == "PHONE" ? "TELEFONE" : $extra['pix_type'], // PHONE TELEFONE CPF CNPJ
             'pixKey' => $extra['pix_key']
