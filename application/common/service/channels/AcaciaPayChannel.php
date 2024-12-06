@@ -158,13 +158,6 @@ class AcaciaPayChannel implements ChannelInterface
                     ];
                 }
             }
-
-            if (isset($res['msg'])) {
-                return [
-                    'status' => 0,
-                    'msg' => 'Excepção de pagamento, por favor tente de novo mais tarde',
-                ];
-            }
         }
 
         return [
