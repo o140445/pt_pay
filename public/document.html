@@ -673,7 +673,7 @@
                                         <td>status</td>
                                         <td>int</td>
                                         <td>是</td>
-                                        <td>支付状态 1支付中 2成功 3失败</td>
+                                        <td>支付状态 1支付中 2成功 3失败 4退款</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -767,10 +767,10 @@
                                             <td>商户ID</td>
                                         </tr>
                                         <tr>
-                                            <td>merchant_order_no</td>
+                                            <td>order_no</td>
                                             <td>string</td>
                                             <td>是</td>
-                                            <td>商户订单号</td>
+                                            <td>平台订单号</td>
                                         </tr>
                                         <tr>
                                             <td>merchant_order_no</td>
@@ -797,12 +797,6 @@
                                             <td>失败原因</td>
                                         </tr>
                                         <tr>
-                                            <td>nonce</td>
-                                            <td>string</td>
-                                            <td>是</td>
-                                            <td>随机字符串(不超过32位)</td>
-                                        </tr>
-                                        <tr>
                                             <td>sign</td>
                                             <td>string</td>
                                             <td>是</td>
@@ -822,7 +816,6 @@
     "status":2,
     "msg":"OK",
     "pay_success_date":"2024-11-13 16:40:57",
-    "nonce":"11",
     "sign":"90F4C855E7D8D0CB7FACE477BBEA31D8"
 }</pre>
                                 </div>
