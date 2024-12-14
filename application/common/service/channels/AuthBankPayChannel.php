@@ -37,7 +37,7 @@ class AuthBankPayChannel implements ChannelInterface
 
         if ($is_auth) {
             $token = $this->getAccessToken($channel);
-            $this->headers['Authorization'] = 'Bearer ' . $token['access_token'];
+            $this->headers['Authorization'] = 'Bearer ' . $token['accessToken'];
             $token = $this->getExtraConfig($channel, 'token');
             $this->headers['Token'] = $token;
         }
@@ -79,7 +79,6 @@ class AuthBankPayChannel implements ChannelInterface
     public function pay($channel, $params) : array
     {
         $data = [
-            'txId' => $params['order_no'],
             'valor' => $params['amount'],
             'tempoExpiracao' => 3600,
         ];
@@ -248,19 +247,35 @@ class AuthBankPayChannel implements ChannelInterface
 
         return [
             'order_no' => $order['order_no'],
-            'qrcode'=> $response_data['qrcode']['Imagem'],
-            'pix_code' => $response_data['qrcode']['EMV'],
+            'qrcode'=> "data:image/png;base64," .$response_data['qrcode']['imagem'],
+            'pix_code' => $response_data['qrcode']['emv'],
         ];
     }
 
-    public function getVoucher($channel, $params): array
+    public function getVoucher($channel, $order): array
     {
-        // TODO: Implement getVoucher() method.
+        $data = OrderRequestLog::where('order_no', $order['order_no'])->where('request_type', OrderRequestLog::REQUEST_TYPE_CALLBACK)->find();
+        if (! $data) {
+            return [
+                'status' => 0,
+                'msg' => '凭证获取失败',
+            ];
+        }
+        $data['data'] = $data['response_data'];
+        $data['status'] = 1;
+        return $data;
     }
 
     public function parseVoucher($params): array
     {
-        // TODO: Implement parseVoucher() method.
+
+        return [
+            'pay_date' => date('Y-m-d H:i:s', strtotime($params['horario'])),
+            'payer_name' => '', // 付款人姓名
+            'payer_account' =>  '', // 付款人CPF
+            'e_no' => $params['endToEndId'], // 业务订单号
+            'type' => 'isbank', // 业务订单号
+        ];
     }
 
     public function response(): string
