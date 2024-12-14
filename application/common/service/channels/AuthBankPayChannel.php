@@ -79,7 +79,7 @@ class AuthBankPayChannel implements ChannelInterface
     public function pay($channel, $params) : array
     {
         $data = [
-            'valor' => $params['amount'],
+            'valor' => (int)(round($params['amount'], 2) * 100),
             'tempoExpiracao' => 3600,
         ];
 
@@ -116,7 +116,7 @@ class AuthBankPayChannel implements ChannelInterface
 
         $data = [
             'idEnvio' => $params['order_no'],
-            'valor' => $params['amount'],
+            'valor' => (int)(round($params['amount'], 2) * 100),
             'chavePixDestino' => $extra['pix_key'],
         ];
 
@@ -181,7 +181,7 @@ class AuthBankPayChannel implements ChannelInterface
         return [
             'order_no' => $params['idEnvio'],
             'channel_no' => $params['codigoTransacao'],
-            'amount' => abs($params['valor']),
+            'amount' =>  bcdiv(abs($params['valor']), 100, 2),
             'pay_date' => date('Y-m-d H:i:s', strtotime($params['horario'])),
             'status' => $status,
             'eno' => $params['endToEndId'],
@@ -213,7 +213,7 @@ class AuthBankPayChannel implements ChannelInterface
         return [
             'order_no' => $params['txid'],
             'channel_no' => $params['codigoTransacao'],
-            'amount' => $params['valor'],
+            'amount' =>  bcdiv($params['valor'], 100, 2),
             'pay_date' => date('Y-m-d H:i:s', strtotime($params['horario'])),
             'status' => $status,
             'eno' => $params['endToEndId'],
