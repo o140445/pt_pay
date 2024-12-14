@@ -165,6 +165,11 @@ class AuthBankPayChannel implements ChannelInterface
         //  }
         //}
 
+        $token = $this->getExtraConfig($channel, 'token');
+        if ($params['token'] != $token) {
+            return ['status' => 0, 'msg' => 'token错误'];
+        }
+
         $status = OrderOut::STATUS_UNPAID;
         if ($params['status'] == 'Sucesso') {
             $status = OrderOut::STATUS_PAID;
@@ -184,7 +189,7 @@ class AuthBankPayChannel implements ChannelInterface
             'amount' =>  bcdiv(abs($params['valor']), 100, 2),
             'pay_date' => date('Y-m-d H:i:s', strtotime($params['horario'])),
             'status' => $status,
-            'eno' => $params['endToEndId'],
+            'e_no' => $params['endToEndId'],
             'data' => json_encode($params),
             'msg' =>  $params['erro']['motivo'] ?? 'ok',
         ];
@@ -208,15 +213,20 @@ class AuthBankPayChannel implements ChannelInterface
         //        "codigoBanco": "00123456"
         //    }
         //}
+        // 检查 token
+        $token = $this->getExtraConfig($channel, 'token');
+        if ($params['token'] != $token) {
+            return ['status' => 0, 'msg' => 'token错误'];
+        }
 
         $status = OrderIn::STATUS_PAID;
         return [
-            'order_no' => $params['txid'],
-            'channel_no' => $params['codigoTransacao'],
+            'order_no' => '',
+            'channel_no' => $params['txid'],
             'amount' =>  bcdiv($params['valor'], 100, 2),
             'pay_date' => date('Y-m-d H:i:s', strtotime($params['horario'])),
             'status' => $status,
-            'eno' => $params['endToEndId'],
+            'e_no' => $params['endToEndId'],
             'data' => json_encode($params),
             'msg' => 'ok',
         ];
@@ -255,26 +265,29 @@ class AuthBankPayChannel implements ChannelInterface
     public function getVoucher($channel, $order): array
     {
         $data = OrderRequestLog::where('order_no', $order['order_no'])->where('request_type', OrderRequestLog::REQUEST_TYPE_CALLBACK)->find();
-        if (! $data) {
+
+        if (!$data) {
             return [
                 'status' => 0,
                 'msg' => '凭证获取失败',
             ];
         }
-        $data['data'] = $data['response_data'];
-        $data['status'] = 1;
-        return $data;
+        $data = json_decode($data['request_data'], true);
+        $res['data'] = json_decode($data['data'],true);
+        $res['data']['e2e'] =  $res['data']['endToEndId'];
+        $res['status'] = 1;
+
+        return $res;
     }
 
     public function parseVoucher($params): array
     {
-
         return [
             'pay_date' => date('Y-m-d H:i:s', strtotime($params['horario'])),
             'payer_name' => '', // 付款人姓名
             'payer_account' =>  '', // 付款人CPF
             'e_no' => $params['endToEndId'], // 业务订单号
-            'type' => 'isbank', // 业务订单号
+            'type' => 'pix',
         ];
     }
 
