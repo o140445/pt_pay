@@ -159,7 +159,7 @@ class AcaciaPayChannel implements ChannelInterface
                 }
             }
 
-            if (strpos($res['msg'], 'cURL error 7') !== false) {
+            if (isset($res['msg']) && strpos($res['msg'], 'cURL error 7') !== false) {
                 return [
                     'status' => 0,
                     'msg' => 'Excepção de pagamento, por favor tente de novo mais tarde',
