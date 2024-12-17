@@ -47,11 +47,11 @@ class OrderNotify  extends Command
                 $orderInService->notifyDownstream($orderIn->id);
             }catch (\Exception $e) {
                 Db::rollback();
-                Log::write('定时任务代收回调通知下游失败：error' . $e->getMessage() .', order_id:' . $orderIn->id, 'error');
+                Log::write('定时任务代收回调通知下游失败：error' . $e->getMessage() .', order_id:' . $orderIn->order_no, 'error');
                 $this->output->writeln('定时任务代收回调通知下游失败：error' . $e->getMessage() .', order_id:' . $orderIn->order_no);
             }
             Db::commit();
-            Log::write('定时任务代收回调通知下游成功：order_id:' . $orderIn->id, 'info');
+            Log::write('定时任务代收回调通知下游成功：order_id:' . $orderIn->order_no, 'info');
             $this->output->writeln('定时任务代收回调通知下游成功：order_id:' . $orderIn->order_no);
         }
     }
@@ -78,12 +78,12 @@ class OrderNotify  extends Command
                 $orderOutService->notifyDownstream($orderOut->id);
             }catch (\Exception $e) {
                 Db::rollback();
-                Log::write('定时任务代付回调通知下游失败：error' . $e->getMessage() .', order_id:' . $orderOut->id, 'error');
-                $this->output->writeln('定时任务代付回调通知下游失败：error' . $e->getMessage() .', order_id:' . $orderOut->id);
+                Log::write('定时任务代付回调通知下游失败：error' . $e->getMessage() .', order_id:' . $orderOut->order_no, 'error');
+                $this->output->writeln('定时任务代付回调通知下游失败：error' . $e->getMessage() .', order_id:' . $orderOut->order_no);
             }
             Db::commit();
-            Log::write('定时任务代付回调通知下游成功：order_id:' . $orderOut->id, 'info');
-            $this->output->writeln('定时任务代付回调通知下游成功：order_id:' . $orderOut->id);
+            Log::write('定时任务代付回调通知下游成功：order_id:' . $orderOut->order_no, 'info');
+            $this->output->writeln('定时任务代付回调通知下游成功：order_id:' . $orderOut->order_no);
         }
     }
 }
