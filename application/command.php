@@ -23,4 +23,5 @@ return [
     'app\command\SandboxOrder',
     'app\command\ClearLogs',
     'app\command\OrderOutDelay',
+    'app\command\OrderNotify',
 ];

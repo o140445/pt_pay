@@ -28,6 +28,7 @@ class OrderNotifyLog extends Model
     const STATUS_NOTIFY_SUCCESS = 1;
     // STATUS_NOTIFY_FAIL
     const STATUS_NOTIFY_FAIL = 2;
+    const STATUS_NOTIFY_WAIT = 0;
 
     public function getNotifyStatusAttr($value = '')
     {

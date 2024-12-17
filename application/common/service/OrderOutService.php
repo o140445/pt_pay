@@ -251,6 +251,10 @@ class OrderOutService
      */
     public function completeOrder($order, $data)
     {
+        if ($order->status != OrderOut::STATUS_UNPAID){
+            throw new \Exception('订单状态不正确');
+        }
+
         $order->status = OrderOut::STATUS_PAID;
         $order->pay_success_date = isset($data['pay_date']) && $data['pay_date'] ? $data['pay_date'] : date('Y-m-d H:i:s');
         $order->channel_order_no =  isset($data['channel_no']) && $data['channel_no'] ? $data['channel_no'] : $order->channel_order_no;
@@ -534,7 +538,12 @@ class OrderOutService
                 $rse = $rse['error'];
             }
         }
-        Log::write('代付通知下游：data' . json_encode($data) . 'result' . $rse, 'info');
+
+        if (is_array($rse)){
+            $rse = json_encode($rse);
+        }
+
+        Log::write('代付通知下游：data ' . json_encode($data) . ', result: ' . $rse, 'info');
         $code = $rse == 'success' ? OrderNotifyLog::STATUS_NOTIFY_SUCCESS : OrderNotifyLog::STATUS_NOTIFY_FAIL;
 
         $log = new OrderNotifyLog();
@@ -690,4 +699,17 @@ class OrderOutService
         return $res;
     }
 
+
+    /**
+     * 获取支付成功，但未通知的订单
+     */
+    public function getUnNotifyOrder($time)
+    {
+        $orders = OrderOut::where('status', OrderOut::STATUS_PAID)
+            ->where('pay_success_date', '<', $time)
+            ->where('notify_status', OrderNotifyLog::STATUS_NOTIFY_WAIT)
+            ->limit(10)
+            ->select();
+        return $orders;
+    }
 }

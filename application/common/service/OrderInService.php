@@ -412,7 +412,12 @@ class OrderInService
                 $rse = $rse['error'];
             }
         }
-        Log::write('代收通知下游：data' . json_encode($data) . 'result' . $rse, 'info');
+
+        if (is_array($rse)){
+            $rse = json_encode($rse);
+        }
+
+        Log::write('代收通知下游：data ' . json_encode($data) . ', result: ' . $rse, 'info');
         $code = $rse == 'success' ? OrderNotifyLog::STATUS_NOTIFY_SUCCESS : OrderNotifyLog::STATUS_NOTIFY_FAIL;
 
         $log = new OrderNotifyLog();
@@ -513,6 +518,29 @@ class OrderInService
         $res = $paymentService->getPayInfo($order);
 
         return $res;
+    }
+
+    public function memberCreateOrder($member_id, $params)
+    {
+        $params['merchant_id'] = $member_id;
+        $params['merchant_order_no'] = get_order_no('SDO'.$member_id);
+        $params['notify_url'] = '';
+        $params['is_member'] = 1;
+        $order =  $this->createOrder($params);
+        return  $this->requestChannel($order);
+    }
+
+    /**
+     * 获取支付成功，但未通知的订单
+     */
+    public function getUnNotifyOrder($time)
+    {
+        $orders = OrderIn::where('status', OrderIn::STATUS_PAID)
+            ->where('pay_success_date', '<=', $time)
+            ->where('notify_status', OrderNotifyLog::STATUS_NOTIFY_WAIT)
+            ->limit(10)
+            ->select();
+        return $orders;
     }
 
 }
