@@ -511,7 +511,11 @@ class OrderOutService
         }
 
         if ($order->notify_url == ''){
-            return true;
+            // 修改通知次数和状态
+            $order->notify_count += 1;
+            $order->notify_status = OrderNotifyLog::STATUS_NOTIFY_SUCCESS;
+
+            return $order->save();
         }
 
         // 设置时区
