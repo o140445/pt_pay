@@ -183,10 +183,14 @@ class AuthBankPayChannel implements ChannelInterface
             $status = OrderOut::STATUS_REFUND;
         }
 
+        $amount = (string)$params['valor'];
+        // 到数两位加个小数点
+        $amount = substr($amount, 0, -2) . '.' . substr($amount, -2);
+
         return [
             'order_no' => $params['idEnvio'],
             'channel_no' => $params['codigoTransacao'],
-            'amount' =>  bcdiv(abs($params['valor']), 100, 2),
+            'amount' =>  $amount,
             'pay_date' => date('Y-m-d H:i:s', strtotime($params['horario'])),
             'status' => $status,
             'e_no' => $params['endToEndId'],
@@ -220,10 +224,14 @@ class AuthBankPayChannel implements ChannelInterface
         }
 
         $status = OrderIn::STATUS_PAID;
+        $amount = (string)$params['valor'];
+        // 到数两位加个小数点
+        $amount = substr($amount, 0, -2) . '.' . substr($amount, -2);
+
         return [
             'order_no' => '',
             'channel_no' => $params['txid'],
-            'amount' =>  bcdiv($params['valor'], 100, 2),
+            'amount' =>  $amount,
             'pay_date' => date('Y-m-d H:i:s', strtotime($params['horario'])),
             'status' => $status,
             'e_no' => $params['endToEndId'],
