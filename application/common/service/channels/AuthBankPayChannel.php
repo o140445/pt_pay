@@ -183,7 +183,7 @@ class AuthBankPayChannel implements ChannelInterface
             $status = OrderOut::STATUS_REFUND;
         }
 
-        $amount = (string)$params['valor'];
+        $amount = (string)abs($params['valor']);
         // 到数两位加个小数点
         $amount = substr($amount, 0, -2) . '.' . substr($amount, -2);
 
