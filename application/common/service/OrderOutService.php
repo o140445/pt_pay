@@ -82,7 +82,7 @@ class OrderOutService
      * 会员创建订单
      * @param $member_id
      * @param $params
-     * @return array
+     * @return OrderOut
      * @throws \Exception
      */
     public function memberCreateOrder($member_id, $params)
@@ -92,7 +92,7 @@ class OrderOutService
         $params['notify_url'] = '';
         $params['is_member'] = 1;
         $order =  $this->createOutOrder($params);
-        return  $this->requestChannel($order);
+        return  $order;
     }
 
     /**
