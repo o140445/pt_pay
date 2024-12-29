@@ -120,6 +120,11 @@ class OrderOutService
             // 解冻
             $feeService = new FreezeService();
             $feeService->unfreeze(MemberWalletModel::CHANGE_TYPE_PAY_UNFREEZE, '', $order->order_no, '代付解冻');
+            return [
+                'order_no' => $order->order_no,
+                'status' => $order->status,
+                'msg' => $res['msg'],
+            ];
         }
 
 
