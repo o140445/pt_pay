@@ -24,4 +24,5 @@ return [
     'app\command\ClearLogs',
     'app\command\OrderOutDelay',
     'app\command\OrderNotify',
+    'app\command\OutOrderRequestChannel',
 ];

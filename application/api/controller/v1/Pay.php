@@ -187,12 +187,16 @@ class Pay extends Api
         Db::commit();
         Cache::rm($lock);
 
-        try {
-            $res = $orderService->requestChannel($order);
-        }catch (\Exception $e) {
-            Log::write('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
-            $this->error($e->getMessage());
-        }
+        //return [
+        //            'order_no' => $order->order_no,
+        //            'status' => $order->status,
+        //            'msg' => $res['msg'],
+        //        ];
+        $res = [
+            'order_no' => $order->order_no,
+            'status' => $order->status,
+            'msg' => '下单成功',
+        ];
 
         $this->success('返回成功', $res);
     }
