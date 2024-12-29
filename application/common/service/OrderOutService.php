@@ -256,7 +256,7 @@ class OrderOutService
         $order->status = OrderOut::STATUS_PAID;
         $order->pay_success_date = isset($data['pay_date']) && $data['pay_date'] ? $data['pay_date'] : date('Y-m-d H:i:s');
         $order->channel_order_no =  isset($data['channel_no']) && $data['channel_no'] ? $data['channel_no'] : $order->channel_order_no;
-        $order->e_no = isset($data['e_no']) && $data['e_no'] ? $data['e_no'] : '';
+        $order->e_no = $order->e_no ? $order->e_no : (isset($data['e_no']) && $data['e_no'] ? $data['e_no'] : '');
 
         $order->save();
         // 解冻
