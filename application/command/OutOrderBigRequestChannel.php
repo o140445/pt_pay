@@ -4,6 +4,7 @@ namespace app\command;
 
 use app\common\model\merchant\OrderOut;
 use app\common\service\OrderOutService;
+use think\Cache;
 use think\Config;
 use think\console\Command;
 use think\Db;
@@ -30,13 +31,26 @@ class OutOrderBigRequestChannel extends Command
         // 获取所有未处理的订单 100条
         $orderOut = OrderOut::where('status', OrderOut::STATUS_UNPAID)
             ->whereIn('member_id', $big_customer_id)
-            ->limit(20)
+            ->limit(30)
             ->select();
 
         if (!$orderOut) {
             $output->writeln('没有未处理的代付单');
             return;
         }
+
+        // ID加入缓存 哈希
+        $key_prefix = 'request_channel_';
+        foreach ($orderOut as $k => $item) {
+            // 检查是否已经处理
+            if (Cache::get($key_prefix . $item->id)){
+                unset($orderOut[$k]);
+                continue;
+            }
+
+            Cache::set($key_prefix . $item->id, 1, 600);
+        }
+
 
         $outService = new OrderOutService();
         foreach ($orderOut as $item) {
@@ -53,7 +67,7 @@ class OutOrderBigRequestChannel extends Command
             }
 
             $output->writeln('代付回调请求结果：' . json_encode($res));
-
+            Cache::rm($key_prefix . $item->id);
             // 失败
             if ($res['status'] == OrderOut::STATUS_FAILED) {
 

@@ -110,7 +110,10 @@ class OrderOutService
         }
 
         Cache::set($key, 1, 600);
-
+        $order = OrderOut::where('id', $order->id)->lock(true)->find();
+        if (!$order || $order->status != OrderOut::STATUS_UNPAID){
+            throw new \Exception('订单不存在或状态不正确');
+        }
         $channel = Channel::where('status', OrderInService::STATUS_OPEN)->find($order->channel_id);
         $channelService = new PaymentService($channel->code);
         $res = $channelService->outPay($channel, $order);
