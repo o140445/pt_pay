@@ -109,7 +109,7 @@ class OrderOutService
             throw new \Exception('订单已经提交');
         }
 
-        Cache::set($key, 1, 60);
+        Cache::set($key, 1, 600);
 
         $channel = Channel::where('status', OrderInService::STATUS_OPEN)->find($order->channel_id);
         $channelService = new PaymentService($channel->code);
