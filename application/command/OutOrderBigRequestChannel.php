@@ -13,7 +13,7 @@ class OutOrderBigRequestChannel extends Command
 {
     protected function configure()
     {
-        $this->setName('out_order:request_channel')
+        $this->setName('out_order:big_request_channel')
             ->setDescription('outOrderRequestChannel');
     }
 
