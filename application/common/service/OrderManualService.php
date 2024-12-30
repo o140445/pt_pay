@@ -20,19 +20,6 @@ class OrderManualService
         $order->extra = json_encode($params['extra']);
         $order->save();
 
-        //请求支付
-        $channelService = new PaymentService($channel->code);
-        $channel_res = $channelService->outPay($channel, $order);
-
-        if ($channel_res['status'] == 1) {
-            $order->channel_order_no = $channel_res['order_id'] ?? '';
-            $order->save();
-
-        } else {
-
-            throw new \Exception($channel_res['msg']);
-        }
-
         return $order;
 
     }

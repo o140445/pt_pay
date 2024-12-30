@@ -102,6 +102,15 @@ class OrderOutService
      */
     public function requestChannel($order)
     {
+        // 检查是否已经提交过
+        $key = 'order_out_request_channel_lock_'.$order->order_no;
+        $lock = Cache::get($key);
+        if ($lock){
+            throw new \Exception('订单已经提交');
+        }
+
+        Cache::set($key, 1, 60);
+
         $channel = Channel::where('status', OrderInService::STATUS_OPEN)->find($order->channel_id);
         $channelService = new PaymentService($channel->code);
         $res = $channelService->outPay($channel, $order);

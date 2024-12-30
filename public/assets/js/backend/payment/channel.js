@@ -35,27 +35,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'is_out', title: __('IsOut'), searchList: {0:__('Disabled'),1:__('Enabled')}, formatter: Table.api.formatter.status},
                         {field: 'create_time', title: __('CreateTime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
                         {field: 'update_time', title: __('UpdateTime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
-                        {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate,
-                            // 代付按钮
-                            buttons: [
-                                {
-                                    name: 'pay',
-                                    text: __('代付'),
-                                    classname: 'btn btn-xs btn-success btn-dialog',
-                                    url: 'order/manual/add?channel_id={id}',
-                                    success: function (data, ret) {
-                                        Layer.alert(ret.msg);
-                                        //刷新表格
-                                        table.bootstrapTable('refresh');
-                                    },
-                                    error: function (data, ret) {
-                                        Layer.alert(ret.msg);
-                                        return false;
-                                    }
-                                }
-                            ]
-
-                        }
                     ]
                 ]
             });
