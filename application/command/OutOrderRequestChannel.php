@@ -51,6 +51,8 @@ class OutOrderRequestChannel extends Command
             Cache::set($key_prefix . $item->id, 1, 600);
         }
 
+        $output->writeln('代付单数量：' . count($orderOut));
+
         $outService = new OrderOutService();
         foreach ($orderOut as $item) {
             // 发起代付
@@ -65,7 +67,7 @@ class OutOrderRequestChannel extends Command
                 continue;
             }
 
-            $output->writeln('代付回调请求结果：' . json_encode($res));
+            $output->writeln('代付回调请求结果：' . json_encode($res) . ' 时间：' . date('Y-m-d H:i:s'));
             Cache::rm($key_prefix . $item->id);
             // 失败
             if ($res['status'] == OrderOut::STATUS_FAILED) {
