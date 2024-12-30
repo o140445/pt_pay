@@ -25,4 +25,5 @@ return [
     'app\command\OrderOutDelay',
     'app\command\OrderNotify',
     'app\command\OutOrderRequestChannel',
+    'app\command\OutOrderBigRequestChannel',
 ];

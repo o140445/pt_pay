@@ -9,7 +9,7 @@ use think\console\Command;
 use think\Db;
 use think\Log;
 
-class OutOrderRequestChannel extends Command
+class OutOrderBigRequestChannel extends Command
 {
     protected function configure()
     {
@@ -29,7 +29,7 @@ class OutOrderRequestChannel extends Command
 
         // 获取所有未处理的订单 100条
         $orderOut = OrderOut::where('status', OrderOut::STATUS_UNPAID)
-            ->whereNotIn('customer_id', $big_customer_id)
+            ->whereIn('customer_id', $big_customer_id)
             ->limit(30)
             ->select();
 
