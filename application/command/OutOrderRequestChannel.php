@@ -25,7 +25,7 @@ class OutOrderRequestChannel extends Command
             'level' => ['error', 'info'],
         ]);
 
-        $big_customer_id = Config::get('big_customer_id');
+        $big_customer_id = Config::get('big_customer');
 
         // 获取所有未处理的订单 100条
         $orderOut = OrderOut::where('status', OrderOut::STATUS_UNPAID)
