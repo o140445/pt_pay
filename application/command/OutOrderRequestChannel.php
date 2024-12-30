@@ -30,7 +30,7 @@ class OutOrderRequestChannel extends Command
         // 获取所有未处理的订单 100条
         $orderOut = OrderOut::where('status', OrderOut::STATUS_UNPAID)
             ->whereNotIn('member_id', $big_customer_id)
-            ->limit(30)
+            ->limit(20)
             ->select();
 
         if (!$orderOut) {
