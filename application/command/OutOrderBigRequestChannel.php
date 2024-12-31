@@ -28,10 +28,24 @@ class OutOrderBigRequestChannel extends Command
 
         $big_customer_id = Config::get('big_customer');
 
+        $page_key = 'request_channel_page';
+        $page = Cache::get($page_key);
+        if (!$page) {
+            $page = 1;
+        }
+
+        if ($page > 5) {
+            $page = 1;
+        }
+
+        Cache::set($page_key, $page + 1);
+
+        $limit = 20;
+
         // 获取所有未处理的订单 100条
         $orderOut = OrderOut::where('status', OrderOut::STATUS_UNPAID)
             ->whereIn('member_id', $big_customer_id)
-            ->limit(20)
+            ->limit(($page - 1) * $limit, $limit)
             ->select();
 
         if (!$orderOut) {
