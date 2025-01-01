@@ -409,3 +409,6 @@ CREATE TABLE `fa_order_out_delay` (
     KEY `idx_create_time` (`create_time`),
     key `idx_source` (`source`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='延迟代付回调';
+
+
+select order_no, member_id , amount from fa_order_out where status = 2 and order_no in (select order_no from fa_order_request_log where order_type = 2 and request_type = 1 and response_data != 'null' group by order_no having count(1) > 2);

@@ -26,4 +26,5 @@ return [
     'app\command\OrderNotify',
     'app\command\OutOrderRequestChannel',
     'app\command\OutOrderBigRequestChannel',
+    'app\command\QueryOutStatus',
 ];
