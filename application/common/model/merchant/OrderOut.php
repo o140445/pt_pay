@@ -47,7 +47,8 @@ class OrderOut extends Model
             self::STATUS_UNPAID => __('Status unpaid'),
             self::STATUS_PAID => __('Status paid'),
             self::STATUS_FAILED => __('Status failed'),
-            self::STATUS_REFUND => __('Status refund')
+            self::STATUS_REFUND => __('Status refund'),
+            self::STATUS_PAYING => __('Status paying')
         ];
     }
 
