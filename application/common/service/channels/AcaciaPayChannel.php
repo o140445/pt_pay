@@ -351,4 +351,60 @@ class AcaciaPayChannel implements ChannelInterface
             'type' => 'isbank', // 业务订单号
         ];
     }
+
+
+    public function query($channel, $params): array
+    {
+        $url = $channel['gateway'].'/api/transaction/';
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'partnerId' => $channel['mch_id'],
+            'authKey' => $channel['mch_key'],
+        ];
+
+        $data = [
+            "search" => $params['order_no'],
+        ];
+
+        $response = Http::postJson($url, $data, $headers);
+        return $response;
+        Log::write('AcaciaPayChannel query:'.json_encode($response) . ' data:'.json_encode($data) . ' headers:'.json_encode($headers), 'info');
+        if (isset($response['error'])) {
+            return [
+                'status' => 0,
+                'msg' => $response['error'],
+            ];
+        }
+
+        //{
+        //    "transactionId": "85c6627b-1e04-4884-bc1f-b68b3397dffd",
+        //    "userId": "12222",
+        //    "amount": 100.00,
+        //    "description": "发票付款",
+        //    "status": "PAID",
+        //    "createdAt": "2024-10-22 10:53:31",
+        //    "updatedAt": "2024-10-22 11:10:15"
+        //}
+
+        $status = OrderOut::STATUS_UNPAID;
+        if ($response['status'] == 'PAID') {
+            $status = OrderOut::STATUS_PAID;
+        }
+
+        if ($response['status'] == 'FAILED' || $response['status'] == 'CANCELED') {
+            $status = OrderOut::STATUS_FAILED;
+        }
+
+        return [
+            'order_no' => $params['data']['userId'] ?? '', // 订单号
+            'channel_no' => $params['data']['transactionId'], // 渠道订单号
+            'pay_date' => '', // 支付时间
+            'status' => $status, // 状态 2成功 3失败 4退款
+            'e_no' =>  '', // 业务订单号
+            'data' => json_encode($params), // 数据
+            'msg' => $status == OrderOut::STATUS_PAID ? 'sucesso' : 'falham', // 消息
+        ];
+
+    }
 }

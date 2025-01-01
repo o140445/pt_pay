@@ -318,4 +318,9 @@ class AuthBankPayChannel implements ChannelInterface
         return '';
     }
 
+    public function query($channel, $params): array
+    {
+        return [];
+    }
+
 }
