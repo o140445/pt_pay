@@ -234,12 +234,12 @@ class OrderOutService
             '');
 
         // 完成订单
-        if ($res['status'] == OrderOut::STATUS_PAID && $order->status == OrderOut::STATUS_UNPAID) {
+        if ($res['status'] == OrderOut::STATUS_PAID && $order->status == OrderOut::STATUS_PAYING) {
             $this->completeOrder($order, $res);
         }
 
         // 失败订单
-        if ($res['status'] == OrderOut::STATUS_FAILED && $order->status == OrderOut::STATUS_UNPAID) {
+        if ($res['status'] == OrderOut::STATUS_FAILED && $order->status == OrderOut::STATUS_PAYING) {
             $this->failOrder($order, $res);
         }
 
@@ -249,7 +249,7 @@ class OrderOutService
         }
 
         // 直接退款
-        if ($res['status'] == OrderOut::STATUS_REFUND && $order->status == OrderOut::STATUS_UNPAID) {
+        if ($res['status'] == OrderOut::STATUS_REFUND && $order->status == OrderOut::STATUS_PAYING) {
             $this->failOrder($order, $res);
         }
 
@@ -266,7 +266,7 @@ class OrderOutService
      */
     public function completeOrder($order, $data)
     {
-        if ($order->status != OrderOut::STATUS_UNPAID){
+        if ($order->status != OrderOut::STATUS_PAYING){
             throw new \Exception('订单状态不正确');
         }
 
@@ -521,7 +521,7 @@ class OrderOutService
         }
 
         $order = OrderOut::where('id', $order_id)->find();
-        if (!$order || $order->status == OrderOut::STATUS_UNPAID){
+        if (!$order || $order->status == OrderOut::STATUS_UNPAID || $order->status == OrderOut::STATUS_PAYING){
             throw new \Exception('订单不存在或未支付');
         }
 
