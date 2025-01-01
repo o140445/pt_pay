@@ -19,4 +19,18 @@ class OrderRequestService
         $model->response_data = $response_data;
         $model->save();
     }
+
+    public function checkRequest($order_no, $request_type, $order_type)
+    {
+        $model = OrderRequestLog::where('order_no', $order_no)
+            ->where('request_type', $request_type)
+            ->where('order_type', $order_type)
+            ->find();
+
+        if ($model && $model->response_data) {
+            return true;
+        }
+
+        return false;
+    }
 }
