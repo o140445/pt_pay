@@ -34,7 +34,4 @@ interface ChannelInterface
     // parseVoucher
     public function parseVoucher($params) : array;
 
-    //query
-    public function query($channel, $params) : array;
-
 }

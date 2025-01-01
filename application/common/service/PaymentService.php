@@ -82,10 +82,4 @@ class PaymentService
     {
         return $this->channel->parseVoucher($data);
     }
-
-    // 查询订单
-    public function query($channel, $data)
-    {
-        return $this->channel->query($channel, $data);
-    }
 }
