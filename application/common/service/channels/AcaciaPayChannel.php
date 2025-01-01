@@ -364,7 +364,7 @@ class AcaciaPayChannel implements ChannelInterface
         ];
 
         $data = [
-            "search" => $params['order_no'],
+            "search" => $params['e_no'],
         ];
 
         $response = Http::postJson($url, $data, $headers);
