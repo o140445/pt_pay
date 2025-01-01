@@ -109,7 +109,7 @@ class OrderOutService
             throw new \Exception('订单已经提交');
         }
 
-        Cache::set($key, 1, 600);
+        Cache::set($key, 1, 86400);
         $order = OrderOut::where('id', $order->id)->lock(true)->find();
         if (!$order || $order->status != OrderOut::STATUS_UNPAID){
             throw new \Exception('订单不存在或状态不正确');
@@ -119,7 +119,7 @@ class OrderOutService
         $res = $channelService->outPay($channel, $order);
 
         if ($res['status'] == OrderInService::CHANNEL_RES_STATUS_SUCCESS) {
-            $order->status = OrderOut::STATUS_UNPAID;
+            $order->status = OrderOut::STATUS_PAYING;
             $order->channel_order_no = $res['order_id'] ?? '';
             $order->e_no = $res['e_no'] ?? '';
             $order->save();

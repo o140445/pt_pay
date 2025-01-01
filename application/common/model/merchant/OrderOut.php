@@ -33,11 +33,12 @@ class OrderOut extends Model
     ];
 
 
-    // 状态 1未支付 2已支付 3失败 4退款
+    // 状态 1未支付 2已支付 3失败 4退款 5支付中
     const STATUS_UNPAID = 1;
     const STATUS_PAID = 2;
     const STATUS_FAILED = 3;
     const STATUS_REFUND = 4;
+    const STATUS_PAYING = 5;
 
     
     public function getStatusList()
