@@ -103,13 +103,13 @@ class OrderOutService
     public function requestChannel($order)
     {
         // 检查是否已经提交过
-        $key = 'order_out_request_channel_lock_'.$order->order_no;
-        $lock = Cache::get($key);
-        if ($lock){
-//            throw new \Exception('订单已经提交');
-        }
-
-        Cache::set($key, 1, 10);
+//        $key = 'order_out_request_channel_lock_'.$order->order_no;
+//        $lock = Cache::get($key);
+//        if ($lock){
+////            throw new \Exception('订单已经提交');
+//        }
+//
+//        Cache::set($key, 1, 10);
         $order = OrderOut::where('id', $order->id)->lock(true)->find();
         if (!$order || $order->status != OrderOut::STATUS_UNPAID){
             throw new \Exception('订单不存在或状态不正确');
