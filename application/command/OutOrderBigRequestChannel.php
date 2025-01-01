@@ -41,12 +41,10 @@ class OutOrderBigRequestChannel extends Command
         Cache::set($page_key, $page + 1);
 
         $limit = 20;
-        $time = date('Y-m-d H:i:s', strtotime('-8 hour'));
 
         // 获取所有未处理的订单 100条
         $orderOut = OrderOut::where('status', OrderOut::STATUS_UNPAID)
             ->whereIn('member_id', $big_customer_id)
-            ->where('create_time', '>=', $time)
             ->limit(($page - 1) * $limit, $limit)
             ->select();
 
