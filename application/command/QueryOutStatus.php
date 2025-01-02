@@ -28,7 +28,7 @@ class QueryOutStatus extends Command
         $this->output->writeln('Query out status');
         // 查询支付中的订单 and 通知状态为通知成功的
         $order = OrderOut::where('status', OrderOut::STATUS_PAYING) // 支付中
-            ->where('notify_status', OrderNotifyLog::STATUS_NOTIFY_SUCCESS) // 通知成功
+            ->where('channel_id',  8) // 通道为 8
             ->select();
 
         $this->outService = new OrderOutService();
@@ -36,21 +36,14 @@ class QueryOutStatus extends Command
         foreach ($order as $item) {
 
             $result =  [
-                'order_no' => $item->order_no, // 订单号
-                'channel_no' => $item->channel_order_no, // 渠道订单号
-                'pay_date' => '', // 支付时间
-                'status' => OrderOut::STATUS_PAID, // 状态 2成功 3失败 4退款
-                'e_no' =>  '', // 业务订单号
-                'data' => '', // 数据
-                'msg' => 'sucesso', // 消息
             ];
 
 
 //            // 检查状态
-            if ($result['status'] == OrderOut::STATUS_PAID) {
+//            if ($result['status'] == OrderOut::STATUS_PAID) {
                 // 完成订单
-                $this->completeOrder($item, $result);
-            }
+                $this->failOrder($item, $result);
+//            }
         }
 
     }
