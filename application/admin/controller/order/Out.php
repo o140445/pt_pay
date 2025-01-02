@@ -163,7 +163,7 @@ class Out extends Backend
                 throw new \Exception('订单不存在');
             }
 
-            if ($order->status != OrderOut::STATUS_UNPAID) {
+            if ($order->status != OrderOut::STATUS_UNPAID && $order->status != OrderOut::STATUS_PAYING) {
                 throw new \Exception('订单状态不正确');
             }
 
