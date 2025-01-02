@@ -9,7 +9,6 @@ use app\common\service\HookService;
 use fast\Http;
 use think\Config;
 use think\Log;
-
 class AuthBankPayChannel implements ChannelInterface
 {
     // headers
@@ -88,6 +87,7 @@ class AuthBankPayChannel implements ChannelInterface
         $url = $channel->gateway . '/qrcode/v1/gerar';
 
         $res = Http::postJson($url, $data, $this->headers);
+        echo  json_encode($res);die();
         Log::write('AuthBank pay', ['res' => $res, 'params' => $data]);
         if (!$res || isset($res['msg']) || (isset($res['sucesso']) && $res['sucesso'] == false)) {
             return ['status' => 0, 'msg' => $res['msg'] ?? $res['mensagem'] ?? '下单失败'];
