@@ -115,7 +115,7 @@ class OrderOutService
         $log = new OrderRequestService();
         $is_out = $log->checkRequest($order->order_no, OrderRequestLog::REQUEST_TYPE_REQUEST, OrderRequestLog::ORDER_TYPE_OUT);
         if ($is_out){
-//            throw new \Exception('订单已经提交');
+            throw new \Exception('订单已经提交');
         }
 
         $order = OrderOut::where('id', $order->id)->lock(true)->find();
