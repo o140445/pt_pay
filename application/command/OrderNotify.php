@@ -33,11 +33,17 @@ class OrderNotify  extends Command
         $endTime = date('Y-m-d H:i:s', strtotime('-5 minute'));
         $orderInService = new OrderInService();
         $orderIns = $orderInService->getUnNotifyOrder($endTime);
-        if (!$orderIns) {
+
+        $endTime = date('Y-m-d H:i:s', strtotime('-1 day'));
+        $failOrder = $orderInService->getNotifyFailOrder($endTime);
+
+        if (!$orderIns && !$failOrder) {
             Log::write('没有未通知的代收单', 'info');
             $this->output->writeln('没有未通知的代收单');
             return;
         }
+        // 合并
+        $orderIns = array_merge((array)$orderIns, (array)$failOrder);
 
         foreach ($orderIns as $orderIn) {
             // 开启事务
@@ -65,11 +71,17 @@ class OrderNotify  extends Command
         $endTime = date('Y-m-d H:i:s', strtotime('-5 minute'));
         $orderOutService = new OrderOutService();
         $orderOuts = $orderOutService->getUnNotifyOrder($endTime);
-        if (!$orderOuts) {
+        // 1天前的代付单
+        $endTime = date('Y-m-d H:i:s', strtotime('-1 day'));
+        $failOrder = $orderOutService->getNotifyFailOrder($endTime);
+        if (!$orderOuts && !$failOrder) {
             Log::write('没有未通知的代付单', 'info');
             $this->output->writeln('没有未通知的代付单');
             return;
         }
+
+        // 合并
+        $orderOuts = array_merge((array)$orderOuts, (array)$failOrder);
 
         foreach ($orderOuts as $orderOut) {
             // 开启事务

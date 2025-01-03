@@ -412,3 +412,19 @@ CREATE TABLE `fa_order_out_delay` (
 
 
 select order_no, member_id , amount from fa_order_out where status = 2 and order_no in (select order_no from fa_order_request_log where order_type = 2 and request_type = 1 and response_data != 'null' group by order_no having count(1) > 2);
+
+
+
+ALTER TABLE `fa_member_wallet` MODIFY `balance` decimal(15,4) Default 0 COMMENT '余额';
+ALTER TABLE `fa_member_wallet` MODIFY `blocked_balance` decimal(15,4) Default 0 COMMENT '冻结余额';
+ALTER TABLE `fa_member_wallet_log` MODIFY `amount` decimal(15,4) Default 0 COMMENT '变动金额';
+ALTER TABLE `fa_member_wallet_log` MODIFY `before_balance` decimal(15,4) Default 0 COMMENT '变动前余额';
+ALTER TABLE `fa_member_wallet_log` MODIFY `after_balance` decimal(15,4) Default 0 COMMENT '变动后余额';
+ALTER TABLE `fa_member_wallet_freeze` MODIFY `amount` decimal(15,4) Default 0 COMMENT '冻结金额';
+ALTER TABLE `fa_withdraw_order` MODIFY `amount` decimal(15,4) Default 0 COMMENT '金额';
+ALTER TABLE `fa_withdraw_order` MODIFY `usdt_amount` decimal(15,4) Default 0 COMMENT 'usdt金额';
+
+
+
+
+select order_no, member_id , amount from fa_order_out where status = 2 and order_no in (select order_no from fa_order_request_log where order_type = 2 and request_type = 1 and response_data != 'null' group by order_no having count(1) > 2);

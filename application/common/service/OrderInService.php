@@ -547,4 +547,17 @@ class OrderInService
         return $orders;
     }
 
+    /**
+     * 通知失败，小于3次的订单
+     */
+    public function getNotifyFailOrder($time)
+    {
+        $orders = OrderIn::where('notify_status', OrderNotifyLog::STATUS_NOTIFY_FAIL)
+            ->where('notify_count', '<', 3)
+            ->where('create_time', '>=', $time)
+            ->limit(50)
+            ->select();
+        return $orders;
+    }
+
 }
