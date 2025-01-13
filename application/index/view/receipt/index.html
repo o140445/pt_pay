@@ -82,6 +82,12 @@
             <span>{$data.payer_account}</span>
         </div>
         {/if}
+        {if $data.payer_type == 'cnpj'}
+        <div class="info fontSmall main">
+            <strong>CNPJ:</strong>
+            <span>{$data.payer_account}</span>
+        </div>
+        {/if}
         <div class="info fontSmall main">
             <strong>Nome:</strong>
             <span>{$data.payer_name}</span>

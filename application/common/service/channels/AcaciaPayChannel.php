@@ -28,6 +28,11 @@ class AcaciaPayChannel implements ChannelInterface
                 'name'=>'银行名称',
                 'key'=>'bankName',
                 'value'=>'',
+            ],
+            [
+                'name'=>'CNPJ',
+                'key'=>'cnpj',
+                'value'=>'',
             ]
         ];
     }
@@ -290,34 +295,14 @@ class AcaciaPayChannel implements ChannelInterface
      */
     public function getVoucher($channel, $order) : array
     {
-        $url = $channel['gateway'].'/api/generate/receipt/'.$order['channel_order_no'];
-
-        $headers = [
-            'Content-Type' => 'application/json',
-            'partnerId' => $channel['mch_id'],
-            'authKey' => $channel['mch_key'],
-        ];
-
-        $response = Http::getJson($url,$headers);
-        Log::write('AcaciaPayChannel 获取凭证: '.json_encode($response) . ' order_no: ' . $order['order_no'], 'info');
-        if (isset($response['error'])) {
-            return [
-                'status' => 0,
-                'msg' => $response['error'],
-            ];
-        }
-
-        if (isset($response['msg'])) {
-            return [
-                'status' => 0,
-                'msg' => '获取凭证失败',
-            ];
-        }
-
-        return [
-            'status' => 1, // 状态 1成功 0失败
-            'msg' => '获取凭证成功', // 消息
-            'data' => $response, // 数据
+        return  [
+            'data' => [
+                'pay_success_date' => $order['pay_success_date'],
+                'bankName' => $this->getExtraConfig($channel, 'bankName'),
+                'cnpj' => $this->getExtraConfig($channel, 'cnpj'),
+                'e2e' => $order['e_no'] ?? '',
+            ],
+            'status' => 1,
         ];
 
     }
@@ -325,32 +310,20 @@ class AcaciaPayChannel implements ChannelInterface
     /**
      * 解析凭证
      */
-    public function parseVoucher($voucher) : array
+    public function parseVoucher($data) : array
     {
-
-        //{
-        //    "tx_id": "595f42802f4579b58b44c2b0d21abe",
-        //    "copia_e_cola": "00020126850014br.gov.bcb.pix2563pix.voluti.com.br/qr/v3/at/a62c3200-8944-48c1-aca8-af816ed0ee925204000053039865802BR5925MEGA_SERVICOS,_TECNOLOGIA6002SP62070503***6304D208",
-        //    "qrcode": "iVBORw0KGgoAAAANSUhEUgAAAUAAAAFACAIAAABC8jL9AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAJKkl...etc",
-        //    "amount": "5.00",
-        //    "method_code": "pix",
-        //    "user_id": "123",
-        //    "status": "paid",
-        //    "payer_name": "付款人姓名",
-        //    "ispb": "付款人CPF",
-        //    "e2e": "E00416968202411051528kRNvgsChncG",
-        //    "created_at": "05/11/2024 12:27",
-        //    "updated_at": "05/11/2024 20:28"
-        //}
-
         return [
-            'pay_date' => $voucher['created_at'], // 支付时间
-            'payer_name' => $voucher['payer_name'], // 付款人姓名
-            'payer_account' => $voucher['ispb'], // 付款人CPF
-            'e_no' => $voucher['e2e'], // 业务订单号
-            'type' => 'isbank', // 业务订单号
+            'pay_date' => date('Y-m-d H:i:s', strtotime($data['pay_success_date'])),
+            'payer_name' => $data['bankName'], // 付款人姓名B.B INVESTIMENT TRADING SERVICOS LTDA
+            'payer_account' => $data['cnpj'], // 付款人CPF 57.709.170/0001-67
+            'e_no' => $data['e_no'] ?? '', // 业务订单号
+            'type' => 'cnpj', // 业务订单号
         ];
     }
 
+    public function getVoucherUrl($order): string
+    {
+        return   Config::get('pay_url').'/index/receipt/index?order_id='.$order['order_no'];
+    }
 
 }
