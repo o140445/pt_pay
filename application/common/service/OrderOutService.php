@@ -665,8 +665,10 @@ class OrderOutService
             );
 
             // 修改E_NO
-            $order->e_no = $response['data']['e2e'];
-            $order->save();
+            if (!$order->e_no){
+                $order->e_no = $response['data']['e_no'];
+                $order->save();
+            }
             $response['response_data'] = json_encode($response['data']);
         }
 
