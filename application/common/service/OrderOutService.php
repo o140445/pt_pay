@@ -698,6 +698,7 @@ class OrderOutService
         }
 
         $data = Cache::get('voucher_'.$order_no);
+
         if (!$data){
             $data = $this->getVoucher($order);
             Cache::set('voucher_'.$order_no, json_encode($data), 600);

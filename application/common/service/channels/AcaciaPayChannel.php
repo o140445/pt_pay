@@ -300,7 +300,7 @@ class AcaciaPayChannel implements ChannelInterface
                 'pay_success_date' => $order['pay_success_date'],
                 'bankName' => $this->getExtraConfig($channel, 'bankName'),
                 'cnpj' => $this->getExtraConfig($channel, 'cnpj'),
-                'e2e' => $order['e_no'] ?? '',
+                'e_no' => $order['e_no'] ?? '',
             ],
             'status' => 1,
         ];

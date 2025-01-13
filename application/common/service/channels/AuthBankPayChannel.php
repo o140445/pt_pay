@@ -281,7 +281,7 @@ class AuthBankPayChannel implements ChannelInterface
         }
         $data = json_decode($data['request_data'], true);
         $res['data'] = json_decode($data['data'],true);
-        $res['data']['e2e'] =  $res['data']['endToEndId'];
+        $res['data']['e_no'] =  $res['data']['endToEndId'];
         $res['status'] = 1;
 
         return $res;
