@@ -206,16 +206,16 @@ class Http
                 $response = $client->request('POST', $url, [
                     'headers' => $header,
                     'json' => $data,
-                    'timeout' => 5,
-                    'connect_timeout' => 5,
+                    'timeout' => 10,
+                    'connect_timeout' => 10,
                 ]);
 
             } else {
                 $response = $client->request('POST', $url, [
                     'headers' => $header,
                     'form_params' => $data,
-                    'timeout' => 5,
-                    'connect_timeout' => 5,
+                    'timeout' => 10,
+                    'connect_timeout' => 10,
                 ]);
             }
         }catch (\GuzzleHttp\Exception\ClientException $e) {
