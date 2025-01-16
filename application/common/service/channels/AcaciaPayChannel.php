@@ -124,6 +124,15 @@ class AcaciaPayChannel implements ChannelInterface
             $extra['pix_key'] = '+55'.$extra['pix_key'];
         }
 
+        // 如果类型是CPF 并且不是数字
+        if ($extra['pix_type'] == 'CPF' && !is_numeric($extra['pix_key'])) {
+            return [
+                'status' => 0,
+                'msg' => 'CPF inválido',
+            ];
+        }
+
+
         $data = [
             'userId' => $params['order_no'],
             'amount' => (float)$params['amount'],
