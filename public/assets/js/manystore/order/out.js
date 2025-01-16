@@ -38,6 +38,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             "2":__('Status paid'),
                             "3":__('Status failed'),
                             "4":__('Status refund'),
+                            "5":__('Status paying'),
                             }
                         },
 
