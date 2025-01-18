@@ -27,6 +27,7 @@ return [
     'Status paid'        => '支付成功',
     'Status failed'      => '支付失败',
     'Status refund'      => '退款',
+    'Status paying'      => '支付中',
     'Notify_status success' => '通知成功',
     'Notify_status fail' => '通知失败',
     'Notify_status unknown' => '未通知',
