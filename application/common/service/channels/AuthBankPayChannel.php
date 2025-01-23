@@ -62,7 +62,7 @@ class AuthBankPayChannel implements ChannelInterface
 
         $res = Http::postJson($url, $data, $this->headers);
 
-        Log::write('AuthBank getAccessToken', ['res' => $res, 'params' => $data]);
+        Log::write('AuthBank getAccessToken res :' . json_encode($res) . ' data:'.json_encode($data) . ' url: '. $url .' headers:'.json_encode($this->headers), 'info');
 
         if (!$res || isset($res['msg']) || (isset($res['sucesso']) && $res['sucesso'] == false)) {
             $msg = $res['msg'] ?? $res['mensagem'] ?? '获取token失败';
