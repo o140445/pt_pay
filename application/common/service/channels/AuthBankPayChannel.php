@@ -47,18 +47,16 @@ class AuthBankPayChannel implements ChannelInterface
     public function getAccessToken($channel)
     {
         $key = 'auth_bank_token';
-        $token = cache($key);
-        if ($token) {
+//        $token = cache($key);
+//        if ($token) {
 //            return json_decode($token, true);
-        }
+//        }
 
         $url = $channel->gateway . '/no-auth/autenticacao/v1/api/login';
         $data = [
             'clientId' => $channel->mch_id,
             'clientSecret' => $channel->mch_key,
         ];
-
-        $this->setHeader($channel);
 
         $res = Http::postJson($url, $data, $this->headers);
 var_dump($res);die();
