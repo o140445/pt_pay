@@ -46,7 +46,7 @@ class AuthBankPayChannel implements ChannelInterface
     // getAccessToken
     public function getAccessToken($channel)
     {
-        $key = 'auth_bank_token'.$channel->mc_id;
+        $key = 'auth_bank_token'.$channel->mch_id;
         $token = cache($key);
         if ($token) {
             return json_decode($token, true);
