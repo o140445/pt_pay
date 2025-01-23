@@ -86,7 +86,7 @@ class Pay extends Api
             Db::rollback();
             Cache::rm($lock);
 
-            Log::write('代收请求失败：error1 ' . $e->getMessage() .', data:' . json_encode($params), 'error');
+            Log::write('代收请求失败：error 1 ' . $e->getMessage() .', data:' . json_encode($params), 'error');
             $this->error($e->getMessage());
         }
 
@@ -96,7 +96,7 @@ class Pay extends Api
         try {
             $res = $orderService->requestChannel($order);
         }catch (\Exception $e) {
-            Log::write('代收请求失败：error2 ' . $e->getMessage() .', data:' . json_encode($params), 'error');
+            Log::write('代收请求失败：error 2 ' . $e->getMessage() .', data:' . json_encode($params), 'error');
             $this->error($e->getMessage());
         }
 

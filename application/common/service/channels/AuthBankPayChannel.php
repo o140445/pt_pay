@@ -46,11 +46,11 @@ class AuthBankPayChannel implements ChannelInterface
     // getAccessToken
     public function getAccessToken($channel)
     {
-        $key = 'auth_bank_token';
-//        $token = cache($key);
-//        if ($token) {
-//            return json_decode($token, true);
-//        }
+        $key = 'auth_bank_token'.$channel->mc_id;
+        $token = cache($key);
+        if ($token) {
+            return json_decode($token, true);
+        }
 
         $url = $channel->gateway . '/no-auth/autenticacao/v1/api/login';
         $data = [
@@ -59,7 +59,7 @@ class AuthBankPayChannel implements ChannelInterface
         ];
 
         $res = Http::postJson($url, $data, $this->headers);
-var_dump($res);die();
+
         Log::write('AuthBank getAccessToken res :' . json_encode($res) . ' data:'.json_encode($data) . ' url: '. $url .' headers:'.json_encode($this->headers), 'info');
 
         if (!$res || isset($res['msg']) || (isset($res['sucesso']) && $res['sucesso'] == false)) {
@@ -75,7 +75,6 @@ var_dump($res);die();
 
     public function pay($channel, $params) : array
     {
-        var_dump(123);die();
         $data = [
             'valor' => (int)(round($params['amount'], 2) * 100),
             'tempoExpiracao' => 3600,
