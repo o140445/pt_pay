@@ -80,11 +80,13 @@ class AuthBankPayChannel implements ChannelInterface
         $data = [
             'valor' => (int)(round($params['amount'], 2) * 100),
             'tempoExpiracao' => 3600,
+            'comImagem' => true,
+            'txId' => $params['order_no'],
         ];
 
         $this->setHeader($channel, true);
 
-        $url = $channel->gateway . '/qrcode/v1/gerar';
+        $url = $channel->gateway . '/qrcode/v2/gerar';
 
         $res = Http::postJson($url, $data, $this->headers);
         Log::write('AuthBank pay', ['res' => $res, 'params' => $data]);
