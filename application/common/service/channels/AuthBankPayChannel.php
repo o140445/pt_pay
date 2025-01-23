@@ -75,6 +75,7 @@ var_dump($res);die();
 
     public function pay($channel, $params) : array
     {
+        var_dump(123);die();
         $data = [
             'valor' => (int)(round($params['amount'], 2) * 100),
             'tempoExpiracao' => 3600,
