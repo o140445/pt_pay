@@ -49,7 +49,7 @@ class AuthBankPayChannel implements ChannelInterface
         $key = 'auth_bank_token';
         $token = cache($key);
         if ($token) {
-            return json_decode($token, true);
+//            return json_decode($token, true);
         }
 
         $url = $channel->gateway . '/no-auth/autenticacao/v1/api/login';
