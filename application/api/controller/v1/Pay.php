@@ -70,7 +70,7 @@ class Pay extends Api
         }
 
         // 写请求日志
-        Log::write('代收请求参数：data' . json_encode($params), 'info');
+        Log::write('代收请求参数：data ' . json_encode($params), 'info');
 
         // 加锁同一个单号同时只能有一个请求
         $lock = $params['merchant_order_no'] . '_lock';
@@ -86,7 +86,7 @@ class Pay extends Api
             Db::rollback();
             Cache::rm($lock);
 
-            Log::write('代收请求失败：error1' . $e->getMessage() .', data:' . json_encode($params), 'error');
+            Log::write('代收请求失败：error1 ' . $e->getMessage() .', data:' . json_encode($params), 'error');
             $this->error($e->getMessage());
         }
 
@@ -96,7 +96,7 @@ class Pay extends Api
         try {
             $res = $orderService->requestChannel($order);
         }catch (\Exception $e) {
-            Log::write('代收请求失败：error2' . $e->getMessage() .', data:' . json_encode($params), 'error');
+            Log::write('代收请求失败：error2 ' . $e->getMessage() .', data:' . json_encode($params), 'error');
             $this->error($e->getMessage());
         }
 
