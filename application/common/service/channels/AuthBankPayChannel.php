@@ -81,7 +81,6 @@ class AuthBankPayChannel implements ChannelInterface
             'valor' => (int)(round($params['amount'], 2) * 100),
             'tempoExpiracao' => 3600,
             'comImagem' => true,
-            'txId' => $params['order_no'],
         ];
 
         $this->setHeader($channel, true);
@@ -89,7 +88,8 @@ class AuthBankPayChannel implements ChannelInterface
         $url = $channel->gateway . '/qrcode/v2/gerar';
 
         $res = Http::postJson($url, $data, $this->headers);
-        Log::write('AuthBank pay', ['res' => $res, 'params' => $data]);
+        Log::write('AuthBank pay response:'.json_encode($res) . ' data:'.json_encode($data) . ' url: '. $url .' headers:'.json_encode($this->headers), 'info');
+
         if (!$res || isset($res['msg']) || (isset($res['sucesso']) && $res['sucesso'] == false)) {
             return ['status' => 0, 'msg' => $res['msg'] ?? $res['mensagem'] ?? '下单失败'];
         }
@@ -127,7 +127,7 @@ class AuthBankPayChannel implements ChannelInterface
 
         $res = Http::postJson($url, $data, $this->headers);
 
-        Log::write('AuthBank outPay', ['res' => $res, 'params' => $data]);
+        Log::write('AuthBank outPay response:'.json_encode($res) . ' data:'.json_encode($data) . ' url: '. $url .' headers:'.json_encode($this->headers), 'info');
         if (!$res || isset($res['msg']) || (isset($res['sucesso']) && $res['sucesso'] == false)) {
             return ['status' => 0, 'msg' => $res['msg'] ?? $res['mensagem'] ?? '下单失败'];
         }
