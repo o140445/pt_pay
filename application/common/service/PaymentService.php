@@ -5,6 +5,7 @@ namespace app\common\service;
 use app\common\service\channels\AcaciaPayChannel;
 use app\common\service\channels\AuthBankPayChannel;
 use app\common\service\channels\ChannelInterface;
+use app\common\service\channels\LPayChannel;
 
 class PaymentService
 {
@@ -13,6 +14,7 @@ class PaymentService
     const PAY_CHANNEL = [
         'AcaciaPay' => 'AcaciaPay',
         'AuthBankPay' => 'AuthBankPay',
+        'LPay' => 'LPay',
     ];
 
     public function __construct(string $code)
@@ -23,6 +25,9 @@ class PaymentService
                 break;
             case 'AuthBankPay':
                 $this->channel = new AuthBankPayChannel();
+                break;
+            case 'LPay':
+                $this->channel = new LPayChannel();
                 break;
             default:
                 throw new \Exception('未知支付渠道');
@@ -78,8 +83,20 @@ class PaymentService
     }
 
     // 解析凭证
-    public function parseVoucher($data)
+    public function parseVoucher($channel, $data)
     {
-        return $this->channel->parseVoucher($data);
+        return $this->channel->parseVoucher($channel, $data);
+    }
+
+    // getVoucherUrl
+    public function getVoucherUrl($data)
+    {
+        return $this->channel->getVoucherUrl($data);
+    }
+
+    // queryOrder
+    public function queryOrder($channel, $channel_no)
+    {
+        return $this->channel->queryOrder($channel, $channel_no);
     }
 }

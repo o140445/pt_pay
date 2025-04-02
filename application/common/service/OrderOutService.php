@@ -104,12 +104,12 @@ class OrderOutService
     {
         // 检查是否已经提交过
         $key = 'order_out_request_channel_lock_'.$order->order_no;
-//        $lock = Cache::get($key);
-//        if ($lock){
-//            throw new \Exception('订单已经提交');
-//        }
-//
-//        Cache::set($key, 1, 3600);
+        $lock = Cache::get($key);
+        if ($lock){
+            throw new \Exception('订单已经提交');
+        }
+
+        Cache::set($key, 1, 3600);
 
         // 查询数据库是否已经提交
         $log = new OrderRequestService();
