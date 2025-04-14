@@ -202,7 +202,7 @@ class LPayChannel implements ChannelInterface
         return [];
     }
 
-    public function parseVoucher($channel, $params): array
+    public function parseVoucher($channel): array
     {
         return [];
     }
