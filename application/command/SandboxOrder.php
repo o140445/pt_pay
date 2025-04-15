@@ -22,18 +22,24 @@ class SandboxOrder extends Command
         // 循环通知
         $orderService = new OrderSandboxService();
         foreach ($data as $item) {
-            // 如果是未完成的订单，修改状态
-            if ($item->status == 1) {
-                // 金额小于10的订单，直接成功，否则失败
-                if ($item->amount <= 10) {
-                    $item->status = 2;
-                    $item->save();
-                } else {
-                    $item->status = 3;
-                    $item->save();
+
+            try {
+                // 如果是未完成的订单，修改状态
+                if ($item->status == 1) {
+                    // 金额小于10的订单，直接成功，否则失败
+                    if ($item->amount <= 10) {
+                        $item->status = 2;
+                        $item->save();
+                    } else {
+                        $item->status = 3;
+                        $item->save();
+                    }
                 }
+                $orderService->notify($item->order_no);
+            }catch (\Exception $e) {
+                $output->writeln('订单号：' . $item->order_no . ' 通知失败，错误信息：' . $e->getMessage());
+                continue;
             }
-            $orderService->notify($item->order_no);
             $output->writeln('订单号：' . $item->order_no . ' 通知成功');
         }
 
