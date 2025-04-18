@@ -158,7 +158,7 @@ class OrderOutService
 
         return [
             'order_no' => $order->order_no,
-            'status' => $order->status,
+            'status' => OrderOut::STATUS_UNPAID,
             'msg' => $res['msg'],
         ];
     }
