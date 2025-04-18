@@ -65,16 +65,16 @@ class AcaciaPayChannel implements ChannelInterface
             ];
         }
 
-        if (isset($response['msg'])) {
-            $response = Http::postJson($channel['gateway'].'/api/pix', $data, $headers);
-            Log::write('AcaciaPayChannel pay response:'.json_encode($response) . ' data:'.json_encode($data) . ' headers:'.json_encode($headers), 'info');
-            if (isset($response['error'])) {
-                return [
-                    'status' => 0,
-                    'msg' => $response['error'],
-                ];
-            }
-            if (isset($response['msg'])) {
+        if (isset($response['msg']) ) {
+            if (strpos($response['msg'], 'response') !== false) {
+                $res = json_decode(substr($response['msg'], strpos($response['msg'], '{')), true);
+                if (isset($res['error'])) {
+                    return [
+                        'status' => 0,
+                        'msg' => $res['error'],
+                    ];
+                }
+            } else {
                 return [
                     'status' => 0,
                     'msg' => 'Excepção de pagamento, por favor tente de novo mais tarde',
@@ -142,7 +142,6 @@ class AcaciaPayChannel implements ChannelInterface
 
         $url = $channel['gateway'].'/api/withdraw';
         $res = Http::postJson($url, $data, $headers);
-
         Log::write('AcaciaPayChannel outPay response:'.json_encode($res) . ' data:'.json_encode($data) . ' headers:'.json_encode($headers), 'info');
         if (isset($res['error'])) {
             return [
@@ -150,24 +149,18 @@ class AcaciaPayChannel implements ChannelInterface
                 'msg' => $res['error'],
             ];
         }
-
-        // 是否是超时 包含 cURL error 7 的错误才是超时
+        //$res['msg'] = string(207) "Server error: `POST https://paynex.live/api/withdraw` resulted in a `500 Internal Server Error` response: {"error":"Error create withdraw #001930 - The selected pix key type is invalid. (and 1 more error)"}
+        // 获取 response
         if (isset($res['msg']) ) {
-
-            //cURL error 7: Failed to connect to acaciapay.live port 443 after 2001 ms
-            if (strpos($res['msg'], 'cURL error 7') !== false) {
-                $res = Http::postJson($url, $data, $headers);
-
-                Log::write('AcaciaPayChannel outPay response:'.json_encode($res) . ' data:'.json_encode($data) . ' headers:'.json_encode($headers), 'info');
-                if (isset($res['error'])) {
+            if (strpos($res['msg'], 'response') !== false) {
+                $response = json_decode(substr($res['msg'], strpos($res['msg'], '{')), true);
+                if (isset($response['error'])) {
                     return [
                         'status' => 0,
-                        'msg' => $res['error'],
+                        'msg' => $response['error'],
                     ];
                 }
-            }
-
-            if (isset($res['msg']) && strpos($res['msg'], 'cURL error 7') !== false) {
+            } else {
                 return [
                     'status' => 0,
                     'msg' => 'Excepção de pagamento, por favor tente de novo mais tarde',
