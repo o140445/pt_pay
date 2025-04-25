@@ -13,11 +13,30 @@ use think\Log;
 class FixPayChannel implements ChannelInterface
 {
 
-    const METHOD_PAY = 'BAR01';
 
     public function config()
     {
-        return [];
+        return [
+            [
+                'name'=>'代付类型',
+                'key'=>'method',
+                'value'=>'BAR01',
+            ]
+        ];
+    }
+
+    /**
+     * 获取扩展配置
+     */
+    public function getExtraConfig($channel, $key) {
+        $extraConfig = json_decode($channel['extra'], true);
+        foreach ($extraConfig as $item) {
+            if ($item['key'] == $key) {
+                return $item['value'];
+            }
+        }
+
+        return '';
     }
 
     public function pay($channel, $params): array
@@ -25,7 +44,7 @@ class FixPayChannel implements ChannelInterface
 
         $data = [
             'merchantNo' => $channel['mch_id'],
-            'method' => self::METHOD_PAY,
+            'method' => $this->getExtraConfig($channel, 'method'),
             'merchantOrderNo' => $params['order_no'],
             'description' => 'int',
             'payAmount' => $params['amount'],
