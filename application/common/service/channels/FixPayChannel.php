@@ -13,16 +13,69 @@ use think\Log;
 class FixPayChannel implements ChannelInterface
 {
 
+
     public function config()
     {
-        return [];
+        return [
+            [
+                'name'=>'代付类型',
+                'key'=>'method',
+                'value'=>'BAR01',
+            ]
+        ];
+    }
+
+    /**
+     * 获取扩展配置
+     */
+    public function getExtraConfig($channel, $key) {
+        $extraConfig = json_decode($channel['extra'], true);
+        foreach ($extraConfig as $item) {
+            if ($item['key'] == $key) {
+                return $item['value'];
+            }
+        }
+
+        return '';
     }
 
     public function pay($channel, $params): array
     {
+
+        $data = [
+            'merchantNo' => $channel['mch_id'],
+            'method' => $this->getExtraConfig($channel, 'method'),
+            'merchantOrderNo' => $params['order_no'],
+            'description' => 'int',
+            'payAmount' => $params['amount'],
+            'mobile' => '12345678901',
+            'name' => 'tikpay',
+            'email' => 'tikpay@gmail.com',
+            'notifyUrl' => $this->getNotifyUrl($channel, "innotify"),
+            'returnUrl' => $this->getNotifyUrl($channel, "inreturn"),
+        ];
+
+        $data['sign'] = $this->sign($data, $channel['mch_key']);
+        $url = $channel['gateway'] . '/api/payin/order';
+
+        $response = Http::postJson($url, $data);
+        Log::write('FixPayChannel pay response:' . json_encode($response) . ' data:' . json_encode($data), 'info');
+
+        if (!$response || isset($response['msg']) || $response['status'] != 200) {
+            return [
+                'status' => 0,
+                'msg' =>  $response['msg'] ?? $response['message'] ?? '请求失败',
+            ];
+        }
+
         return [
-            'status' => 0,
-            "msg" => "未开通代收",
+            'status' => 1, // 状态 1成功 0失败
+            'pay_url' => $response['data']['paymentInfo'], // 支付地址
+            'msg' => '', // 消息
+            'order_id' => $response['data']['platOrderNo'], // 订单号
+            'e_no' => '',
+            'request_data' => json_encode($data), // 请求数据
+            'response_data' => json_encode($response), // 响应数据
         ];
     }
 
@@ -40,7 +93,7 @@ class FixPayChannel implements ChannelInterface
         $data = [
             'merchantNo' => $channel['mch_id'],
             'merchantOrderNo' => $params['order_no'],
-            'description' => '代付',
+            'description' => 'out',
             'payAmount' => $params['amount'],
             'mobile' => $mobile,
             'email' => $email,
@@ -99,7 +152,47 @@ class FixPayChannel implements ChannelInterface
 
     public function payNotify($channel, $params): array
     {
-        throw new \Exception("未开通代收");
+        //{
+        //    "merchantNo": "Hwpay",
+        //    "merchantOrderNo": "DI20250425044802nuJKdn",
+        //    "amount": "5.00",
+        //    "factAmount": "5.00",
+        //    "platOrderNo": "Hwpay17455672854600709491484",
+        //    "orderStatus": "SUCCESS",
+        //    "orderMessage": "SUCCESS",
+        //    "sign": "f7e386dc297de580a451ce78df3d81c5"
+        //}
+        $sign = $params['sign'];
+        unset($params['sign']);
+        $newSign = $this->sign($params, $channel['mch_key']);
+        if ($sign != $newSign) {
+            throw new \Exception('签名错误');
+        }
+
+        $status = OrderOut::STATUS_UNPAID;
+        //ARRIVED/SUCCESS/CLEARED中
+        if ($params['orderStatus'] == 'SUCCESS' || $params['orderStatus'] == 'ARRIVED' || $params['orderStatus'] == 'CLEARED') {
+            $status = OrderOut::STATUS_PAID;
+        }
+        if ($params['orderStatus'] == 'FAILED') {
+            $status = OrderOut::STATUS_FAILED;
+        }
+
+        if ($status == OrderOut::STATUS_UNPAID) {
+            throw new \Exception('未支付');
+        }
+
+        return  [
+            'order_no' => $params['merchantOrderNo'], // 订单号
+            'channel_no' => $params['platOrderNo'], // 渠道订单号
+            'pay_date' => date('Y-m-d H:i:s'), // 支付时间
+            'status' => $status, // 状态 2成功 3失败 4退款
+            'e_no' => '', // 业务订单号
+            'data' => json_encode($params), // 数据
+            'msg' => $params['orderMessage'] ?? '', // 消息
+        ];
+
+
     }
 
     public function outPayNotify($channel, $params): array
