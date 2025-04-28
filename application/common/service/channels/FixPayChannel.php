@@ -4,11 +4,8 @@ namespace app\common\service\channels;
 
 use app\common\model\merchant\OrderOut;
 use app\common\model\merchant\OrderRequestLog;
-use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
-use BaconQrCode\Renderer\ImageRenderer;
-use BaconQrCode\Renderer\RendererStyle\RendererStyle;
-use BaconQrCode\Writer;
 use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Writer\PngWriter;
 use fast\Http;
 use think\Config;
 use think\Log;
@@ -244,6 +241,7 @@ class FixPayChannel implements ChannelInterface
         return "SUCCESS";
     }
 
+
     public function getPayInfo($orderIn): array
     {
         $response = OrderRequestLog::where('order_no', $orderIn['order_no'])
@@ -255,28 +253,31 @@ class FixPayChannel implements ChannelInterface
         }
 
         $responseData = json_decode($response['response_data'], true);
-//        var_dump($responseData['data']);die();
+
         if (!$responseData || empty($responseData['data']['qrcode'])) {
             throw new \Exception('二维码信息无效！');
         }
 
-        // 配置二维码生成器
-        $renderer = new ImageRenderer(
-            new RendererStyle(200), // 二维码尺寸
-            new ImagickImageBackEnd() // 用Imagick生成图片
+        // 使用 Endroid 6.x 生成二维码
+        $builder = new Builder(
+            writer: new PngWriter(),
+            data: $responseData['data']['qrcode'],
+            size: 200,
+            margin: 10
         );
 
-        $writer = new Writer($renderer);
+        $result = $builder->build();
 
-        // 生成二维码图片
-        $qrCodeBinary = $writer->writeString($responseData['data']['qrcode']);
+        // 获取 base64 图片数据
+        $qrCodeBase64 = $result->getDataUri();
 
         return [
             'order_no' => $orderIn['order_no'],
-            'qrcode'   => 'data:image/png;base64,' . base64_encode($qrCodeBinary),
+            'qrcode' => $qrCodeBase64,
             'pix_code' => $responseData['data']['qrcode'],
         ];
     }
+
 
     public function getNotifyType($params): string
     {

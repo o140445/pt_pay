@@ -32,7 +32,8 @@
         "txthinking/mailer": "^2.0",
         "pragmarx/google2fa": "^8.0",
         "pragmarx/google2fa-qrcode": "^3.0",
-        "bacon/bacon-qr-code": "^3.0"
+        "bacon/bacon-qr-code": "^3.0",
+        "endroid/qr-code": "^6.0"
     },
     "config": {
         "preferred-install": "dist",

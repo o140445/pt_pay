@@ -91,6 +91,7 @@ class ComposerStaticInitf3106b6ef3260b6914241eab0bed11c1
         ),
         'E' => 
         array (
+            'Endroid\\QrCode\\' => 15,
             'EasyWeChat\\' => 11,
             'EasyWeChatComposer\\' => 19,
         ),
@@ -267,6 +268,10 @@ class ComposerStaticInitf3106b6ef3260b6914241eab0bed11c1
         'GuzzleHttp\\' => 
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+        ),
+        'Endroid\\QrCode\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/endroid/qr-code/src',
         ),
         'EasyWeChat\\' => 
         array (
