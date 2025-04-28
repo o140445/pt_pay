@@ -8,6 +8,7 @@ use app\common\model\merchant\OrderOut;
 use app\common\service\MemberWalletService;
 use app\common\service\OrderInService;
 use app\common\service\OrderOutService;
+use app\common\service\StatService;
 use think\Config;
 use think\Request;
 
@@ -145,6 +146,26 @@ class Bot extends Api
 //
 //            $data['url'] =  Config::get('pay_url').'/index/receipt/index?order_id='.$order['order_no'];
 
+        }catch (\Exception $e) {
+            $this->error($e->getMessage());
+        }
+
+        $this->success('ok', $data);
+    }
+
+    /**
+     * 获取当天详情
+     */
+    public function day()
+    {
+        $merchant_id = $this->request->get('merchant_id');
+        if (empty($merchant_id)) {
+            $this->error(__('Parameter error'));
+        }
+
+        try {
+            $service = new StatService();
+            $data = $service->getDayDetail($merchant_id, date('Y-m-d'));
         }catch (\Exception $e) {
             $this->error($e->getMessage());
         }

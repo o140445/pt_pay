@@ -196,4 +196,12 @@ class StatService
         }
 
     }
+
+    /**
+     * getDayDetail
+     */
+    public function getDayDetail($member_id, $date)
+    {
+        return [];
+    }
 }
