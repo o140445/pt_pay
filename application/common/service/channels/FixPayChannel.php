@@ -80,9 +80,9 @@ class FixPayChannel implements ChannelInterface
 
         return [
             'status' => 1, // 状态 1成功 0失败
-            'pay_url' => $response['data']['paymentInfo'], // 支付地址
+            'pay_url' => $pay_url, // 支付地址
             'msg' => '', // 消息
-            'order_id' => $pay_url, // 订单号
+            'order_id' => $response['data']['platOrderNo'], // 订单号
             'e_no' => '',
             'request_data' => json_encode($data), // 请求数据
             'response_data' => json_encode($response), // 响应数据
