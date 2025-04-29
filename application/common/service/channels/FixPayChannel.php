@@ -73,7 +73,7 @@ class FixPayChannel implements ChannelInterface
 
         //{"status":"200","message":"success","data":{"orderStatus":"CREATED","orderMessage":"SUCCESS","merchantOrderNo":"DI20250425044802nuJKdn","platOrderNo":"Hwpay17455672854600709491484","paymentInfo":"https:\/\/pay.cxddc.top\/barzh\/Hwpay17455672854600709491484","payAmount":"5","qrcode":"00020101021226900014br.gov.bcb.pix2568qrcode.siliumpay.com.br\/dynamic\/aaf497c7-4462-474e-9b31-ecd264a5df055204000053039865802BR5904GD 36009Sao Paulo62070503***6304DC7D","description":"int","sign":"8ed7da17f604b2210a8437a1253d08c8"}}
 
-        if (!isset($response['data']['qrcode']) || empty($response['data']['paymentInfo'])) {
+        if (!isset($response['data']['qrcode']) || empty($response['data']['qrcode'])) {
             $pay_url = $response['data']['paymentInfo'] ?? '';
         }else{
             $pay_url = Config::get('pay_url') . '/index/pay/index?order_id=' . $params['order_no'];
