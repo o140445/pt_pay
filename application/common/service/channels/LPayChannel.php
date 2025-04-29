@@ -153,8 +153,8 @@ class LPayChannel implements ChannelInterface
         }
         
         return [
-            'order_no' => '', // 订单号
-            'channel_no' => $params['orderNo'], // 渠道订单号
+            'order_no' => $params['orderNo'], // 订单号
+            'channel_no' => $params['transactionNo'], // 渠道订单号
             'amount' => $params['amount'], // 金额
             'pay_date' => $status == OrderIn::STATUS_PAID ? date('Y-m-d H:i:s', time()) : '', // 支付时间
             'status' => $status, // 状态 2成功 3失败 4退款
@@ -186,8 +186,8 @@ class LPayChannel implements ChannelInterface
         }
 
         return [
-            'order_no' => '', // 订单号
-            'channel_no' => $params['orderNo'], // 渠道订单号
+            'order_no' => $params['orderNo'], // 订单号
+            'channel_no' => $params['transactionNo'], // 渠道订单号
             'amount' => $params['amount'], // 金额
             'pay_date' => $status == OrderOut::STATUS_PAID ? date('Y-m-d H:i:s', time()) : '', // 支付时间
             'status' => $status, // 状态 2成功 3失败 4退款
