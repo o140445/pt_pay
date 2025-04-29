@@ -3,6 +3,7 @@
 namespace app\common\service;
 
 use app\common\model\merchant\ChannelStatModel;
+use app\common\model\merchant\Member;
 use app\common\model\merchant\MemberStatModel;
 use app\common\model\merchant\OrderIn;
 use app\common\model\merchant\OrderOut;
@@ -202,6 +203,137 @@ class StatService
      */
     public function getDayDetail($member_id, $date)
     {
-        return [];
+        // 查询member_id是否存在
+        $member = Member::where('id', $member_id)->find();
+        if (!$member) {
+            throw new \Exception('会员不存在');
+        }
+
+        // 查询今天是否有记录
+//        $model = MemberStatModel::where('member_id', $member_id)
+//            ->where('date', date(strtotime($date)))
+//            ->lock(true)
+//            ->find();
+//
+//        if (!$model) {
+//            throw new \Exception('没有统计数据');
+//        }
+
+        // 总代收单，代收成功单，成功率，代收金额，平局金额, 按小时分类统计[总比数，成功比数，成功率，代收金额]
+        $orderIn = OrderIn::where('member_id', $member_id)
+            ->field('id,amount,true_amount,status,create_time')
+            ->where('create_time', '>=', $date . ' 00:00:00')
+            ->where('create_time', '<=', $date . ' 23:59:59')
+            ->select();
+        if (!$orderIn) {
+            $orderIn = [];
+        }
+        $orderInCount = count($orderIn);
+        $orderInSuccessCount = 0;
+        $orderInSuccessAmount = 0;
+        $orderInSuccessRate = 0;
+        $orderInAmount = 0;
+        // 平均金额
+        $orderInAverageAmount = 0;
+        $orderInHour = [];
+        foreach ($orderIn as $item) {
+//            $item = $item->toArray();
+            $hour = date('H', strtotime($item['create_time']));
+            if (!isset($orderInHour[$hour])) {
+                $orderInHour[$hour] = [
+                    'hour' => $hour,
+                    'count' => 0,
+                    'success_count' => 0,
+                    'success_rate' => 0,
+                    'amount' => 0,
+                    'success_amount' => 0,
+                ];
+            }
+            $orderInHour[$hour]['count'] += 1;
+            $orderInHour[$hour]['amount'] += $item['amount'];
+            $orderInAmount += $item['amount'];
+            if ($item['status'] == OrderIn::STATUS_PAID) {
+                $orderInSuccessCount += 1;
+                $orderInSuccessAmount += $item['true_amount'];
+                $orderInHour[$hour]['success_count'] += 1;
+                $orderInHour[$hour]['success_rate'] = round($orderInHour[$hour]['success_count'] / $orderInHour[$hour]['count'], 2);
+                $orderInHour[$hour]['success_amount'] += $item['true_amount'];
+            }
+        }
+
+        if ($orderInCount > 0) {
+            $orderInSuccessRate = round($orderInSuccessCount / $orderInCount, 2);
+            $orderInAverageAmount = $orderInSuccessAmount > 0 ? round($orderInSuccessAmount / $orderInSuccessCount, 2) : 0;
+        }
+
+        // 总代付单，代付成功单，成功率，代付金额，平局金额, 按小时分类统计[总比数，成功比数，成功率，代付金额]
+        $orderOut = OrderOut::where('member_id', $member_id)
+            ->field('id,amount,status,create_time')
+            ->where('create_time', '>=', $date . ' 00:00:00')
+            ->where('create_time', '<=',$date . ' 23:59:59')
+            ->select();
+        if (!$orderOut) {
+            $orderOut = [];
+        }
+        $orderOutCount = count($orderOut);
+        $orderOutSuccessCount = 0;
+        $orderOutSuccessAmount = 0;
+        $orderOutSuccessRate = 0;
+        $orderOutAmount = 0;
+        // 平均金额
+        $orderOutAverageAmount = 0;
+        $orderOutHour = [];
+        foreach ($orderOut as $item) {
+            $hour = date('H', strtotime($item['create_time']));
+            if (!isset($orderOutHour[$hour])) {
+                $orderOutHour[$hour] = [
+                    'hour' => $hour,
+                    'count' => 0,
+                    'success_count' => 0,
+                    'success_rate' => 0,
+                    'amount' => 0,
+                    'success_amount' => 0,
+                ];
+            }
+            $orderOutHour[$hour]['count'] += 1;
+            $orderOutHour[$hour]['amount'] += $item['amount'];
+            $orderOutAmount += $item['amount'];
+            if ($item['status'] == OrderOut::STATUS_PAID) {
+                $orderOutSuccessCount += 1;
+                $orderOutSuccessAmount += $item['amount'];
+                $orderOutHour[$hour]['success_count'] += 1;
+                $orderOutHour[$hour]['success_rate'] = round($orderOutHour[$hour]['success_count'] / $orderOutHour[$hour]['count'], 2);
+                $orderOutHour[$hour]['success_amount'] += $item['amount'];
+            }
+        }
+
+        if ($orderOutCount > 0) {
+            $orderOutSuccessRate = round($orderOutSuccessCount / $orderOutCount, 2);
+            $orderOutAverageAmount = $orderOutSuccessAmount > 0 ? round($orderOutSuccessAmount / $orderOutSuccessCount, 2) : 0;
+        }
+
+        // 统计数据
+        $data = [
+            'order_in' => [
+                'count' => $orderInCount,
+                'success_count' => $orderInSuccessCount,
+                'success_rate' => $orderInSuccessRate,
+                'amount' => $orderInAmount,
+                'success_amount' => $orderInSuccessAmount,
+                'average_amount' => $orderInAverageAmount,
+                'detail' => array_values($orderInHour),
+            ],
+            'order_out' => [
+                'count' => $orderOutCount,
+                'success_count' => $orderOutSuccessCount,
+                'success_rate' => $orderOutSuccessRate,
+                'amount' => $orderOutAmount,
+                'success_amount' => $orderOutSuccessAmount,
+                'average_amount' => $orderOutAverageAmount,
+                'detail' => array_values($orderOutHour),
+            ],
+        ];
+
+        return $data;
     }
 }

@@ -32,6 +32,7 @@ class Bot extends Api
         if ($token != $sysToken) {
             $this->error(__('Token is invalid'));
         }
+
     }
 
     /**
