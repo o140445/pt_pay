@@ -164,6 +164,9 @@ class OrderInService
             $order = OrderIn::where('channel_order_no', $data['channel_no'])->lock(true)->find();
         }
 
+        if (!$order) {
+            throw new \Exception('订单不存在');
+        }
         // 设置时区
         date_default_timezone_set($order->area->timezone);
 
