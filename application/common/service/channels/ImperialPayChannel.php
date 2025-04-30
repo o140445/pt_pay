@@ -223,7 +223,7 @@ class ImperialPayChannel implements ChannelInterface
 
     public function response(): string
     {
-        // TODO: Implement response() method.
+        return "SUCCESS";
     }
     public function getVoucherUrl($params): string
     {
