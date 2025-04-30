@@ -4,6 +4,7 @@ namespace app\api\controller\v1;
 
 use app\common\controller\Api;
 use app\common\service\OrderSandboxService;
+use think\Log;
 
 class Sandbox extends Api
 {
@@ -13,7 +14,6 @@ class Sandbox extends Api
     {
         parent::_initialize();
     }
-
     public function in()
     {
         if (!$this->request->isPost()) {
@@ -31,10 +31,12 @@ class Sandbox extends Api
             $this->error('参数错误');
         }
 
+        Log::write('沙盒 请求参数：' . json_encode($params), 'info');
         try {
             $orderService = new OrderSandboxService();
             $result = $orderService->createOrderIn($params);
         }catch (\Exception $e) {
+            Log::write('沙盒 请求异常：' . $e->getMessage(), 'error');
             $this->error($e->getMessage());
         }
 
@@ -59,10 +61,12 @@ class Sandbox extends Api
             $this->error('参数错误');
         }
 
+        Log::write('沙盒 代付请求参数：' . json_encode($params), 'info');
         try {
             $orderService = new OrderSandboxService();
             $result = $orderService->createOrderOut($params);
         }catch (\Exception $e) {
+            Log::write('沙盒 代付请求异常：' . $e->getMessage(), 'error');
             $this->error($e->getMessage());
         }
 
