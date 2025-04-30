@@ -91,6 +91,37 @@ class Pay extends Frontend
         return $this->view->fetch();
     }
 
+    public function pay()
+    {
+        $order_id = $this->request->param('order_id');
+
+        if (!$order_id) {
+            $this->redirect('/404.html');
+        }
+
+        $order = OrderIn::with('channel')->where('order_no', $order_id)->where('status', OrderIn::STATUS_UNPAID)->find();
+        if (!$order) {
+//            $this->error('订单不存在');
+            $this->redirect('/404.html');
+        }
+
+        $key =  'order_in_info_' . $order['order_no'];
+        $response = Cache::get($key);
+        if (!$response) {
+            $channelService = new  PaymentService($order->channel->code);
+            $response_data = $channelService->getPayInfo($order);
+        }else{
+            $response_data = $response;
+        }
+
+        $data = [
+            "url" => $response_data['url'],
+        ];
+
+        $this->view->assign('data', $data);
+        return $this->view->fetch();
+    }
+
     /**
      * 拉入cdn黑名单
      */
