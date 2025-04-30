@@ -9,6 +9,7 @@ use app\common\service\HookService;
 use app\common\service\OrderInService;
 use fast\Http;
 use think\Config;
+use think\Log;
 
 class ImperialPayChannel implements ChannelInterface
 {
@@ -53,12 +54,13 @@ class ImperialPayChannel implements ChannelInterface
     {
         $data = [
             "identifier" => $params['order_no'],
-            "amount" => $params['amount'],
+            // 2位
+            "amount" => (float)number_format($params['amount'], 2, '.', ''),
             "client" => [
-                "name" => "João da Silva",
-                "email" => "joao@gmail.com",
-                "phone" => "(11) 99999-9999",
-                "document" => "123.456.789-00"
+                "name" => "Renan Renan Vicente das Neves",
+                "email" => "renan.renan.dasneves@futureteeth.com.br",
+                "phone" => "(97) 2982-7280",
+                "document" => "576.457.682-23"
             ]
         ];
 
@@ -67,8 +69,8 @@ class ImperialPayChannel implements ChannelInterface
         //https://app.imperialpay.com.br/api/v1/gateway/pix/receive
         $url = $channel['gateway'] . "/gateway/pix/receive";
         $response = Http::postJson($url, $data, $headers);
-
-        if (!$response || isset($response['msg']) || $response['status'] != "OK") {
+        Log::write('ImperialPayChannel pay response:' . json_encode($response) . ' data:' . json_encode($data), 'info');
+        if (!$response || isset($response['msg']) || isset($response['errorCode'])) {
             return [
                 'status' => 0,
                 'msg' =>  $response['msg'] ?? $response['message'] ?? '请求失败',
@@ -214,7 +216,7 @@ class ImperialPayChannel implements ChannelInterface
 
         return [
             'order_no' => $order['order_no'],
-            'qrcode'=> $response_data['pix']['base64'],
+            'qrcode'=> "data:image/png;base64," .$response_data['pix']['base64'],
             'pix_code' => $response_data['pix']['code'],
         ];
     }
