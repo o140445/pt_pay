@@ -189,7 +189,7 @@ class ImperialPayChannel implements ChannelInterface
         }
 
         return [
-            'order_no' => '', // 订单号
+            'order_no' => $params['transaction']['identifier'], // 订单号
             'channel_no' => $params['transaction']['id'], // 渠道订单号
             'amount' => $params['transaction']['amount'], // 支付金额
             'pay_date' => '', // 支付时间
