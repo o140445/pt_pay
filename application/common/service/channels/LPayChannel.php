@@ -4,6 +4,7 @@ namespace app\common\service\channels;
 
 use app\common\model\merchant\OrderIn;
 use app\common\model\merchant\OrderOut;
+use app\common\model\merchant\OrderRequestLog;
 use fast\Http;
 use think\Config;
 use think\Log;
@@ -79,9 +80,12 @@ class LPayChannel implements ChannelInterface
             ];
         }
 
+        $pay_url = Config::get('pay_url') . '/index/pay/pay?order_id=' . $params['order_no'];
+
+//$response['data']['orderurl']
         return [
             'status' => 1, // 状态 1成功 0失败
-            'pay_url' => $response['data']['orderurl'] ?? '', // 支付地址
+            'pay_url' => $pay_url, // 支付地址
             'msg' => '', // 消息
             'order_id' => $response['data']['transactionNo'], // 订单号
             'e_no' => '',
@@ -217,9 +221,17 @@ class LPayChannel implements ChannelInterface
         return "ok";
     }
 
-    public function getPayInfo($orderIn): array
+    public function getPayInfo($order): array
     {
-        return [];
+        $response = OrderRequestLog::where('order_no', $order['order_no'])->where('request_type', OrderRequestLog::REQUEST_TYPE_REQUEST)->find();
+        if (! $response) {
+            throw new \Exception('支付信息获取失败！');
+        }
+        $response_data = json_decode($response['response_data'], true);
+
+        return [
+            'url' => $response_data['data']['orderurl'] ?? '',
+        ];
     }
 
     public function getNotifyType($params): string
