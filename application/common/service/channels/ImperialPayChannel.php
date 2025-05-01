@@ -30,13 +30,8 @@ class ImperialPayChannel implements ChannelInterface
     {
         return [
             [
-                "name" => "公钥",
-                "key" => "public_key",
-                "value" => "",
-            ],
-            [
-                "name" => "私钥",
-                "key" => "private_key",
+                "name" => "客户IP",
+                "key" => "ip",
                 "value" => "",
             ]
         ];
@@ -45,8 +40,8 @@ class ImperialPayChannel implements ChannelInterface
     public function setHeaders($channel)
     {
         return [
-            "x-public-key" => $this->getExtraConfig($channel, 'public_key'),
-            "x-secret-key" => $this->getExtraConfig($channel, 'private_key'),
+            "x-public-key" => $channel['mch_id'],
+            "x-secret-key" => $channel['mch_key'],
         ];
     }
 
@@ -107,7 +102,72 @@ class ImperialPayChannel implements ChannelInterface
 
     public function outPay($channel, $params): array
     {
-        // TODO: Implement outPay() method.
+        $extra = json_decode($params['extra'], true);
+
+        $data = [
+            'clientIdentifier' => $params['order_no'],
+            'callbackUrl' =>  $this->getNotifyUrl($channel, "innotify"),
+            'amount' => (float)number_format($params['amount'], 2, '.', ''),
+            'pix' =>
+                [
+                    'pixType' => $extra['pix_type'],
+                    'pixKey' => $extra['pix_key'],
+                ],
+            'owner' =>
+                [
+                    'name' =>$extra['pix_name'],
+                    'ip' => $this->getExtraConfig($channel, 'ip'),
+                    'document' => [
+                        'type' => $extra['pix_type'],
+                        'number' => $extra['pix_key'],
+                    ]
+                ]
+        ];
+
+        $headers = $this->setHeaders($channel);
+        //https://app.imperialpay.com.br/api/v1/gateway/transfers
+        $url = $channel['gateway'] . "/gateway/transfers";
+        $response = Http::postJson($url, $data, $headers);
+        Log::write('ImperialPayChannel outPay response:' . json_encode($response) . ' data:' . json_encode($data), 'info');
+        if (!$response || isset($response['msg']) || isset($response['errorCode'])) {
+            return [
+                'status' => 0,
+                'msg' =>  $response['msg'] ?? $response['message'] ?? '请求失败',
+            ];
+        }
+
+        //{
+        //  "webhookToken": "webhookToken123",
+        //  "withdraw": {
+        //    "id": "withdraw123",
+        //    "amount": 1000,
+        //    "feeAmount": 10,
+        //    "currency": "BRL",
+        //    "status": "PENDING",
+        //    "createdAt": "2025-04-30T16:12:56.120Z",
+        //    "updatedAt": "2025-04-30T16:12:56.120Z"
+        //  },
+        //  "payoutAccount": {
+        //    "id": "payoutAccount123",
+        //    "status": "ACTIVE",
+        //    "pix": "produtor@email.com",
+        //    "pixType": "email",
+        //    "createdAt": "2025-04-30T16:12:56.120Z",
+        //    "updatedAt": "2025-04-30T16:12:56.120Z",
+        //    "deletedAt": null
+        //  }
+        //}
+
+        return [
+            'status' => 1, // 状态 1成功 0失败
+            'msg' => '', // 消息
+            'order_id' => $response['withdraw']['id'], // 订单号
+            'e_no' => '',
+            'request_data' => json_encode($data), // 请求数据
+            'response_data' => json_encode($response), // 响应数据
+        ];
+
+
     }
 
     public function payNotify($channel, $params): array
@@ -203,7 +263,55 @@ class ImperialPayChannel implements ChannelInterface
 
     public function outPayNotify($channel, $params): array
     {
-        // TODO: Implement outPayNotify() method.
+        // {
+        //  "event": "TRANSFER_CREATED",
+        //  "token": "pb9wyo",
+        //  "withdraw": {
+        //    "id": "rgrbnrswiz",
+        //    "clientIdentifier": "123456",
+        //    "amount": 100,
+        //    "receivedAmount": 0,
+        //    "feeAmount": 10,
+        //    "currency": "BRL",
+        //    "status": "PENDING",
+        //    "createdAt": "2025-04-30T16:32:08.231Z",
+        //    "updatedAt": "2025-04-30T16:32:08.231Z"
+        //  },
+        //  "payoutAccount": {
+        //    "id": "8uiisz3wpq",
+        //    "status": "ACTIVE",
+        //    "ownerName": "João da Silva",
+        //    "ownerDocument": "123.456.789-00",
+        //    "pix": "cliente@gmail.com",
+        //    "pixType": "email",
+        //    "createdAt": "2025-04-30T16:32:08.231Z",
+        //    "updatedAt": "2025-04-30T16:32:08.231Z",
+        //    "deletedAt": null
+        //  }
+        //}
+        $status = OrderOut::STATUS_UNPAID;
+        if ($params['event'] == 'TRANSFER_COMPLETED' && $params['withdraw']['status'] == 'COMPLETED') {
+            $status = OrderOut::STATUS_PAID;
+        }
+
+        if ($params['event'] == 'TRANSFER_FAILED' || $params['withdraw']['status'] == 'CANCELED') {
+            $status = OrderOut::STATUS_FAILED;
+        }
+
+        if ($status == OrderOut::STATUS_UNPAID) {
+            throw new \Exception('未支付');
+        }
+
+        return  [
+            'order_no' => $params['withdraw']['clientIdentifier'], // 订单号
+            'channel_no' => $params['withdraw']['id'], // 渠道订单号
+            'pay_date' => date('Y-m-d H:i:s'), // 支付时间
+            'status' => $status, // 状态 2成功 3失败 4退款
+            'e_no' => '', // 业务订单号
+            'data' => json_encode($params), // 数据
+            'msg' => $status == OrderOut::STATUS_PAID ? 'sucesso' : 'canceled', // 消息
+        ];
+
     }
 
     public function getPayInfo($order): array
@@ -237,55 +345,13 @@ class ImperialPayChannel implements ChannelInterface
 
     public function getNotifyType($params): string
     {
-        //{
-        //  "event": "TRANSACTION_PAID",
-        //  "token": "y9funmim14",
-        //  "offerCode": "ABCK181",
-        //  "client": {
-        //    "id": "tuznq01l06",
-        //    "name": "John Doe",
-        //    "email": "jondoe@gmail.com",
-        //    "phone": "(11) 9 8888-7777",
-        //    "cpf": "123.456.789-10",
-        //    "cnpj": null,
-        //    "address": {
-        //      "country": "BR",
-        //      "zipCode": "01304-000",
-        //      "state": "SP",
-        //      "city": "São Paulo",
-        //      "neighborhood": "Consolação",
-        //      "street": "Rua Augusta",
-        //      "number": "6312",
-        //      "complement": "6 andar"
-        //    }
-        //  },
-        //  "transaction": {
-        //    "id": "qa87z0hk6p",
-        //    "status": "COMPLETED",
-        //    "paymentMethod": "CREDIT_CARD",
-        //    "originalCurrency": "USD",
-        //    "originalAmount": 20,
-        //    "currency": "BRL",
-        //    "amount": 100,
-        //    "createAt": "2025-04-29T23:27:11.188Z",
-        //    "payedAt": "2025-04-29T23:28:11.188Z"
-        //  },
-        //  "subscription": null,
-        //  "orderItems": [
-        //    {
-        //      "id": "8chesbv44u",
-        //      "price": 100,
-        //      "product": {
-        //        "id": "tbsx49ctyu",
-        //        "name": "Curso de marketing",
-        //        "externalId": "KSA912"
-        //      }
-        //    }
-        //  ],
-        //}
-
         if (isset($params['event']) && $params['event'] == 'TRANSACTION_PAID' && isset($params['transaction'])) {
             return HookService::NOTIFY_TYPE_IN;
+        }
+
+        if (isset($params['event'])
+            && ($params['event'] == 'TRANSFER_COMPLETED' || $params['event'] == "TRANSFER_FAILED")) {
+            return HookService::NOTIFY_TYPE_OUT_PAY;
         }
 
         return  "";
@@ -295,4 +361,9 @@ class ImperialPayChannel implements ChannelInterface
         // TODO: Implement getVoucher() method.
     }
 
+
+    public function getNotifyUrl($channel, $type)
+    {
+        return Config::get('pay_url') . '/api/v1/pay/' . $type . '/code/' . $channel['sign'];
+    }
 }
