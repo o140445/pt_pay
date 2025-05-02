@@ -5,6 +5,8 @@ namespace app\common\service\channels;
 use app\common\model\merchant\OrderIn;
 use app\common\model\merchant\OrderOut;
 use app\common\model\merchant\OrderRequestLog;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Writer\PngWriter;
 use fast\Http;
 use think\Config;
 use think\Log;
@@ -95,8 +97,8 @@ class HubPayChannel implements ChannelInterface
            "items" => [[
                 "title" => "Produto 1",
                 "quantity" => 1,
-                "price" => (int)($params['amount'] * 100),
-               "tangible" => true,
+                "unitPrice" => (int)($params['amount'] * 100),
+                "tangible" => true,
            ]]
        ];
 
@@ -113,10 +115,11 @@ class HubPayChannel implements ChannelInterface
 
         Log::write('HubPay pay response: '.json_encode($res) .' data: '.json_encode($data), 'info');
 
-        if (isset($res['msg']) || !isset($res['message']) || !$res['error']) {
+        //{"message":["items.0.property price should not exist","items.0.unitPrice must be an integer number"],"error":"Bad Request","statusCode":400}
+        if (isset($res['msg']) || isset($res['message']) || isset($res['error'])) {
             return [
                 'status' => 0,
-                'msg' => $res['msg'] ?? $res['message'] ?? $res['error'],
+                'msg' => $res['msg'] ?? $res['message'][0] ?? $res['error'] ?? '',
             ];
         }
 
@@ -305,9 +308,32 @@ class HubPayChannel implements ChannelInterface
             'msg' => 'ok',
         ];
     }
-    public function getPayInfo($orderIn): array
+    public function getPayInfo($order): array
     {
-        // TODO: Implement getPayInfo() method.
+        $response = OrderRequestLog::where('order_no', $order['order_no'])->where('request_type', OrderRequestLog::REQUEST_TYPE_REQUEST)->find();
+        if (! $response) {
+            throw new \Exception('支付信息获取失败！');
+        }
+        $response_data = json_decode($response['response_data'], true);
+        // 使用 Endroid 6.x 生成二维码
+        $builder = new Builder(
+            writer: new PngWriter(),
+            data: $response_data['qrcode'],
+            size: 200,
+            margin: 10
+        );
+
+        $result = $builder->build();
+
+        // 获取 base64 图片数据
+        $qrCodeBase64 = $result->getDataUri();
+
+
+        return [
+            'order_no' => $order['order_no'],
+            'qrcode'=> $qrCodeBase64,
+            'pix_code' => $response_data['qrcode'],
+        ];
     }
     public function getVoucher($channel, $params): array
     {
