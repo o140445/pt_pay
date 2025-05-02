@@ -180,7 +180,7 @@ class HubPayChannel implements ChannelInterface
             'postback' => $this->getNotifyUrl($channel, "outnotify"),
             'details' => [
                 'name' => $extra['pix_name'],
-                "document" => "294.423.412-94"
+                "document" => "43477432894"
             ]
         ];
 
