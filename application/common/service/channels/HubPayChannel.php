@@ -64,6 +64,11 @@ class HubPayChannel implements ChannelInterface
         return '';
     }
 
+    public function getNotifyUrl($channel, $type)
+    {
+        return Config::get('pay_url') . '/api/v1/pay/' . $type . '/code/' . $channel['sign'];
+    }
+
     public function pay($channel, $params): array
     {
         $token = $this->getToken($channel);
@@ -99,7 +104,8 @@ class HubPayChannel implements ChannelInterface
                 "quantity" => 1,
                 "unitPrice" => (int)($params['amount'] * 100),
                 "tangible" => true,
-           ]]
+           ]],
+           "postback" =>   $this->getNotifyUrl($channel, "innotify"),
        ];
 
         $url = $channel['gateway'].'/transaction';
@@ -171,6 +177,7 @@ class HubPayChannel implements ChannelInterface
             'amount' => (int)($params['amount'] * 100),
             'key' => $extra['pix_key'],
             'key_type' => $extra['pix_type'],
+            'postback' => $this->getNotifyUrl($channel, "outnotify"),
             'details' => [
                 'name' => $extra['pix_name'],
                 "document" => $extra['pix_document'] ?? $extra['pix_key']
