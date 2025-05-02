@@ -195,10 +195,10 @@ class HubPayChannel implements ChannelInterface
             $headers
         );
         Log::write('HubPay outPay response: '.json_encode($res) .' data: '.json_encode($data), 'info');
-        if (isset($res['msg']) || !isset($res['statusCode']) || $res['statusCode'] != 200) {
+        if (isset($res['msg']) || !isset($res['statusCode']) || $res['statusCode'] != 201) {
             return [
                 'status' => 0,
-                'msg' => $res['msg'] ?? $res['message'] ?? $res['error'] ?? '',
+                'msg' => $res['msg'] ?? $res['message'][0] ?? $res['error'] ?? '',
             ];
         }
 
