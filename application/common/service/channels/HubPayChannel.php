@@ -178,10 +178,6 @@ class HubPayChannel implements ChannelInterface
             'key' => $extra['pix_key'],
             'key_type' => $extra['pix_type'],
             'postback' => $this->getNotifyUrl($channel, "outnotify"),
-            'details' => [
-                'name' => $extra['pix_name'],
-                "document" => "60556437000138"
-            ]
         ];
 
         $url = $channel['gateway'].'/withdraw/pix';
