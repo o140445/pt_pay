@@ -173,6 +173,11 @@ class HubPayChannel implements ChannelInterface
 
         $extra = json_decode($params['extra'], true);
 
+        // 类型转换 CPF = DOCUMENT
+        if ($extra['pix_type'] == 'CPF') {
+            $extra['pix_type'] = 'DOCUMENT';
+        }
+
         $data = [
             'amount' => (int)($params['amount'] * 100),
             'key' => $extra['pix_key'],
