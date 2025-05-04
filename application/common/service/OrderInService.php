@@ -563,4 +563,15 @@ class OrderInService
         return $orders;
     }
 
+    /**
+     * getPayInfo
+     */
+    public function getPayInfo($order): array
+    {
+        $paymentService = new PaymentService($order->channel->code);
+        $res = $paymentService->getPayInfo($order);
+
+        return $res;
+    }
+
 }

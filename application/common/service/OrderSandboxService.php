@@ -40,6 +40,7 @@ class OrderSandboxService
             'order_no' => $order->order_no,
             'pay_url' => "test_url",
             'status' => $order->status,
+            'pix_code' => '',
             'msg' => 'OK',
         ];
     }

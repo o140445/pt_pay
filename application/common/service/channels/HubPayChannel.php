@@ -197,9 +197,10 @@ class HubPayChannel implements ChannelInterface
         );
         Log::write('HubPay outPay response: '.json_encode($res) .' data: '.json_encode($data), 'info');
         if (isset($res['msg']) || !isset($res['statusCode']) || $res['statusCode'] != 201) {
+            // {"status":422,"content":{"name":"INSUFFICIENT_FUNDS","message":"Insufficient balance for withdrawal"}}
             return [
                 'status' => 0,
-                'msg' => $res['msg'] ?? $res['message'][0] ?? $res['error'] ?? '',
+                'msg' => $res['msg'] ?? $res['message'][0] ?? $res['error'] ?? $res['content']['message'] ?? '',
             ];
         }
 

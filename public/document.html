@@ -296,7 +296,7 @@
                         <div class="tab-pane active" id="info0">
                             <div class="panel panel-default">
                                 <div class="panel-body">
-                                    正式环境地址：/api/v1/pay/in
+                                    正式环境地址：/api/v2/pay/in
                                     <br>
                                     沙盒环境地址：/api/v1/sandbox/in
                                     <br>
@@ -452,6 +452,12 @@
                                         <td>是</td>
                                         <td>支付状态 1支付中 2成功 3失败</td>
                                     </tr>
+                                    <tr>
+                                        <td>pix_code</td>
+                                        <td>string</td>
+                                        <td>否</td>
+                                        <td>pix 支付代码</td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -463,12 +469,14 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <pre id="sample_response2">{
-    "code":"1",
-    "msg":"OK",
-    "data":{
-        "order_no":"DI202411130058522OAoO2",
-        "pay_url":"test_url",
-        "status":1
+    "code": 1,
+    "msg": "返回成功",
+    "data": {
+        "order_no": "DI20250504093110Uf2FUe",
+        "pay_url": "https://www.xxxxx.com/pay?order_id=DI20250504093110Uf2FUe",
+        "status": 1,
+        "msg": "",
+        "pix_code": "00020101021226760014br.gov.bcb.pix2554qrcode.bmb.app.br/cob/c80a624a8edd0fabbe554986eead886f5204000053039865802BR5912CLICKPAY 0046009SAO PAULO62070503***6304E6FB"
     }
 }</pre>
                                     </div>
