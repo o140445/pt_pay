@@ -189,10 +189,10 @@ class AcaciaPayChannel implements ChannelInterface
      */
     public function payNotify($channel, $params) : array
     {
-        $secureCode = $this->getExtraConfig($channel, 'secureCode');
-        if ($params['header']['securecode'] != $secureCode) {
+//        $secureCode = $this->getExtraConfig($channel, 'secureCode');
+//        if ($params['header']['securecode'] != $secureCode) {
 //            throw new \Exception('secureCode 验证失败');
-        }
+//        }
 
        $status = OrderIn::STATUS_UNPAID;
         if ($params['event'] == 'payment.paid') {
@@ -223,10 +223,10 @@ class AcaciaPayChannel implements ChannelInterface
      */
     public function outPayNotify($channel, $params) : array
     {
-        $secureCode = $this->getExtraConfig($channel, 'secureCode');
-        if ($params['header']['securecode'] != $secureCode) {
+//        $secureCode = $this->getExtraConfig($channel, 'secureCode');
+//        if ($params['header']['securecode'] != $secureCode) {
 //            throw new \Exception('secureCode 验证失败');
-        }
+//        }
 
         $status = OrderOut::STATUS_UNPAID;
         if ($params['event'] == 'withdraw.paid') {
