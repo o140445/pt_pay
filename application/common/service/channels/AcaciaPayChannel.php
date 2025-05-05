@@ -186,7 +186,7 @@ class AcaciaPayChannel implements ChannelInterface
             }
 
             // 不是请求超时
-            if (strpos($res['msg'], 'cURL error 28:') == false) {
+            if (strpos($res['msg'], 'cURL error 28') === false) {
                 return [
                     'status' => 0,
                     'msg' => 'Excepção de pagamento, por favor tente de novo mais tarde',
@@ -252,7 +252,7 @@ class AcaciaPayChannel implements ChannelInterface
         if ($params['status'] == 'withdraw.paid') {
             $status = OrderOut::STATUS_PAID;
         }
-        if ($params['event'] == 'withdraw.failed' || $params['event'] == 'withdraw.canceled') {
+        if ($params['status'] == 'withdraw.failed' || $params['status'] == 'withdraw.canceled') {
             $status = OrderOut::STATUS_FAILED;
         }
 
