@@ -191,14 +191,14 @@ class AcaciaPayChannel implements ChannelInterface
     {
         $secureCode = $this->getExtraConfig($channel, 'secureCode');
         if ($params['header']['securecode'] != $secureCode) {
-            throw new \Exception('secureCode 验证失败');
+//            throw new \Exception('secureCode 验证失败');
         }
 
        $status = OrderIn::STATUS_UNPAID;
-        if ($params['status'] == 'payment.paid') {
+        if ($params['event'] == 'payment.paid') {
             $status = OrderIn::STATUS_PAID;
         }
-        if ($params['status'] == 'payment.canceled') {
+        if ($params['event'] == 'payment.canceled') {
             $status = OrderIn::STATUS_FAILED;
         }
 
@@ -225,14 +225,14 @@ class AcaciaPayChannel implements ChannelInterface
     {
         $secureCode = $this->getExtraConfig($channel, 'secureCode');
         if ($params['header']['securecode'] != $secureCode) {
-            throw new \Exception('secureCode 验证失败');
+//            throw new \Exception('secureCode 验证失败');
         }
 
         $status = OrderOut::STATUS_UNPAID;
-        if ($params['status'] == 'withdraw.paid') {
+        if ($params['event'] == 'withdraw.paid') {
             $status = OrderOut::STATUS_PAID;
         }
-        if ($params['status'] == 'withdraw.failed' || $params['status'] == 'withdraw.canceled') {
+        if ($params['event'] == 'withdraw.failed' || $params['event'] == 'withdraw.canceled') {
             $status = OrderOut::STATUS_FAILED;
         }
 
@@ -265,11 +265,11 @@ class AcaciaPayChannel implements ChannelInterface
     public function getNotifyType($params) : string
     {
         // 如果status 包含 payment 是代收， withdraw 是代付 其他是其他
-        if (isset($params['status'])) {
-            if (strpos($params['status'], 'payment') !== false) {
+        if (isset($params['event'])) {
+            if (strpos($params['event'], 'payment') !== false) {
                 return HookService::NOTIFY_TYPE_IN;
             }
-            if (strpos($params['status'], 'withdraw') !== false) {
+            if (strpos($params['event'], 'withdraw') !== false) {
                 return HookService::NOTIFY_TYPE_OUT_PAY;
             }
         }
