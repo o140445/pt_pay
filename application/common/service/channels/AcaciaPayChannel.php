@@ -207,9 +207,9 @@ class AcaciaPayChannel implements ChannelInterface
         }
 
         return [
-            'order_no' => $params['user_id'], // 订单号
-            'channel_no' => $params['tx_id'], // 渠道订单号
-            'amount' => $params['valor_cobrado'], // 金额
+            'order_no' => $params['data']['userId'], // 订单号
+            'channel_no' => $params['data']['txid'], // 渠道订单号
+            'amount' => $params['data']['amount'], // 金额
             'pay_date' => '', // 支付时间
             'status' => $status, // 状态 2成功 3失败 4退款
             'e_no' => '', // 业务订单号
