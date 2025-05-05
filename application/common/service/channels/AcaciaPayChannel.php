@@ -65,6 +65,19 @@ class AcaciaPayChannel implements ChannelInterface
             ];
         }
 
+        // 请求超时
+        if (isset($response['msg'])  && strpos($response['msg'], 'cURL error 28:') !== false) {
+            // 重新请求
+            $response = Http::postJson($channel['gateway'].'/api/pix', $data, $headers);
+            Log::write('AcaciaPayChannel pay response:'.json_encode($response) . ' data:'.json_encode($data) . ' headers:'.json_encode($headers), 'info');
+            if (isset($response['error'])) {
+                return [
+                    'status' => 0,
+                    'msg' => $response['error'],
+                ];
+            }
+        }
+
         if (isset($response['msg']) ) {
             if (strpos($response['msg'], 'response') !== false) {
                 $res = json_decode(substr($response['msg'], strpos($response['msg'], '{')), true);
@@ -149,6 +162,9 @@ class AcaciaPayChannel implements ChannelInterface
         $url = $channel['gateway'].'/api/withdraw';
         $res = Http::postJson($url, $data, $headers);
         Log::write('AcaciaPayChannel outPay response:'.json_encode($res) . ' data:'.json_encode($data) . ' headers:'.json_encode($headers), 'info');
+
+
+
         if (isset($res['error'])) {
             return [
                 'status' => 0,
@@ -156,6 +172,7 @@ class AcaciaPayChannel implements ChannelInterface
             ];
         }
         //$res['msg'] = string(207) "Server error: `POST https://paynex.live/api/withdraw` resulted in a `500 Internal Server Error` response: {"error":"Error create withdraw #001930 - The selected pix key type is invalid. (and 1 more error)"}
+       //{"code":0,"msg":"cURL error 28: Operation timed out after 10002 milliseconds with 0 bytes received (see https:\/\/curl.haxx.se\/libcurl\/c\/libcurl-errors.html)
         // 获取 response
         if (isset($res['msg']) ) {
             if (strpos($res['msg'], 'response') !== false) {
@@ -166,7 +183,10 @@ class AcaciaPayChannel implements ChannelInterface
                         'msg' => $response['error'],
                     ];
                 }
-            } else {
+            }
+
+            // 不是请求超时
+            if (strpos($res['msg'], 'cURL error 28:') == false) {
                 return [
                     'status' => 0,
                     'msg' => 'Excepção de pagamento, por favor tente de novo mais tarde',
@@ -229,7 +249,7 @@ class AcaciaPayChannel implements ChannelInterface
 //        }
 
         $status = OrderOut::STATUS_UNPAID;
-        if ($params['event'] == 'withdraw.paid') {
+        if ($params['status'] == 'withdraw.paid') {
             $status = OrderOut::STATUS_PAID;
         }
         if ($params['event'] == 'withdraw.failed' || $params['event'] == 'withdraw.canceled') {
@@ -245,7 +265,7 @@ class AcaciaPayChannel implements ChannelInterface
             'channel_no' => $params['data']['tx_id'], // 渠道订单号
             'pay_date' => '', // 支付时间
             'status' => $status, // 状态 2成功 3失败 4退款
-            'e_no' =>  '', // 业务订单号
+            'e_no' =>  $params['data']['e2e'] ?? '', // 业务订单号
             'data' => json_encode($params), // 数据
             'msg' => $status == OrderOut::STATUS_PAID ? 'sucesso' : 'falham', // 消息
         ];
@@ -269,7 +289,10 @@ class AcaciaPayChannel implements ChannelInterface
             if (strpos($params['event'], 'payment') !== false) {
                 return HookService::NOTIFY_TYPE_IN;
             }
-            if (strpos($params['event'], 'withdraw') !== false) {
+        }
+
+        if (isset($params['status'])) {
+            if (strpos($params['status'], 'withdraw') !== false) {
                 return HookService::NOTIFY_TYPE_OUT_PAY;
             }
         }
