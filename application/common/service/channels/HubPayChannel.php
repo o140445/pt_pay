@@ -122,10 +122,11 @@ class HubPayChannel implements ChannelInterface
         Log::write('HubPay pay response: '.json_encode($res) .' data: '.json_encode($data), 'info');
 
         //{"message":["items.0.property price should not exist","items.0.unitPrice must be an integer number"],"error":"Bad Request","statusCode":400}
-        if (isset($res['msg']) || isset($res['message']) || isset($res['error'])) {
+        //"status":"PENDING"
+        if (isset($res['msg']) || isset($res['message']) || isset($res['error']) || (isset($res['status']) && $res['status'] != 'PENDING')) {
             return [
                 'status' => 0,
-                'msg' => $res['msg'] ?? $res['message'][0] ?? $res['error'] ?? '',
+                'msg' => $res['msg'] ?? $res['message'][0] ?? $res['error'] ?? 'Excepção de pagamento, por favor tente de novo mais tarde',
             ];
         }
 
