@@ -7,6 +7,7 @@ use app\common\model\merchant\OrderRequestLog;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
 use fast\Http;
+use http\Exception;
 use think\Config;
 use think\Log;
 
@@ -24,6 +25,17 @@ class FixPayChannel implements ChannelInterface
                 'name'=>'代付类型',
                 'key'=>'method',
                 'value'=>'BAR01',
+            ],
+
+            [
+                'name'=>'银行名称',
+                'key'=>'bankName',
+                'value'=>'',
+            ],
+            [
+                'name'=>'CNPJ',
+                'key'=>'cnpj',
+                'value'=>'',
             ]
         ];
     }
@@ -65,6 +77,14 @@ class FixPayChannel implements ChannelInterface
         Log::write('FixPayChannel pay response:' . json_encode($response) . ' data:' . json_encode($data), 'info');
 
         if (!$response || isset($response['msg']) || $response['status'] != 200) {
+
+            if (isset($response['msg']) && strpos($response['msg'], 'cURL error 7:') !== false) {
+                return [
+                    'status' => 0,
+                    'msg' => 'Excepção de pagamento, por favor tente de novo mais tarde',
+                ];
+            }
+
             return [
                 'status' => 0,
                 'msg' =>  $response['msg'] ?? $response['message'] ?? '请求失败',
@@ -122,6 +142,12 @@ class FixPayChannel implements ChannelInterface
         Log::write('FixPayChannel outPay response:' . json_encode($response) . ' data:' . json_encode($data), 'info');
 
         if (!$response || isset($response['msg']) || $response['status'] != 200) {
+            if (isset($response['msg']) && strpos($response['msg'], 'cURL error 7:') !== false) {
+                return [
+                    'status' => 0,
+                    'msg' => 'Excepção de pagamento, por favor tente de novo mais tarde',
+                ];
+            }
             return [
                 'status' => 0,
                 'msg' =>  $response['msg'] ?? $response['message'] ?? '请求失败',
@@ -292,12 +318,52 @@ class FixPayChannel implements ChannelInterface
 
     public function parseVoucher($channel, $params): array
     {
-       return [];
+
+//        $html = file_get_contents("https://pay.paythere.top/getfeedback/".$params['order_no']);
+        // 解析数据 html
+        $data = Http::postJson("{$channel['gateway']}/getfeedback/{$params['order_no']}", []);
+        if (empty($data)) {
+            throw new \Exception('Voucher parsing failed.');
+        }
+
+        $payer_name = $this->getExtraConfig($channel, 'bankName');
+        $payer_account = $this->getExtraConfig($channel, 'cnpj');
+        return [
+            'pay_date' => $params['pay_success_date'], // 支付时间
+            'payer_name' => $payer_name, // 付款人姓名B.B INVESTIMENT TRADING SERVICOS LTDA
+            'payer_account' => $payer_account, // 付款人CPF 57.709.170/0001-67
+            'e_no' => $data['data']['a11'],
+            'type' => 'cnpj', // 业务订单号
+        ];
     }
 
-    public function getVoucher($channel, $params): array
+    public function getVoucher($channel, $order): array
     {
-        return [];
+        //https://pay.paythere.top/getfeedback/DO20250508073425E9EXvm
+
+//        $html = file_get_contents("https://pay.paythere.top/getfeedback/".$order['order_no']);
+        $html = file_get_contents("https://pay.paythere.top/getfeedback/DO20250508073425E9EXvm");
+        // 解析数据 html
+        $pattern = '/<th[^>]*?>\s*EndToEndId\s*<\/th>.*?<td[^>]*?>(.*?)<\/td>/is';
+        $e_no= '';
+        if (preg_match($pattern, $html, $matches)) {
+            $e_no = $matches[1];
+        }
+
+        if (empty($e_no)) {
+            throw new \Exception('Voucher parsing failed.');
+        }
+
+
+        $payer_name = $this->getExtraConfig($channel, 'bankName');
+        $payer_account = $this->getExtraConfig($channel, 'cnpj');
+        return [
+            'pay_date' => $order['pay_success_date'], // 支付时间
+            'payer_name' => $payer_name, // 付款人姓名B.B INVESTIMENT TRADING SERVICOS LTDA
+            'payer_account' => $payer_account, // 付款人CPF 57.709.170/0001-67
+            'e_no' => $e_no, // 业务订单号
+            'type' => 'cnpj', // 业务订单号
+        ];
     }
 
     public function getVoucherUrl($order): string

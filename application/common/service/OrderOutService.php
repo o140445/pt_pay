@@ -707,7 +707,15 @@ class OrderOutService
 
         // 解析数据
         $paymentService = new PaymentService($order->channel->code);
-        $voucher = $paymentService->parseVoucher($order->channel, $order);
+
+        //$voucher
+        $voucher = Cache::get('voucher_'.$order->order_no);
+        if (!$voucher){
+            $voucher = $paymentService->parseVoucher($order->channel, $order);
+            Cache::set('voucher_'.$order->order_no,  json_encode($voucher), 600);
+        }else{
+            $voucher = json_decode($voucher, true);
+        }
 
         $extra = json_decode($order->extra, true);
 
@@ -723,6 +731,7 @@ class OrderOutService
             'payee_name' => $extra['pix_name'] ?? '',
             'payee_account' => $extra['pix_key'] ?? '',
         ];
+
 
         return $res;
     }
