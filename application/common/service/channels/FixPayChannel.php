@@ -76,14 +76,13 @@ class FixPayChannel implements ChannelInterface
         $response = Http::postJson($url, $data);
         Log::write('FixPayChannel pay response:' . json_encode($response) . ' data:' . json_encode($data), 'info');
 
-        if (!$response || isset($response['msg']) || $response['status'] != 200) {
+        if (isset($response['msg']) && strpos($response['msg'], 'cURL error 7:') !== false) {
+            // 重新请求
+            $response = Http::postJson($url, $data);
+            Log::write('FixPayChannel pay response:' . json_encode($response) . ' data:' . json_encode($data), 'info');
+        }
 
-            if (isset($response['msg']) && strpos($response['msg'], 'cURL error 7:') !== false) {
-                return [
-                    'status' => 0,
-                    'msg' => 'Excepção de pagamento, por favor tente de novo mais tarde',
-                ];
-            }
+        if (!$response || isset($response['msg']) || $response['status'] != 200) {
 
             return [
                 'status' => 0,
