@@ -369,7 +369,7 @@ class FixPayChannel implements ChannelInterface
     public function getVoucherUrl($order): string
     {
         // https://pay.paythere.top/getfeedback/
-        return   'https://pay.paythere.top/getfeedback/'.$order['order_no'];
+        return   Config::get('pay_url').'/index/receipt/index?order_id='.$order['order_no'];
     }
 
 }
