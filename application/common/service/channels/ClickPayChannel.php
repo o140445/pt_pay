@@ -330,7 +330,7 @@ class ClickPayChannel implements ChannelInterface
     /**
      * 解析凭证
      */
-    public function parseVoucher($data): array
+    public function parseVoucher($data, $params): array
     {
         return [
             'pay_date' => date('Y-m-d H:i:s', strtotime($data['pay_success_date'])),
