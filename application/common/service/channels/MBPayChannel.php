@@ -282,7 +282,7 @@ class MBPayChannel implements ChannelInterface
         return [
             'status' => 1, // 状态 1成功 0失败
             'msg' => '', // 消息
-            'order_id' => $res['ticket'] ?? '', // 订单号
+            'order_id' => $res['transactionId'] ?? '', // 订单号
             'e_no' => '',
             'pay_url' => '', // 支付地址
             'request_data' => json_encode($data), // 请求数据
@@ -407,7 +407,7 @@ class MBPayChannel implements ChannelInterface
 
         return [
             'order_no' => $params['customId'],
-            'channel_no' => '',
+            'channel_no' => $params['transactionCode'] ?? '',
             'amount' =>  number_format($params['amount'] / 100, 2, '.', ''),
             'pay_date' => date('Y-m-d H:i:s'),
             'status' => $status,
