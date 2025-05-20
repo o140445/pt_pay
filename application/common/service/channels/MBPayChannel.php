@@ -396,7 +396,7 @@ class MBPayChannel implements ChannelInterface
         //"customId": "Error in processing",
         //"reason": "Insufficient balance"
         //}
-        if ($params['updateCode'] == '03') {
+        if (isset($params['updateCode']) && $params['updateCode'] == '03') {
             $status = OrderOut::STATUS_FAILED;
         }
 
