@@ -492,7 +492,7 @@ class MBPayChannel implements ChannelInterface
 //        $res['data'] = json_decode($data['data'],true);
 
         return [
-            'pay_date' => date('d/m/Y', strtotime($order['pay_date'])), // 付款日期
+            'pay_date' => date('d/m/Y', strtotime($order['pay_success_date'])), // 付款日期
             'payer_name' => $payer_name, // 付款人姓名
             'payer_account' =>  $payer_account, // 付款人CPF
             'e_no' => $order['e_no'], // 业务订单号
