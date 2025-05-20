@@ -16,6 +16,7 @@ use app\common\service\channels\NovoPayChannel;
 use app\common\service\channels\ImperialPayChannel;
 use app\common\service\channels\HubPayChannel;
 use app\common\service\channels\ClickPayChannel;
+use app\common\service\channels\MBPayChannel;
 
 class PaymentService
 {
@@ -35,6 +36,7 @@ class PaymentService
         'ImperialPay' => 'ImperialPay',
         'HubPay' => 'HubPay',
         'ClickPay' => 'ClickPay',
+        'MBPay' => 'MBPay',
     ];
 
     public function __construct(string $code)
@@ -70,17 +72,17 @@ class PaymentService
             case 'LPay':
                 $this->channel = new LPayChannel();
                 break;
-
             case 'ImperialPay':
                 $this->channel = new ImperialPayChannel();
                 break;
-
             case 'HubPay':
                 $this->channel = new HubPayChannel();
                 break;
-
             case 'ClickPay':
                 $this->channel = new  ClickPayChannel();
+                break;
+            case 'MBPay':
+                $this->channel = new MBPayChannel();
                 break;
 
             default:
