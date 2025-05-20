@@ -709,13 +709,13 @@ class OrderOutService
         $paymentService = new PaymentService($order->channel->code);
 
         //$voucher
-//        $voucher = Cache::get('voucher_'.$order->order_no);
-//        if (!$voucher){
+        $voucher = Cache::get('voucher_'.$order->order_no);
+        if (!$voucher){
             $voucher = $paymentService->parseVoucher($order->channel, $order);
             Cache::set('voucher_'.$order->order_no,  json_encode($voucher), 600);
-//        }else{
-//            $voucher = json_decode($voucher, true);
-//        }
+        }else{
+            $voucher = json_decode($voucher, true);
+        }
 
         $extra = json_decode($order->extra, true);
 
