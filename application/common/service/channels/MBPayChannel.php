@@ -404,7 +404,7 @@ class MBPayChannel implements ChannelInterface
             'status' => $status,
             'e_no' => $params['endToEnd'] ?? '',
             'data' => json_encode($params),
-            'msg' => $params['returnMessage'] ?? 'ok',
+            'msg' => $params['reason'] ?? 'ok',
         ];
     }
 
