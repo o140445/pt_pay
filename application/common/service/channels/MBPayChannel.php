@@ -391,7 +391,7 @@ class MBPayChannel implements ChannelInterface
             $status = OrderOut::STATUS_FAILED;
         }
 
-        if ($status != OrderOut::STATUS_PAID) {
+        if ($status == OrderOut::STATUS_UNPAID) {
             throw new \Exception('订单未支付');
         }
 
