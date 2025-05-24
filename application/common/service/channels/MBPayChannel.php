@@ -383,19 +383,10 @@ class MBPayChannel implements ChannelInterface
         //}
 
         $status = OrderOut::STATUS_UNPAID;
-        if ($params['status'] == 'Completed' && $params['returnCode'] == '00') {
+        if (isset($params['status']) && $params['status'] == 'Completed' && $params['returnCode'] == '00') {
             $status = OrderOut::STATUS_PAID;
         }
-        //{
-        //"withdrawCode": "A1B2C3D4E5",
-        //"amount": 100.50,
-        //"transactionCode": null,
-        //"updateCode": "03",
-        //"updateMessage": "REJECTED TRANSACTION",
-        //"custom_id": "Error in processing",
-        //"customId": "Error in processing",
-        //"reason": "Insufficient balance"
-        //}
+//        {"withdrawCode":"6831b3e7dd804","customId":"DO20250524085623KHpGdb","transactionId":"","transactionCode":"","updateCode":"02","updateMessage":"RETURNED TRANSACTION","amount":"30000","reason":"DICT entry not found. Please check if the key is correct."}
         if (isset($params['updateCode']) && $params['updateCode'] == '03') {
             $status = OrderOut::STATUS_FAILED;
         }
@@ -413,7 +404,7 @@ class MBPayChannel implements ChannelInterface
             'status' => $status,
             'e_no' => $params['endToEnd'] ?? '',
             'data' => json_encode($params),
-            'msg' => 'ok',
+            'msg' => $params['returnMessage'] ?? 'ok',
         ];
     }
 
