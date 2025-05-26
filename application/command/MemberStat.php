@@ -21,8 +21,7 @@ class MemberStat extends Command
         $start = "2025-05-24";
         $is_yesterday_key = 'member_stat_' . date('Y-m-d', strtotime('-1 day'));
         $is_yesterday = cache($is_yesterday_key);
-        var_dump($is_yesterday);die();
-        if ($is_yesterday < 20 || !$is_yesterday) {
+        if ($is_yesterday >= 20) {
             $start = date('Y-m-d 00:00:00');
         }else{
             $is_yesterday += 1;
