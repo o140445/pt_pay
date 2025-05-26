@@ -18,10 +18,10 @@ class MemberStat extends Command
     {
         // 查询昨天的会员统计
 //        $start = date('Y-m-d 00:00:00', strtotime('-1 day'));
-        $start = "2025-05-25";
+        $start = "2025-05-24";
         $is_yesterday_key = 'member_stat_' . date('Y-m-d', strtotime('-1 day'));
         $is_yesterday = cache($is_yesterday_key);
-        if ($is_yesterday < 20) {
+        if ($is_yesterday < 20 || !$is_yesterday) {
             $start = date('Y-m-d 00:00:00');
         }else{
             $is_yesterday += 1;
