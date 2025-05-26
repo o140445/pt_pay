@@ -17,11 +17,10 @@ class MemberStat extends Command
     protected function execute($input, $output)
     {
         // 查询昨天的会员统计
-//        $start = date('Y-m-d 00:00:00', strtotime('-1 day'));
-        $start = "2025-05-25";
+        $start = date('Y-m-d 00:00:00', strtotime('-1 day'));
         $is_yesterday_key = 'member_stat_' . date('Y-m-d', strtotime('-1 day'));
         $is_yesterday = cache($is_yesterday_key);
-        if ($is_yesterday >= 20) {
+        if ($is_yesterday >= 12) {
             $start = date('Y-m-d 00:00:00');
         }else{
            if (empty($is_yesterday)) {
@@ -125,7 +124,7 @@ class MemberStat extends Command
 
         $output->writeln('会员统计完成');
 
-        if ($is_yesterday < 20) {
+        if ($is_yesterday < 12) {
             cache($is_yesterday_key, $is_yesterday, 86400);
         }
     }

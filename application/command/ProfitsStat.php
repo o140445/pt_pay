@@ -20,10 +20,14 @@ class ProfitsStat extends Command
         // 昨天是否已经统计完成
         $is_yesterday_key = 'profits_stat_' . date('Y-m-d', strtotime('-1 day'));
         $is_yesterday = cache($is_yesterday_key);
-        if ($is_yesterday < 10) {
+        if ($is_yesterday >= 12) {
             $start = date('Y-m-d 00:00:00');
-        } else {
-            $is_yesterday += 1;
+        }else{
+            if (empty($is_yesterday)) {
+                $is_yesterday = 1;
+            }else{
+                $is_yesterday += 1;
+            }
         }
         $end = date('Y-m-d 23:59:59', strtotime($start));
         Log::write('开始统计利润数据: start=' . $start . ', end=' . $end, 'info');
@@ -92,7 +96,7 @@ class ProfitsStat extends Command
         $output->writeln('利润统计完成');
 
         // 标记昨天
-        if ($is_yesterday < 10) {
+        if ($is_yesterday < 12) {
             cache($is_yesterday_key, $is_yesterday, 86400);
         }
     }

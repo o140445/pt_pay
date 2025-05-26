@@ -20,10 +20,14 @@ class ChannelStat extends Command
         $start = date('Y-m-d 00:00:00', strtotime('-1 day'));
         $is_yesterday_key = 'channel_stat_' . date('Y-m-d', strtotime('-1 day'));
         $is_yesterday = cache($is_yesterday_key);
-        if ($is_yesterday > 10) {
+        if ($is_yesterday >= 12) {
             $start = date('Y-m-d 00:00:00');
         }else{
-            $is_yesterday += 1;
+            if (empty($is_yesterday)) {
+                $is_yesterday = 1;
+            }else{
+                $is_yesterday += 1;
+            }
         }
         $end = date('Y-m-d 23:59:59', strtotime($start));
         Log::write('开始统计渠道数据: start=' . $start . ', end=' . $end, 'info');
@@ -114,7 +118,7 @@ class ChannelStat extends Command
         $output->writeln('渠道统计完成');
 
         // 标记已经统计过
-        if ($is_yesterday < 10) {
+        if ($is_yesterday < 12) {
             cache($is_yesterday_key, $is_yesterday, 86400);
         }
 
