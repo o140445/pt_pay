@@ -25,7 +25,8 @@ class ProfitsStat extends Command
         } else {
             $is_yesterday += 1;
         }
-        $end = date('Y-m-d 23:59:59');
+        $end = date('Y-m-d 23:59:59', strtotime($start));
+        Log::write('开始统计利润数据: start=' . $start . ', end=' . $end, 'info');
 
         $sql = "SELECT 
             area_id,

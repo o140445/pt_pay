@@ -25,7 +25,8 @@ class ChannelStat extends Command
         }else{
             $is_yesterday += 1;
         }
-        $end = date('Y-m-d 23:59:59');
+        $end = date('Y-m-d 23:59:59', strtotime($start));
+        Log::write('开始统计渠道数据: start=' . $start . ', end=' . $end, 'info');
 
         // 先统计代收单
         $in_sql = "SELECT 

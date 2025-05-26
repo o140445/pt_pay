@@ -17,7 +17,8 @@ class MemberStat extends Command
     protected function execute($input, $output)
     {
         // 查询昨天的会员统计
-        $start = date('Y-m-d 00:00:00', strtotime('-1 day'));
+//        $start = date('Y-m-d 00:00:00', strtotime('-1 day'));
+        $start = "2025-05-24";
         $is_yesterday_key = 'member_stat_' . date('Y-m-d', strtotime('-1 day'));
         $is_yesterday = cache($is_yesterday_key);
         if ($is_yesterday < 10) {
@@ -26,7 +27,8 @@ class MemberStat extends Command
             $is_yesterday += 1;
         }
 
-        $end = date('Y-m-d 23:59:59');
+        $end = date('Y-m-d 23:59:59', strtotime($start));
+        $output->writeln('开始统计会员数据: start=' . $start . ', end=' . $end);
 
         // 先统计代收单
         $in_sql = "SELECT 
