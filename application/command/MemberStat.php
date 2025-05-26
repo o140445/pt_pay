@@ -24,7 +24,11 @@ class MemberStat extends Command
         if ($is_yesterday >= 20) {
             $start = date('Y-m-d 00:00:00');
         }else{
-            $is_yesterday += 1;
+           if (empty($is_yesterday)) {
+                $is_yesterday = 1;
+            }else{
+                $is_yesterday += 1;
+            }
         }
 
         $end = date('Y-m-d 23:59:59', strtotime($start));
