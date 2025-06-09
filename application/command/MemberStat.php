@@ -124,7 +124,7 @@ class MemberStat extends Command
 
         $output->writeln('会员统计完成');
 
-        if ($is_yesterday < 12) {
+        if ($is_yesterday <= 12) {
             cache($is_yesterday_key, $is_yesterday, 86400);
         }
     }

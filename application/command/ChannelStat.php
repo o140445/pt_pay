@@ -118,7 +118,7 @@ class ChannelStat extends Command
         $output->writeln('渠道统计完成');
 
         // 标记已经统计过
-        if ($is_yesterday < 12) {
+        if ($is_yesterday <= 12) {
             cache($is_yesterday_key, $is_yesterday, 86400);
         }
 
