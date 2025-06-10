@@ -25,24 +25,34 @@ class OrderOutDelay extends Command
         ]);
 
 
-        // 获取所有未处理的订单 1分钟前的订单 100条
-        $date = date('Y-m-d H:i:s', strtotime('-1 minute'));
+        // 获取所有未处理的订单 30s前的订单 50条
+        $date = date('Y-m-d H:i:s', strtotime('-30 seconds'));
         $orderOutDelay = \app\common\model\merchant\OrderOutDelay::where('status', 0)
             ->where('create_time', '<', $date)
-            ->limit(100)
+            ->limit(50)
             ->select();
 
         $outService = new OrderOutService();
         foreach ($orderOutDelay as $item) {
             $data = json_decode($item->data, true);
-            // 发起代付
+            // 查询超过3次的订单就不再处理
+            if ($item->retry_count >= 3) {
+                // 更新订单状态
+                $item->status = 1;
+                $item->save();
+                continue;
+            }
 
             Db::startTrans();
             try {
-                $res =   $outService->notify($data['code'], $data);
+                $res =   $outService->notify($data['out_code'], $data);
             }catch (\Exception $e) {
                 Db::rollback();
                 Log::write('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($data), 'error');
+                $output->writeln('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($data));
+                $item->retry_count += 1; // 重试次数加1
+                $item->save();
+                return;
             }
             Db::commit();
 
@@ -61,9 +71,10 @@ class OrderOutDelay extends Command
                 Log::error('代付回调请求失败 error:  data:' . json_encode($data) . ', msg:' . $res['msg']);
             }
 
-            $output->writeln('Order Out Delay order_id: ' . $item->source . ' code: ' . $data['code'] . ' msg: ' . $res['msg']);
+            $output->writeln('Order Out Delay order_id: ' . $item->source . ' channel: ' . $data['out_code'] . ' msg: ' . $res['msg']);
             // 更新订单状态
             $item->status = 1;
+            $item->retry_count += 1; // 重试次数加1
             $item->save();
         }
 

@@ -15,3 +15,6 @@ ALTER TABLE `fa_member` DROP COLUMN `docking_type`;
 -- fa_channel 修改字段长度 mch_key 255 -> 2056 extra 255 -> 1024
 ALTER TABLE `fa_channel` MODIFY COLUMN `mch_key` VARCHAR(2056) NOT NULL DEFAULT '' COMMENT '商户密钥';
 ALTER TABLE `fa_channel` MODIFY COLUMN `extra` VARCHAR(1024) NOT NULL DEFAULT '' COMMENT '扩展参数';
+
+-- order_out_delay add retry_count
+ALTER TABLE `fa_order_out_delay` ADD COLUMN `retry_count` INT(11) NOT NULL DEFAULT 0 COMMENT '重试次数';

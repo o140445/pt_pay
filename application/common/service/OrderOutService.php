@@ -209,15 +209,14 @@ class OrderOutService
 
             // 写入延迟回调表
             $log = new OrderOutDelay();
+            $data['out_code'] = $sign;
             $log->data = json_encode($data);
             $log->source = $source;
             $log->save();
 
-//            throw new \Exception('订单不存在'.' order_no:'.$res['order_no'].' channel_no:'.$res['channel_no']);
-
             return [
                 'order_id' => '',
-                'msg' => '订单不存在'. ' order_no:'.$res['order_no'].' channel_no:'.$res['channel_no']
+                'msg' => $paymentService->response()
             ];
         }
 
@@ -240,6 +239,32 @@ class OrderOutService
             OrderRequestLog::ORDER_TYPE_OUT,
             json_encode($res),
             '');
+
+        // 未支付状态，先查询延迟回调表
+        if ($order->status == OrderOut::STATUS_UNPAID) {
+            //先查询延迟回调表
+            $source = !$res['order_no'] ? $res['channel_no'] : $res['order_no'];
+            $log = OrderOutDelay::where('source', $source)->find();
+            if ($log){
+                return [
+                    'order_id' => '',
+                    'msg' => $paymentService->response()
+                ];
+            }
+
+            // 写入延迟回调表
+            $log = new OrderOutDelay();
+            $data['out_code'] = $sign;
+            $log->data = json_encode($data);
+            $log->source = $source;
+            $log->save();
+
+            return [
+                'order_id' => '',
+                'msg' => $paymentService->response()
+            ];
+
+        }
 
         // 完成订单
         if ($res['status'] == OrderOut::STATUS_PAID && $order->status == OrderOut::STATUS_PAYING) {
