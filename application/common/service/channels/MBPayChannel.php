@@ -250,14 +250,24 @@ class MBPayChannel implements ChannelInterface
         );
 
         Log::write('MBPayChannel outPay response: '.json_encode($res).' data:'.json_encode($data).' header:'.json_encode($header), 'info');
-
-
+        
         if (isset($res['msg']) || isset($res['message']) ||  (isset($res['returnCode']) && $res['returnCode'] != '00')) {
             Log::write('MBPayChannel outPay error: '.json_encode($res).' data:'.json_encode($data), 'error');
-            return [
-                'status' => 0,
-                'msg' => $res['message'] ??  $res['returnMessage'] ?? 'Excepção de pagamento, por favor tente de novo mais tarde',
-            ];
+            // 其他错误
+            if (!isset($res['msg']) ) {
+                return [
+                    'status' => 0,
+                    'msg' => $res['message'] ??  $res['returnMessage'] ?? 'Excepção de pagamento, por favor tente de novo mais tarde',
+                ];
+            }
+
+            // 不是 cURL error 28 的错误
+            if (isset($res['msg']) && strpos($res['msg'], 'cURL error 28') === false) {
+                return [
+                    'status' => 0,
+                    'msg' => $res['message'] ??  $res['returnMessage'] ?? 'Excepção de pagamento, por favor tente de novo mais tarde',
+                ];
+            }
         }
         //{
         // "error": false,
