@@ -4,6 +4,7 @@ namespace app\command;
 
 use app\common\model\merchant\Channel;
 use app\common\service\channels\MBPayChannel;
+use MongoDB\BSON\DBPointer;
 use think\console\Command;
 
 class MBChannelQuery extends Command
@@ -60,10 +61,29 @@ class MBChannelQuery extends Command
                     // 只处理失败的
                     if ($result['status'] == 0)  {
                         $output->writeln("Order Order: {$order->order_no} - Query failed, Status: {$result['status']}, Message: {$result['msg']}");
-
-                        // 更新订单状态
                         $out_service = new \app\common\service\OrderOutService();
-                        $out_service->failOrder($order, $result);
+
+                        Db::startTrans();
+                        try {
+                            // 更新订单状态
+                            $out_service->failOrder($order, $result);
+                            Db::commit();
+                        }catch (\Exception $e) {
+                            $output->writeln("Error updating order ID: {$order->id}, Error: " . $e->getMessage());
+                            Db::rollback();
+                            continue; // 跳过当前订单，继续下一个
+                        }
+
+                        // 通知下游
+                        Db::startTrans();
+                        try {
+                            $res = $out_service->notifyDownstream($order->id);
+                            Db::commit();
+                        } catch (\Exception $e) {
+                            Db::rollback();
+                            $output->writeln("Error notifying downstream for order ID: {$order->id}, Error: " . $e->getMessage());
+                        }
+
                     }else{
                         $json = json_encode($result);
                         $output->writeln("Order Order: {$order->order_no} - Query successful, res: {$json}");
