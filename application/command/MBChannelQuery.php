@@ -4,8 +4,9 @@ namespace app\command;
 
 use app\common\model\merchant\Channel;
 use app\common\service\channels\MBPayChannel;
-use MongoDB\BSON\DBPointer;
 use think\console\Command;
+use think\Db;
+
 
 class MBChannelQuery extends Command
 {
