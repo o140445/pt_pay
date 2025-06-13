@@ -168,6 +168,17 @@ class MBPayChannel implements ChannelInterface
         // "recurrence": false,
         // "split": false
         //}
+        // 请求超时
+        if (isset($res['msg']) && strpos($res['msg'], 'cURL error 28:') !== false) {
+            // 重新请求
+            $res = Http::postJson(
+                $url,
+                $data,
+                $header
+            );
+        }
+
+
         if (isset($res['msg']) || isset($res['message']) ||  (isset($res['returnCode']) && $res['returnCode'] != '00')) {
             Log::write('MBPayChannel pay error: '.json_encode($res).' data:'.json_encode($data), 'error');
             return [
@@ -504,5 +515,48 @@ class MBPayChannel implements ChannelInterface
     public function getVoucherUrl($params): string
     {
         return   Config::get('pay_url').'/index/receipt/index?order_id='.$params['order_no'];
+    }
+
+    /**
+     * query order
+     * @param $channel
+     * @param $order_no
+     */
+    public function queryOrder($channel, $order_no): array
+    {
+        $token = $this->getToken($channel, []);
+        if (!$token) {
+            return [
+                'code' => 0,
+                'msg' => '获取token失败',
+            ];
+        }
+
+        $header = [
+            'Authorization' => 'Bearer '.$token,
+            'ApplicationToken' =>  $this->getExtraConfig($channel, 'applicationToken'),
+        ];
+
+        $url = $channel['gateway'].'/transfer/getstatus?CustomId='.$order_no;
+        $res = Http::getJson(
+            $url,
+            $header
+        );
+;
+        Log::write('MBPayChannel queryOrder response: '.json_encode($res).' order_no:'.$order_no, 'info');
+
+        if (isset($res['returnCode']) && $res['returnCode'] != '00') {
+            Log::write('MBPayChannel queryOrder error: '.json_encode($res).' order_no:'.$order_no, 'error');
+            return [
+                'status' => 0,
+                'msg' =>  $res['returnMessage'] ?? 'Excepção de pagamento, por favor tente de novo mais tarde',
+            ];
+        }
+
+        return [
+            'status' => 1, // 状态 1成功 0失败
+            'msg' => '', // 消息
+            'data' => $res, // 响应数据
+        ];
     }
 }
