@@ -95,24 +95,7 @@ class Out extends ManystoreBase
                     $this->error($e->getMessage());
                 }
                 Db::commit();
-
-                Db::startTrans();
-                try {
-                    $res = $orderService->requestChannel($order);
-                    Db::commit();
-                }catch (\Exception $e) {
-                    Db::rollback();
-                    Log::write('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
-                    $this->error($e->getMessage());
-                }
-
-                if ($res['status'] == 1) {
-                    $this->success();
-                } else {
-                    $this->error($res['msg']);
-                }
-
-
+                $this->success();
             }
             $this->error(__('Parameter %s can not be empty', ''));
         }

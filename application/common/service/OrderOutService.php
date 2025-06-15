@@ -110,13 +110,13 @@ class OrderOutService
 //        }
 //
 //        Cache::set($key, 1, 3600);
-//
-//        // 查询数据库是否已经提交
-//        $log = new OrderRequestService();
-//        $is_out = $log->checkRequest($order->order_no, OrderRequestLog::REQUEST_TYPE_REQUEST, OrderRequestLog::ORDER_TYPE_OUT);
-//        if ($is_out){
-//            throw new \Exception('订单已经提交');
-//        }
+
+        // 查询数据库是否已经提交
+        $log = new OrderRequestService();
+        $is_out = $log->checkRequest($order->order_no, OrderRequestLog::REQUEST_TYPE_REQUEST, OrderRequestLog::ORDER_TYPE_OUT);
+        if ($is_out){
+            throw new \Exception('订单已经提交');
+        }
 
         $order = OrderOut::where('id', $order->id)->lock(true)->find();
         if (!$order || $order->status != OrderOut::STATUS_UNPAID){

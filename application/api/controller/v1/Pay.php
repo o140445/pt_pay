@@ -184,15 +184,11 @@ class Pay extends Api
             $this->error($e->getMessage());
         }
 
-        Db::startTrans();
-        try {
-            $res = $orderService->requestChannel($order);
-            Db::commit();
-        }catch (\Exception $e) {
-            Db::rollback();
-            Log::write('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
-            $this->error($e->getMessage());
-        }
+        $res  = [
+            'order_id' => $order->id,
+            'status' => OrderOut::STATUS_UNPAID,
+            'msg' => 'ok',
+        ];
 
         $this->success('返回成功', $res);
     }
