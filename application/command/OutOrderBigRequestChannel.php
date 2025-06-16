@@ -44,6 +44,7 @@ class OutOrderBigRequestChannel extends Command
 
         // 获取所有未处理的订单 100条
         $orderOut = OrderOut::where('status', OrderOut::STATUS_UNPAID)
+            ->where('create_time', '>', date('Y-m-d H:i:s', strtotime('-6 hours'))) // 6小时内的订单
             ->limit(($page - 1) * $limit, $limit)
             ->select();
 
