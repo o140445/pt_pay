@@ -35,7 +35,7 @@ class MBChannelQuery extends Command
             $output->writeln("Processing channel ID: {$channelId}");
 
             // 时间 3分钟前
-            $date = date('Y-m-d H:i:s', strtotime('-3 minutes'));
+            $date = date('Y-m-d H:i:s', strtotime('-1 minutes'));
 
             // 查询该渠道的订单
             $out_orders = \app\common\model\merchant\OrderOut::where('channel_id', $channelId)
