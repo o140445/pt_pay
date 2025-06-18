@@ -169,7 +169,7 @@ class MBPayChannel implements ChannelInterface
         // "split": false
         //}
         // 请求超时
-        if (isset($res['msg']) && strpos($res['msg'], 'cURL error 28:') !== false) {
+        if (isset($res['msg']) && strpos($res['msg'], 'cURL error 7:') !== false) {
             // 重新请求
             $res = Http::postJson(
                 $url,

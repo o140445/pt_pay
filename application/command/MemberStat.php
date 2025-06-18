@@ -20,7 +20,7 @@ class MemberStat extends Command
         $start = date('Y-m-d 00:00:00', strtotime('-1 day'));
         $is_yesterday_key = 'member_stat_' . date('Y-m-d', strtotime('-1 day'));
         $is_yesterday = cache($is_yesterday_key);
-        if ($is_yesterday >= 12) {
+        if ($is_yesterday >= 15) {
             $start = date('Y-m-d 00:00:00');
         }else{
            if (empty($is_yesterday)) {
@@ -124,7 +124,7 @@ class MemberStat extends Command
 
         $output->writeln('会员统计完成');
 
-        if ($is_yesterday <= 12) {
+        if ($is_yesterday <= 15) {
             cache($is_yesterday_key, $is_yesterday, 86400);
         }
     }
