@@ -2,6 +2,7 @@
 
 namespace fast;
 
+use app\common\service\HttpClientService;
 use think\Exception;
 
 /**
@@ -194,34 +195,30 @@ class Http
      */
     public static function postJson($url, $data = [], $header = [])
     {
-        // json
         $header = array_merge([
             'Content-Type' => 'application/json',
+            'Connection'   => 'keep-alive', // 推荐添加
         ], $header);
-        try {
-            $client = new \GuzzleHttp\Client();
 
-            if ($header['Content-Type'] == 'application/json') {
+        try {
+            $client = HttpClientService::getClient(); // ✅ 使用共享 Guzzle 实例
+
+            if ($header['Content-Type'] === 'application/json') {
                 $response = $client->request('POST', $url, [
                     'headers' => $header,
                     'json' => $data,
-                    'timeout' => 10,
-                    'connect_timeout' => 10,
                 ]);
-
             } else {
                 $response = $client->request('POST', $url, [
-                    'headers' => $header,
+                    'headers'     => $header,
                     'form_params' => $data,
-                    'timeout' => 10,
-                    'connect_timeout' => 10,
                 ]);
             }
-        }catch (\GuzzleHttp\Exception\ClientException $e) {
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
             $response = $e->getResponse();
             $responseBodyAsString = $response->getBody()->getContents();
             return json_decode($responseBodyAsString, true);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return ['code' => 0, 'msg' => $e->getMessage()];
         }
 
