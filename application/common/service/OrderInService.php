@@ -11,6 +11,7 @@ use app\common\model\merchant\OrderNotifyLog;
 use app\common\model\merchant\OrderRequestLog;
 use app\common\model\merchant\Profit;
 use fast\Http;
+use think\Cache;
 use think\Log;
 
 class OrderInService
@@ -397,6 +398,14 @@ class OrderInService
 
             return $order->save();
         }
+
+        // 当前状态是否正在发送
+        $key = 'order_notify_' . $order->id . '_' . $order->status;
+        if (Cache::get($key)){
+            throw new \Exception('订单通知正在进行中，请稍后再试');
+        }
+        // 设置锁
+        Cache::set($key, 1, 10);
 
         $data = [
             'order_no' => $order->order_no,
