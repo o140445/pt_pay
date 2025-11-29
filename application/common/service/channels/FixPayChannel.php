@@ -64,8 +64,8 @@ class FixPayChannel implements ChannelInterface
             'description' => 'int',
             'payAmount' => $params['amount'],
             'mobile' => '12345678901',
-            'name' => 'tikpay',
-            'email' => 'tikpay@gmail.com',
+            'name' => 'happay',
+            'email' => 'happay@gmail.com',
             'notifyUrl' => $this->getNotifyUrl($channel, "innotify"),
             'returnUrl' => $this->getNotifyUrl($channel, "inreturn"),
         ];
@@ -112,7 +112,7 @@ class FixPayChannel implements ChannelInterface
     public function outPay($channel, $params): array
     {
         $mobile = '12345678901';
-        $email = 'tikpay@gmail.com';
+        $email = 'happay@gmail.com';
         $extra = json_decode($params['extra'], true);
 
         // 如果是电话号码 并且是电话号码没有+55
@@ -129,7 +129,7 @@ class FixPayChannel implements ChannelInterface
             'email' => $email,
             'bankNumber' =>  $extra['pix_key'],
             'bankCode' => $extra['pix_type'],
-            'accountHoldName' => $extra['pix_name'] ?? 'tikpay',
+            'accountHoldName' => $extra['pix_name'] ?? 'happay',
             'notifyUrl' => $this->getNotifyUrl($channel, "outnotify"),
        ];
         $data['sign'] = $this->sign($data, $channel['mch_key']);

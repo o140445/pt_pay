@@ -18,8 +18,10 @@ return [
     '__pattern__' => [
     ],
 //        域名绑定到模块
-//        '__domain__'  => [
-//            'admin' => 'admin',
-//            'api'   => 'api',
-//        ],
+        '__domain__'  => [
+            'admin' => 'admin',
+            'api'   => 'api',
+            'mch' => 'manystore',
+            'www'   => 'index',
+        ],
 ];

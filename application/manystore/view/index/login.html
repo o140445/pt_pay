@@ -1,89 +1,226 @@
 <!DOCTYPE html>
-<html lang="{$config.language}">
+<html lang="pt-BR">
 <head>
     {include file="common/meta" /}
 
-    <style type="text/css">
+    <style>
+        /* accessible visually-hidden helper (Bootstrap-like) */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            border: 0;
+        }
+
         body {
-            color: #999;
-            background-color: #f1f4fd;
-            background-size: cover;
+            color: #444;
+            background: linear-gradient(135deg, #eef2ff 0%, #f7fbff 100%);
+            background-attachment: fixed;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
         }
 
         a {
-            color: #444;
+            color: #5569ff;
         }
 
 
         .login-screen {
-            max-width: 430px;
+            width: 100%;
+            max-width: 420px;
             padding: 0;
-            margin: 100px auto 0 auto;
-
+            margin: 40px auto;
         }
 
         .login-screen .well {
-            border-radius: 3px;
-            -webkit-box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
-            background: rgba(255, 255, 255, 1);
-            border: none;
-            overflow: hidden;
+            border-radius: 12px;
+            -webkit-box-shadow: 0 10px 30px rgba(18, 38, 63, 0.08);
+            box-shadow: 0 10px 30px rgba(18, 38, 63, 0.08);
+            background: rgba(255, 255, 255, 0.96);
+            /* removed redundant 'border: none;' to avoid overwrite warnings */
             padding: 0;
+            overflow: hidden;
+            border: 1px solid rgba(85, 105, 255, 0.06);
         }
 
         @media (max-width: 767px) {
             .login-screen {
                 padding: 0 20px;
+                margin-top: 20px;
             }
         }
 
         .profile-img-card {
-            width: 100px;
-            height: 100px;
+            width: 88px;
+            height: 88px;
             display: block;
-            -moz-border-radius: 50%;
-            -webkit-border-radius: 50%;
             border-radius: 50%;
-            margin: -93px auto 30px;
-            border: 5px solid #fff;
+            margin: -66px auto 18px;
+            border: 4px solid rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.6);
         }
 
         .profile-name-card {
             text-align: center;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #2b3a67;
         }
 
         .login-head {
-            background: #899fe1;
+            background: linear-gradient(90deg, #5569ff 0%, #708eea 100%);
+            border-radius: 12px 12px 0 0;
+            padding: 28px 20px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .login-head h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        .login-head p {
+            margin: 6px 0 0;
+            font-size: 13px;
+            opacity: 0.95;
         }
 
         .login-form {
-            padding: 40px 30px;
+            padding: 26px 22px 30px;
             position: relative;
-            z-index: 99;
+            z-index: 9;
         }
 
         #login-form {
-            margin-top: 20px;
+            margin-top: 6px;
         }
 
         #login-form .input-group {
-            margin-bottom: 15px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            gap: 8px;
+            flex-wrap: nowrap; /* keep each group on one line */
         }
 
+        /* default input styling (works for inputs with or without addon) */
         #login-form .form-control {
-            font-size: 13px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: 1px solid #e6ecff;
+            padding: 10px 12px;
+            box-shadow: none;
+            flex: 1 1 auto; /* allow input to grow and fill the row */
+            min-width: 0; /* prevent overflow in flex layouts */
+        }
+
+        .input-group-addon {
+            background: #f6f8ff;
+            border: 1px solid #e6ecff;
+            color: #5569ff;
+            width: 44px;
+            flex: 0 0 44px; /* keep addon fixed width */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px 0 0 6px;
+            padding: 8px 6px;
+        }
+
+        /* If an addon precedes the input, remove left radius on the input */
+        .input-group-addon + .form-control {
+            border-radius: 0 6px 6px 0;
+            margin-left: -1px;
+        }
+
+        .input-group .input-group-addon img {
+            display: block;
+            border-radius: 4px;
+        }
+
+        .btn-success {
+            background: #5569ff;
+            border: none;
+            padding: 12px 14px;
+            font-size: 15px;
+            border-radius: 8px;
+            width: 100%;
+            box-shadow: 0 8px 22px rgba(85,105,255,0.14);
+        }
+
+        .btn-success:hover {
+            background: #3f55e6;
+            color: #fff;
+        }
+
+        .form-group.checkbox label.inline {
+            color: #6b7280;
+        }
+
+        #errtips.hide {
+            display: none;
+        }
+
+        /* subtle responsive tweaks */
+        @media (max-width: 480px) {
+            .login-head { padding: 18px 14px; }
+            .login-form { padding: 18px 14px; }
+            .profile-img-card { width: 72px; height: 72px; margin-top: -56px; }
+        }
+
+        /* captcha 60/40 layout (approx 6/4). stacks on small screens */
+        .captcha-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .captcha-left {
+            flex: 0 0 60%;
+        }
+        .captcha-right {
+            flex: 0 0 40%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        @media (max-width: 576px) {
+            .captcha-row { flex-direction: column; }
+            .captcha-left, .captcha-right { flex: 0 0 100%; justify-content: flex-start; }
+            .captcha-right { margin-top: 8px; }
+        }
+
+        /* adjust captcha-row children sizing: input 60%, addon 40% */
+        .captcha-row > input[type="text"] {
+            flex: 0 0 60%;
+        }
+        .captcha-row > .input-group-addon {
+            flex: 0 0 40%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        @media (max-width: 576px) {
+            .captcha-row > input[type="text"], .captcha-row > .input-group-addon { flex: 0 0 100%; }
+            .captcha-row > .input-group-addon { justify-content: flex-start; margin-top:8px; }
         }
 
     </style>
-    <!--@formatter:off-->
-    {if $background}
-    <style type="text/css">
-        body{
-            background-image: url('{$background}');
-        }
-    </style>
-    {/if}
+    <title>HAPPAY - Login</title>
     <!--@formatter:on-->
 </head>
 <body>
@@ -92,36 +229,39 @@
         <div class="login-screen">
             <div class="well">
                 <div class="login-head">
-                    <img src="__CDN__/assets/img/login-head.png" style="width:100%;"/>
+                    <h2>HAPPAY 商户后台</h2>
+                    <p>欢迎</p>
                 </div>
                 <div class="login-form">
-                    <img id="profile-img" class="profile-img-card" src="__CDN__/assets/img/avatar.png"/>
                     <p id="profile-name" class="profile-name-card"></p>
 
                     <form action="" method="post" id="login-form">
+                        <!--@AdminLoginFormBegin-->
                         <div id="errtips" class="hide"></div>
                         {:token()}
                         <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></div>
+                            <label class="sr-only" for="pd-form-username">{:__('Username')}</label>
                             <input type="text" class="form-control" id="pd-form-username" placeholder="{:__('Username')}" name="username" autocomplete="off" value="" data-rule="{:__('Username')}:required;username"/>
                         </div>
 
                         <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></div>
+                            <label class="sr-only" for="pd-form-password">{:__('Password')}</label>
                             <input type="password" class="form-control" id="pd-form-password" placeholder="{:__('Password')}" name="password" autocomplete="off" value="" data-rule="{:__('Password')}:required;password"/>
                         </div>
+                        <!--@CaptchaBegin-->
                         {if $Think.config.fastadmin.login_captcha}
-                        <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-option-horizontal" aria-hidden="true"></span></div>
-                            <input type="text" name="captcha" class="form-control" placeholder="{:__('Captcha')}" data-rule="{:__('Captcha')}:required;length(4)"/>
+                        <div class="form-group captcha-row">
+                            <label class="sr-only" for="captcha">{:__('Captcha')}</label>
+                            <input type="text" id="captcha" name="captcha" class="form-control" placeholder="{:__('Captcha')}" data-rule="{:__('Captcha')}:required;length({$Think.config.captcha.length})" autocomplete="off" />
                             <span class="input-group-addon" style="padding:0;border:none;cursor:pointer;">
-                                        <img src="{:rtrim('__PUBLIC__', '/')}/index.php?s=/captcha" width="100" height="30" onclick="this.src = '{:rtrim('__PUBLIC__', '/')}/index.php?s=/captcha&r=' + Math.random();"/>
-                                    </span>
+                                <img id="captcha-img" src="{:rtrim('__PUBLIC__', '/')}/index.php?s=/captcha" data-src="{:rtrim('__PUBLIC__', '/')}/index.php?s=/captcha&r=" alt="captcha" width="100" height="30" style="cursor:pointer;border:0;" />
+                            </span>
                         </div>
                         {/if}
+                        <!--@CaptchaEnd-->
                         <div class="form-group checkbox">
-                            <label class="inline" for="keeplogin">
-                                <input type="checkbox" name="keeplogin" id="keeplogin" value="1"/>
+                            <label class="inline" for="keeplogin" >
+                                <input type="checkbox" name="keeplogin" id="keeplogin" value="2"/>
                                 {:__('Keep login')}
                             </label>
                         </div>

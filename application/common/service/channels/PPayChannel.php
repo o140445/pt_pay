@@ -11,9 +11,9 @@ use think\Log;
 class PPayChannel implements ChannelInterface
 {
 
-    const CUSTOMER_NAME = 'tikpay';
+    const CUSTOMER_NAME = 'happay';
 
-    const CUSTOMER_EMAIL = 'tikpay@gmail.com';
+    const CUSTOMER_EMAIL = 'happay@gmail.com';
 
     const CUSTOMER_PHONE = '1234567890';
     
