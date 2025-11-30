@@ -31,7 +31,6 @@ class SignatureValidator implements ValidatorInterface
             'amount' => $data['amount'],
             'product_id' => $data['product_id'],
             'notify_url' => $data['notify_url'],
-            'nonce' => $data['nonce'],
             'sign' => $data['sign'],
         ];
 

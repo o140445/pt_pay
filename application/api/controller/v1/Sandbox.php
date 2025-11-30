@@ -26,8 +26,7 @@ class Sandbox extends Api
             empty($params['product_id']) ||
             empty($params['merchant_order_no']) ||
             empty($params['sign']) ||
-            empty($params['notify_url']) ||
-            empty($params['nonce'])) {
+            empty($params['notify_url'])) {
             $this->error('参数错误');
         }
 
@@ -54,7 +53,6 @@ class Sandbox extends Api
             empty($params['merchant_order_no']) ||
             empty($params['sign']) ||
             empty($params['notify_url']) ||
-            empty($params['nonce']) ||
             empty($params['extra'])) {
             $this->error('参数错误');
         }

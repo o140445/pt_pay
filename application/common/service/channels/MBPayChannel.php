@@ -187,7 +187,7 @@ class MBPayChannel implements ChannelInterface
             ];
         }
 
-        $pay_url = Config::get('pay_url') . '/index/pay/index?order_id=' . $params['order_no'];
+        $pay_url = Config::get('pay_url') . '/pay/index?order_id=' . $params['order_no'];
 
         return [
             'status' => 1, // 状态 1成功 0失败
@@ -204,7 +204,7 @@ class MBPayChannel implements ChannelInterface
 
     public function getNotifyUrl($channel, $type)
     {
-        return Config::get('pay_url') . '/api/v1/pay/' . $type . '/code/' . $channel['sign'];
+        return Config::get('notify_url') . '/api/v1/pay/' . $type . '/code/' . $channel['sign'];
     }
 
     public function outPay($channel, $params): array
@@ -223,12 +223,12 @@ class MBPayChannel implements ChannelInterface
         }
 
         $pix_type = 1;
-        //idTipoChavePIX 转换 CNPJ/CPF/PHONE/EMAIL/CHAVE_ALEATORIA)
+        //idTipoChavePIX 转换 CNPJ/CPF/PHONE/EMAIL/EVP)
         if ($extra['pix_type'] == "PHONE") {
             $pix_type = 2;
         } elseif ($extra['pix_type'] == "EMAIL") {
             $pix_type = 3;
-        } elseif ($extra['pix_type'] == "CHAVE_ALEATORIA") {
+        } elseif ($extra['pix_type'] == "EVP") {
             $pix_type = 4;
         }
 

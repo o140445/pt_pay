@@ -38,7 +38,6 @@ class Pay extends Api
      * @ApiParams (name="merchant_order_no", type="string", required=true, description="商户订单号")
      * @ApiParams (name="sign", type="string", required=true, description="签名")
      * @ApiParams (name="notify_url", type="string", required=true, description="回调地址")
-     * @ApiParams (name="nonce", type="string", required=true, description="随机字符串")
      * @ApiReturnParams   (name="code", type="integer", required=true, sample="0")
      * @ApiReturnParams   (name="msg", type="string", required=true, sample="返回成功")
      * @ApiReturnParams   (name="data", type="object", sample="{'order_id':'int','pay_url':'string', 'status':'int'}", description="订单ID和支付链接")

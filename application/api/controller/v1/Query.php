@@ -23,7 +23,7 @@ class Query extends Api
         }
 
         $params = $this->request->post();
-        if (empty($params['merchant_order_no']) || empty($params['sign']) || empty($params['nonce']) || empty($params['merchant_id'])) {
+        if (empty($params['merchant_order_no']) || empty($params['sign']) || empty($params['merchant_id'])) {
             $this->error('参数错误');
         }
         try {
@@ -52,7 +52,7 @@ class Query extends Api
         }
 
         $params = $this->request->post();
-        if (empty($params['merchant_order_no']) || empty($params['sign']) || empty($params['nonce']) || empty($params['merchant_id'])) {
+        if (empty($params['merchant_order_no']) || empty($params['sign']) ||  empty($params['merchant_id'])) {
             $this->error('参数错误');
         }
         try {
@@ -80,7 +80,7 @@ class Query extends Api
         }
 
         $params = $this->request->post();
-        if (empty($params['merchant_id']) || empty($params['sign']) || empty($params['nonce'])) {
+        if (empty($params['merchant_id']) || empty($params['sign'])) {
             $this->error('参数错误');
         }
         try {
@@ -106,7 +106,7 @@ class Query extends Api
         }
 
         $params = $this->request->post();
-        if (empty($params['merchant_id']) || empty($params['sign']) || empty($params['nonce']) || empty($params['merchant_order_no'])) {
+        if (empty($params['merchant_id']) || empty($params['sign']) ||  empty($params['merchant_order_no'])) {
             $this->error('参数错误');
         }
         try {

@@ -115,6 +115,7 @@ class OrderInService
             'merchant_order_no' => $order->member_order_no,
             'amount' => $order->amount,
             'pay_url' => $res['pay_url'],
+            'pix_code' => $res['pix_code'],
             'status' => $order->status,
             'msg' => $res['msg'],
         ];

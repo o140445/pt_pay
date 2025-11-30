@@ -1,10 +1,10 @@
 <?php
 
 return array (
-  'name' => 'HapPay',
+  'name' => 'HAPPAY',
   'beian' => '',
   'cdnurl' => '',
-  'version' => '1.0.1',
+  'version' => '1.0.4',
   'timezone' => 'Asia/Shanghai',
   'forbiddenip' => '',
   'languages' => 
@@ -28,12 +28,6 @@ return array (
     'user' => 'User',
     'example' => 'Example',
   ),
-  'attachmentcategory' => 
-  array (
-    'category1' => 'Category1',
-    'category2' => 'Category2',
-    'custom' => 'Custom',
-  ),
   'mail_type' => '1',
   'mail_smtp_host' => 'smtp.qq.com',
   'mail_smtp_port' => '465',
@@ -41,4 +35,10 @@ return array (
   'mail_smtp_pass' => '',
   'mail_verify_type' => '2',
   'mail_from' => '',
+  'attachmentcategory' => 
+  array (
+    'category1' => 'Category1',
+    'category2' => 'Category2',
+    'custom' => 'Custom',
+  ),
 );
