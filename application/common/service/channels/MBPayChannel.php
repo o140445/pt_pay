@@ -204,7 +204,7 @@ class MBPayChannel implements ChannelInterface
 
     public function getNotifyUrl($channel, $type)
     {
-        return Config::get('notify_url') . '/api/v1/pay/' . $type . '/code/' . $channel['sign'];
+        return Config::get('notify_url') . '/v1/pay/' . $type . '/code/' . $channel['sign'];
     }
 
     public function outPay($channel, $params): array
