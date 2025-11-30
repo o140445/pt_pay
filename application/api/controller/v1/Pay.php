@@ -192,7 +192,7 @@ class Pay extends Api
             $res = $orderService->requestChannel($order);
             Db::commit();
 
-            if (!isset($res['msg'])){
+            if (isset($res['msg'])){
                 $this->error($res['msg']); 
             }
 

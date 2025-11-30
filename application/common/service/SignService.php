@@ -53,7 +53,6 @@ class SignService
         $sign = $params['sign'];
         unset($params['sign']);
         $newSign = $this->makeSign($params, $secret);
-        return  true;
         return $sign == $newSign;
     }
 
