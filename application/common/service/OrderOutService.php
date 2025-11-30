@@ -126,6 +126,17 @@ class OrderOutService
         $channelService = new PaymentService($channel->code);
         $res = $channelService->outPay($channel, $order);
 
+         // 写入请求日志
+         $log = new OrderRequestService();
+         $log->create(
+             $order->order_no,
+             OrderRequestLog::REQUEST_TYPE_REQUEST,
+             OrderRequestLog::ORDER_TYPE_OUT,
+             $res['request_data'],
+             $res['response_data']);
+
+             
+
         if ($res['status'] == OrderInService::CHANNEL_RES_STATUS_SUCCESS) {
             $order->status = OrderOut::STATUS_PAYING;
             $order->channel_order_no = $res['order_id'] ?? '';
@@ -141,26 +152,18 @@ class OrderOutService
             $feeService = new FreezeService();
             $feeService->unfreeze(MemberWalletModel::CHANGE_TYPE_PAY_UNFREEZE, '', $order->order_no, '代付解冻');
             return [
-                'order_no' => $order->order_no,
-                'status' => $order->status,
                 'msg' => $res['msg'],
             ];
         }
 
 
-        // 写入请求日志
-        $log = new OrderRequestService();
-        $log->create(
-            $order->order_no,
-            OrderRequestLog::REQUEST_TYPE_REQUEST,
-            OrderRequestLog::ORDER_TYPE_OUT,
-            $res['request_data'],
-            $res['response_data']);
+       
 
         return [
             'order_no' => $order->order_no,
+            'merchant_order_no' => $order->member_order_no,
+            'amount' => $order->amount,
             'status' => OrderOut::STATUS_UNPAID,
-            'msg' => $res['msg'],
         ];
     }
 

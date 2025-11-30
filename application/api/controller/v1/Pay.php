@@ -64,8 +64,7 @@ class Pay extends Api
             empty($params['product_id']) ||
             empty($params['merchant_order_no']) ||
             empty($params['sign']) ||
-            empty($params['notify_url']) ||
-            empty($params['nonce'])) {
+            empty($params['notify_url'])) {
             $this->error('Parameter error');
         }
 
@@ -90,6 +89,9 @@ class Pay extends Api
             Log::write('代收请求失败：error 1 ' . $e->getMessage() .', data:' . json_encode($params), 'error');
             $this->error($e->getMessage());
         }
+
+        Db::commit();
+        Cache::rm($lock);
 
         try {
             $res = $orderService->requestChannel($order);
@@ -158,7 +160,6 @@ class Pay extends Api
             empty($params['merchant_order_no']) ||
             empty($params['sign']) ||
             empty($params['notify_url']) ||
-            empty($params['nonce']) ||
             empty($params['extra'])) {
             $this->error('Parameter error');
         }
@@ -183,12 +184,24 @@ class Pay extends Api
             Log::write('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
             $this->error($e->getMessage());
         }
+        Db::commit();
+        Cache::rm($lock);
 
-        $res  = [
-            'order_id' => $order->id,
-            'status' => OrderOut::STATUS_UNPAID,
-            'msg' => 'ok',
-        ];
+
+        Db::startTrans();
+        try {
+            $res = $orderService->requestChannel($order);
+            Db::commit();
+
+            if (!isset($res['msg'])){
+                $this->error($res['msg']); 
+            }
+
+        }catch (\Exception $e) {
+            Db::rollback();
+            Log::write('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
+            $this->error($e->getMessage());
+        }
 
         $this->success('返回成功', $res);
     }

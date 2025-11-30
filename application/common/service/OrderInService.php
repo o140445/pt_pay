@@ -112,6 +112,8 @@ class OrderInService
 
         return [
             'order_no' => $order->order_no,
+            'merchant_order_no' => $order->member_order_no,
+            'amount' => $order->amount,
             'pay_url' => $res['pay_url'],
             'status' => $order->status,
             'msg' => $res['msg'],

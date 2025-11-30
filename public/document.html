@@ -9,17 +9,17 @@
     <title>Happay</title>
 
     <!-- Bootstrap Core CSS -->
-    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/twitter-bootstrap/3.4.1/css/bootstrap.min.css"
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
     <!-- Plugin CSS -->
-    <link href="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/4.7.0/css/font-awesome.min.css"
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css"
           rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
-    <script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/respond.js/1.4.2/respond.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
     <![endif]-->
 
     <style type="text/css">
@@ -225,7 +225,7 @@
             </div>
             <div id="collapseOne0" class="panel-collapse collapse">
                 <div class="panel-body">
-                    请求域名：https://www.tikpaysp.com
+                    请求域名：https://api.happay.pro
                     <br>
                     请求数据格式：application/json
                     <br>
@@ -257,8 +257,7 @@
     "merchant_id":"90001",
     "product_id":"1001",
     "merchant_order_no":"112370",
-    "notify_url":"https://www.xxx.com/api/v1/notify",
-    "nonce":"11",
+    "notify_url":"https://www.xxx.com/v1/notify",
     "extra":{
         "pix_key":"PiterXXXX0@gmail.com",
         "pix_type":"EMAIL",
@@ -266,7 +265,7 @@
     },
     "sign":"8F526D51D78D9A362C42F870D2B88724"
 }
-"amount=5&merchant_id=90001&merchant_order_no=112370&nonce=11&notify_url=https://www.xxx.com/api/v1/notify
+"amount=5&merchant_id=90001&merchant_order_no=112370&nonce=11&notify_url=https://www.xxx.com/v1/notify
 &product_id=1001&pix_key=PiterXXXX0@gmail.com&pix_name=ss&pix_type=EMAIL"
 </pre>
 
@@ -283,7 +282,7 @@
                 <h4 class="panel-title">
                     <span class="label label-primary">POST</span>
                     <a data-toggle="collapse" data-parent="#accordion0" href="#collapseOne2"> 代收接口 <span
-                            class="text-muted">/api/v2/pay/in</span></a>
+                            class="text-muted">/v1/pay/in</span></a>
                 </h4>
             </div>
             <div id="collapseOne2" class="panel-collapse collapse">
@@ -296,9 +295,9 @@
                         <div class="tab-pane active" id="info0">
                             <div class="panel panel-default">
                                 <div class="panel-body">
-                                    正式环境地址：/api/v2/pay/in
+                                    正式环境地址：/v1/pay/in
                                     <br>
-                                    沙盒环境地址：/api/v1/sandbox/in
+                                    沙盒环境地址：/v1/sandbox/in
                                     <br>
                                     沙盒模式自动回调下小于等于10元的订单会返回支付成功,大于10元的订单会返回支付失败
                                 </div>
@@ -369,12 +368,6 @@
                                             <td>是</td>
                                             <td>回调地址</td>
                                         </tr>
-                                        <tr>
-                                            <td>nonce</td>
-                                            <td>string</td>
-                                            <td>是</td>
-                                            <td>随机字符串(不超过32位)</td>
-                                        </tr>
 
                                         <tr>
                                             <td>sign</td>
@@ -396,7 +389,6 @@
     "product_id":123,
     "merchant_order_no":"20241113164057",
     "notify_url":"https://www.xxxxx.com/api/pay/notify/20241113164057",
-    "nonce":"2024sdwq",
     "sign":"C9D309103969180831CF998A49BDCDDD",
 }</pre>
                                 </div>
@@ -441,6 +433,20 @@
                                         <td>订单号</td>
                                     </tr>
                                     <tr>
+                                        <td>merchant_order_no</td>
+                                        <td>string</td>
+                                        <td>是</td>
+                                        <td>商户订单号</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>amount</td>
+                                        <td>string</td>
+                                        <td>是</td>
+                                        <td>支付金额</td>
+                                    </tr>
+
+                                    <tr>
                                         <td>pay_url</td>
                                         <td>string</td>
                                         <td>是</td>
@@ -473,6 +479,8 @@
     "msg": "返回成功",
     "data": {
         "order_no": "DI20250504093110Uf2FUe",
+        "merchant_order_no": "20241113164057",
+        "amount": "10.11",
         "pay_url": "https://www.xxxxx.com/pay?order_id=DI20250504093110Uf2FUe",
         "status": 1,
         "msg": "",
@@ -493,7 +501,7 @@
                 <h4 class="panel-title">
                     <span class="label label-primary">POST</span>
                     <a data-toggle="collapse" data-parent="#accordion0" href="#collapseOne3"> 代付接口 <span
-                            class="text-muted">/api/v1/pay/out</span></a>
+                            class="text-muted">/v1/pay/out</span></a>
                 </h4>
             </div>
             <div id="collapseOne3" class="panel-collapse collapse">
@@ -504,9 +512,9 @@
                     <div class="tab-content">
                         <div class="panel panel-default">
                             <div class="panel-body">
-                                正式环境地址：/api/v1/pay/out
+                                正式环境地址：/v1/pay/out
                                 <br>
-                                沙盒环境地址：/api/v1/sandbox/out
+                                沙盒环境地址：/v1/sandbox/out
                                 <br>
                                 沙盒模式下自动回调小于等于10元的订单会返回支付成功,大于10元的订单会返回支付失败
                             </div>
@@ -578,12 +586,6 @@
                                             <td>是</td>
                                             <td>回调地址</td>
                                         </tr>
-                                        <tr>
-                                            <td>nonce</td>
-                                            <td>string</td>
-                                            <td>是</td>
-                                            <td>随机字符串(不超过32位)</td>
-                                        </tr>
 
                                         <tr>
                                             <td>extra</td>
@@ -607,7 +609,7 @@
                                             <td>extra.pix_type</td>
                                             <td>string</td>
                                             <td>是</td>
-                                            <td>PIX类型 (CNPJ/CPF/PHONE/EMAIL/CHAVE_ALEATORIA)</td>
+                                            <td>PIX类型 (CNPJ/CPF/PHONE/EMAIL/EVP)</td>
                                         </tr>
                                         <tr>
                                             <td>sign</td>
@@ -628,7 +630,6 @@
     "product_id":123,
     "merchant_order_no":"112353",
     "notify_url":"https://www.xxxxx.com/api/pay/notify/20241113164057",
-    "nonce":"11",
     "extra":{
         "pix_key":"dhah@gmail.com",
         "pix_name":"test",
@@ -678,11 +679,24 @@
                                         <td>订单号</td>
                                     </tr>
                                     <tr>
+                                        <td>merchant_order_no</td>
+                                        <td>string</td>
+                                        <td>是</td>
+                                        <td>商户订单号</td>
+                                    </tr>
+                                    <tr>
+                                        <td>amount</td>
+                                        <td>string</td>
+                                        <td>是</td>
+                                        <td>支付金额</td>
+                                    </tr>
+                                    <tr>
                                         <td>status</td>
                                         <td>int</td>
                                         <td>是</td>
                                         <td>支付状态 1支付中 2成功 3失败 4退款</td>
                                     </tr>
+
                                     </tbody>
                                 </table>
                             </div>
@@ -698,6 +712,8 @@
     "msg": "OK",
     "data": {
         "order_no": "DO20241113002649fzLDNr",
+        "merchant_order_no": "20241113164057",
+        "amount": "10.11",
         "status": 1,
     }
 }</pre>
@@ -863,9 +879,9 @@
                         <div class="tab-pane active" id="info5">
                             <div class="panel panel-default">
                                 <div class="panel-body">
-                                代收查询地址：/api/v1/query/in
+                                代收查询地址：/v1/query/in
                                 <br>
-                                代付查询地址：/api/v1/query/out
+                                代付查询地址：/v1/query/out
                                 </div>
                             </div>
                             <div class="panel panel-default">
@@ -1056,7 +1072,7 @@
                 <h4 class="panel-title">
                     <span class="label label-primary">POST</span>
                     <a data-toggle="collapse" data-parent="#accordion0" href="#collapseOne6"> 余额查询<span
-                            class="text-muted">/api/v1/query/balance</span></a>
+                            class="text-muted">/v1/query/balance</span></a>
                 </h4>
             </div>
             <div id="collapseOne6" class="panel-collapse collapse">
@@ -1223,10 +1239,10 @@
     </div> <!-- /container -->
 
     <!-- jQuery -->
-    <script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
 
     <script type="text/javascript">
         function syntaxHighlight(json) {

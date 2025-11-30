@@ -195,6 +195,7 @@ class MBPayChannel implements ChannelInterface
             'order_id' => $res['id'], // 订单号
             'e_no' => '',
             'pay_url' => $pay_url, // 支付地址
+            'pix_code' => $res['qrCodeString'] ?? '', // pix code
             'request_data' => json_encode($data), // 请求数据
             'response_data' => json_encode($res), // 响应数据
         ];
