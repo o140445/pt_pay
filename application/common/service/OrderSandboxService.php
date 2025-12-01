@@ -38,6 +38,8 @@ class OrderSandboxService
 
         return [
             'order_no' => $order->order_no,
+            'merchant_order_no' => $order->member_order_no,
+            'amount' => $order->amount,
             'pay_url' => "test_url",
             'status' => $order->status,
             'pix_code' => '',
@@ -79,8 +81,9 @@ class OrderSandboxService
 
         return [
             'order_no' => $order->order_no,
+            'merchant_order_no' => $order->member_order_no,
+            'amount' => $order->amount,
             'status' => $order->status,
-            'msg' => $order['msg'],
         ];
     }
 
