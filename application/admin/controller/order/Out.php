@@ -128,7 +128,7 @@ class Out extends Backend
             }
 
             //$order->status != OrderOut::STATUS_UNPAID
-            if (!in_array($order->status, [OrderOut::STATUS_UNPAID, OrderOut::STATUS_UNPAID])) {
+            if (!in_array($order->status, [OrderOut::STATUS_UNPAID, OrderOut::STATUS_UNPAID, OrderOut::STATUS_PAID])) {
                 throw new \Exception('订单状态不正确');
             }
 
