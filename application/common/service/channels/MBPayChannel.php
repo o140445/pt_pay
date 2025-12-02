@@ -420,7 +420,7 @@ class MBPayChannel implements ChannelInterface
 
         return [
             'order_no' => $params['customId'],
-            'channel_no' => $params['transactionCode'] ?? '',
+            'channel_no' => $params['transactionId'] ?? '',
             'amount' =>  number_format($params['amount'] / 100, 2, '.', ''),
             'pay_date' => date('Y-m-d H:i:s'),
             'status' => $status,

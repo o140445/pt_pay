@@ -126,17 +126,6 @@ class OrderOutService
         $channelService = new PaymentService($channel->code);
         $res = $channelService->outPay($channel, $order);
 
-         // 写入请求日志
-         $log = new OrderRequestService();
-         $log->create(
-             $order->order_no,
-             OrderRequestLog::REQUEST_TYPE_REQUEST,
-             OrderRequestLog::ORDER_TYPE_OUT,
-             $res['request_data'],
-             $res['response_data']);
-
-             
-
         if ($res['status'] == OrderInService::CHANNEL_RES_STATUS_SUCCESS) {
             $order->status = OrderOut::STATUS_PAYING;
             $order->channel_order_no = $res['order_id'] ?? '';
@@ -156,7 +145,14 @@ class OrderOutService
             ];
         }
 
-
+        // 写入请求日志
+        $log = new OrderRequestService();
+        $log->create(
+            $order->order_no,
+            OrderRequestLog::REQUEST_TYPE_REQUEST,
+            OrderRequestLog::ORDER_TYPE_OUT,
+            $res['request_data'],
+            $res['response_data']);
        
 
         return [
