@@ -298,7 +298,7 @@ class OrderOutService
      */
     public function completeOrder($order, $data)
     {
-        if (!in_array($order->status, [OrderOut::STATUS_UNPAID, OrderOut::STATUS_UNPAID])) {
+        if (!in_array($order->status, [OrderOut::STATUS_UNPAID, OrderOut::STATUS_PAYING])) {
             throw new \Exception('订单状态不正确');
         }
 
@@ -331,7 +331,7 @@ class OrderOutService
      */
     public function failOrder($order, $data)
     {
-        if (!in_array($order->status, [OrderOut::STATUS_UNPAID, OrderOut::STATUS_UNPAID])) {
+        if (!in_array($order->status, [OrderOut::STATUS_UNPAID, OrderOut::STATUS_PAYING])) {
             throw new \Exception('订单状态不正确');
         }
 
