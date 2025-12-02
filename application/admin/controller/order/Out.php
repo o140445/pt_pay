@@ -127,7 +127,8 @@ class Out extends Backend
                 throw new \Exception('密码错误');
             }
 
-            if ($order->status != OrderOut::STATUS_UNPAID && $order->status != OrderOut::STATUS_PAID && $order->status != OrderOut::STATUS_PAYING) {
+            //$order->status != OrderOut::STATUS_UNPAID
+            if (!in_array($order->status, [OrderOut::STATUS_UNPAID, OrderOut::STATUS_UNPAID])) {
                 throw new \Exception('订单状态不正确');
             }
 
