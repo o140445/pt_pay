@@ -15,7 +15,7 @@ class BotService
     {
         // 先查询是否已经绑定
         $existingBind = RobotBind::where('bot_id', $bot_id)
-            ->first();
+            ->find();
 
         if ($existingBind) {
             // 已经绑定，更新记录
@@ -36,7 +36,7 @@ class BotService
     public function unbindBotFromMerchant($bot_id)
     {
         $bind = RobotBind::where('bot_id', $bot_id)
-            ->first();
+            ->find();
 
         if ($bind) {
             $bind->delete();
@@ -50,7 +50,7 @@ class BotService
     public function getMerchantIdByBotId($bot_id)
     {
         $bind = RobotBind::where('bot_id', $bot_id)
-            ->first();
+            ->find();
         if ($bind) {
             return $bind->merchant_id;
         }
