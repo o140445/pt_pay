@@ -14,19 +14,19 @@ class BotService
     public function bindBotToMerchant($bot_id, $merchant_id)
     {
         // 先查询是否已经绑定
-        $existingBind = RobotBind::where('bot_id', $bot_id)
+        $existingBind = RobotBind::where('robot_id', $bot_id)
             ->find();
 
         if ($existingBind) {
             // 已经绑定，更新记录
-            $existingBind->merchant_id = $merchant_id;
+            $existingBind->member_id = $merchant_id;
             $existingBind->save();
             return true;
         } else {
             // 未绑定，创建新记录
             $newBind = new RobotBind();
             $newBind->bot_id = $bot_id;
-            $newBind->merchant_id = $merchant_id;
+            $newBind->member_id = $merchant_id;
             $newBind->create_time = date('Y-m-d H:i:s');
             $newBind->save();
             return true;
@@ -36,7 +36,7 @@ class BotService
     // 解绑
     public function unbindBotFromMerchant($bot_id)
     {
-        $bind = RobotBind::where('bot_id', $bot_id)
+        $bind = RobotBind::where('robot_id', $bot_id)
             ->find();
 
         if ($bind) {
@@ -50,10 +50,10 @@ class BotService
     // 通过bot_id获取商户ID
     public function getMerchantIdByBotId($bot_id)
     {
-        $bind = RobotBind::where('bot_id', $bot_id)
+        $bind = RobotBind::where('robot_id', $bot_id)
             ->find();
         if ($bind) {
-            return $bind->merchant_id;
+            return $bind->member_id;
         }
         return null;
     }
