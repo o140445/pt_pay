@@ -25,7 +25,7 @@ class BotService
         } else {
             // 未绑定，创建新记录
             $newBind = new RobotBind();
-            $newBind->bot_id = $bot_id;
+            $newBind->robot_id = $bot_id;
             $newBind->member_id = $merchant_id;
             $newBind->create_time = date('Y-m-d H:i:s');
             $newBind->save();
