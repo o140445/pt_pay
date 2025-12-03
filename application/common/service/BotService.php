@@ -27,6 +27,7 @@ class BotService
             $newBind = new RobotBind();
             $newBind->bot_id = $bot_id;
             $newBind->merchant_id = $merchant_id;
+            $newBind->create_time = date('Y-m-d H:i:s');
             $newBind->save();
             return true;
         }
