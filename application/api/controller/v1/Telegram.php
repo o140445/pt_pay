@@ -244,8 +244,8 @@ class Telegram
                 "金额: {$orderInfo['amount']}\n" .
                 "状态: {$orderInfo['status']}\n";
 
-            if ($orderInfo['error_msg']) {
-                $orderText .= "错误信息: {$orderInfo['error_msg']}\n";
+            if ($orderInfo['msg']) {
+                $orderText .= "错误信息: {$orderInfo['msg']}\n";
             }
 
             $telegram->sendMessage([
@@ -286,8 +286,8 @@ class Telegram
                 "商户订单号: {$orderInfo['merchant_order_no']}\n" .
                 "金额: {$orderInfo['amount']}\n" .
                 "状态: {$orderInfo['status']}\n";
-            if ($orderInfo['error_msg']) {
-                $orderText .= "错误信息: {$orderInfo['error_msg']}\n";
+            if ($orderInfo['msg']) {
+                $orderText .= "错误信息: {$orderInfo['msg']}\n";
             }
 
             $telegram->sendMessage([
