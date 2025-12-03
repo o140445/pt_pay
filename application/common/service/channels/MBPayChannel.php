@@ -515,7 +515,7 @@ class MBPayChannel implements ChannelInterface
 
     public function getVoucherUrl($params): string
     {
-        return   Config::get('pay_url').'/index/receipt/index?order_id='.$params['order_no'];
+        return   Config::get('pay_url').'/receipt/index?order_id='.$params['order_no'];
     }
 
     /**
