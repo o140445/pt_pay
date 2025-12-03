@@ -65,7 +65,7 @@ class Telegram
             }
 
             // /bind
-            if (str_starts_with($text, '/b') || str_starts_with($text, '/绑定')) {
+            if (str_starts_with($text, '/绑定')) {
                 $this->handleBind($telegram, $chatId, $text, $msgId);
                 return 'ok';
             }
