@@ -364,7 +364,7 @@ class MBPayChannel implements ChannelInterface
             'status' => $status,
             'e_no' => $params['endToEnd'] ?? '',
             'data' => json_encode($params),
-            'msg' => 'ok',
+            'msg' => '',
         ];
     }
 
@@ -426,7 +426,7 @@ class MBPayChannel implements ChannelInterface
             'status' => $status,
             'e_no' => $params['endToEnd'] ?? '',
             'data' => json_encode($params),
-            'msg' => $params['reason'] ?? 'ok',
+            'msg' => $params['reason'] ?? '',
         ];
     }
 

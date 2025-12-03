@@ -18,3 +18,13 @@ ALTER TABLE `fa_channel` MODIFY COLUMN `extra` VARCHAR(1024) NOT NULL DEFAULT ''
 
 -- order_out_delay add retry_count
 ALTER TABLE `fa_order_out_delay` ADD COLUMN `retry_count` INT(11) NOT NULL DEFAULT 0 COMMENT '重试次数';
+
+-- 机器人绑定表
+CREATE TABLE `fa_robot_bind` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `member_id` INT(11) NOT NULL COMMENT '会员ID',
+  `robot_id` varchar(64) NOT NULL COMMENT '机器人ID',
+  `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_member_robot` (`member_id`, `robot_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='机器人绑定表';

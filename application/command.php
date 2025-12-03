@@ -30,4 +30,5 @@ return [
     'app\command\OrderOutEditStatus',
     'app\command\QueryOutOrderEditStatus',
     'app\command\MBChannelQuery',
+    'app\command\TelegramConfig',
 ];
