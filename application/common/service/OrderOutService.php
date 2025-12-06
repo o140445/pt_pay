@@ -127,7 +127,7 @@ class OrderOutService
         $res = $channelService->outPay($channel, $order);
 
         if ($res['status'] == OrderInService::CHANNEL_RES_STATUS_SUCCESS) {
-            $order->status = OrderOut::STATUS_PAYING;
+//            $order->status = OrderOut::STATUS_PAYING;
             $order->channel_order_no = $res['order_id'] ?? '';
             $order->e_no = $res['e_no'] ?? '';
             $order->save();
