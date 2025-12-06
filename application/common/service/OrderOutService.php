@@ -176,6 +176,7 @@ class OrderOutService
         $paymentService = new PaymentService($channel->code);
         $res = $paymentService->outPayNotify($channel, $data);
 
+        // 回调未处理不需要处理
         if ($res['status'] == OrderOut::STATUS_UNPAID) {
             return [
                 'order_id' => '',
@@ -193,40 +194,6 @@ class OrderOutService
             $order = OrderOut::where('channel_order_no', $res['channel_no'])->find();
         }
 
-        // 订单不存在
-        if (!$order) {
-
-            //先查询延迟回调表
-            $source = !$res['order_no'] ? $res['channel_no'] : $res['order_no'];
-            $log = OrderOutDelay::where('source', $source)->find();
-            if ($log){
-                return [
-                    'order_id' => '',
-                    'msg' => $paymentService->response()
-                ];
-            }
-
-            // 写入延迟回调表
-            $log = new OrderOutDelay();
-            $data['out_code'] = $sign;
-            $log->data = json_encode($data);
-            $log->source = $source;
-            $log->save();
-
-            return [
-                'order_id' => '',
-                'msg' => $paymentService->response()
-            ];
-        }
-
-        // 状态判断
-        if (in_array($order->status, [OrderOut::STATUS_FAILED, OrderOut::STATUS_REFUND])) {
-            return [
-                'order_id' => '', // 不需要发送通知
-                'msg' => $paymentService->response()
-            ];
-        }
-
         // 设置时区
         date_default_timezone_set($order->area->timezone);
 
@@ -239,39 +206,13 @@ class OrderOutService
             json_encode($res),
             '');
 
-        // 未支付状态，先查询延迟回调表
-        if ($order->status == OrderOut::STATUS_UNPAID) {
-            //先查询延迟回调表
-            $source = !$res['order_no'] ? $res['channel_no'] : $res['order_no'];
-            $log = OrderOutDelay::where('source', $source)->find();
-            if ($log){
-                return [
-                    'order_id' => '',
-                    'msg' => $paymentService->response()
-                ];
-            }
-
-            // 写入延迟回调表
-            $log = new OrderOutDelay();
-            $data['out_code'] = $sign;
-            $log->data = json_encode($data);
-            $log->source = $source;
-            $log->save();
-
-            return [
-                'order_id' => '',
-                'msg' => $paymentService->response()
-            ];
-
-        }
-
         // 完成订单
-        if ($res['status'] == OrderOut::STATUS_PAID && $order->status == OrderOut::STATUS_PAYING) {
+        if ($res['status'] == OrderOut::STATUS_PAID && in_array($order->status, [OrderOut::STATUS_UNPAID, OrderOut::STATUS_PAYING])) {
             $this->completeOrder($order, $res);
         }
 
         // 失败订单
-        if ($res['status'] == OrderOut::STATUS_FAILED && $order->status == OrderOut::STATUS_PAYING) {
+        if ($res['status'] == OrderOut::STATUS_FAILED && in_array($order->status, [OrderOut::STATUS_UNPAID, OrderOut::STATUS_PAYING])) {
             $this->failOrder($order, $res);
         }
 
@@ -281,7 +222,7 @@ class OrderOutService
         }
 
         // 直接退款
-        if ($res['status'] == OrderOut::STATUS_REFUND && $order->status == OrderOut::STATUS_PAYING) {
+        if ($res['status'] == OrderOut::STATUS_REFUND && in_array($order->status, [OrderOut::STATUS_UNPAID, OrderOut::STATUS_PAYING])) {
             $this->failOrder($order, $res);
         }
 
