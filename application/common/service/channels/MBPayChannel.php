@@ -409,7 +409,7 @@ class MBPayChannel implements ChannelInterface
             $status = OrderOut::STATUS_PAID;
         }
 //        {"withdrawCode":"6831b3e7dd804","customId":"DO20250524085623KHpGdb","transactionId":"","transactionCode":"","updateCode":"02","updateMessage":"RETURNED TRANSACTION","amount":"30000","reason":"DICT entry not found. Please check if the key is correct."}
-        if (isset($params['updateCode']) && isset($params['updateCode']) && ($params['updateCode'] == '03' || $params['updateCode'] == '02')) {
+        if (isset($params['updateCode'])  && in_array($params['updateCode'], ['01', '02', '03', '04'])) {
             $status = OrderOut::STATUS_FAILED;
             // 休息1秒
             usleep(1000000);
