@@ -35,7 +35,7 @@ class HttpClientService
     {
         return Middleware::retry(
             function ($retries, $request, $response = null, $exception = null) {
-                if ($retries >= 3) return false;
+                if ($retries >= 1) return false;
                 if ($exception instanceof ConnectException) return true;
                 if ($response && $response->getStatusCode() >= 500) return true;
                 return false;
