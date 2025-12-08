@@ -506,6 +506,11 @@ class OrderOutService
             throw new \Exception('订单不存在或未支付');
         }
 
+        //如果是成功就不在通知
+        if ($order->notify_status == OrderNotifyLog::STATUS_NOTIFY_SUCCESS){
+            throw new \Exception('订单已通知成功，无需重复通知');
+        }
+
         if ($order->notify_url == ''){
             // 修改通知次数和状态
             $order->notify_count += 1;
