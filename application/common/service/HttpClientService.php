@@ -12,8 +12,8 @@ class HttpClientService
     {
         if (!self::$client) {
             self::$client = new Client([
-                'timeout' => 10,
-                'connect_timeout' => 10,
+                'timeout' => 20,
+                'connect_timeout' => 20,
                 'headers' => [
                     'Connection' => 'keep-alive',
                 ],
