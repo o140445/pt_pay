@@ -5,6 +5,7 @@ namespace app\common\service\channels;
 use app\common\model\merchant\OrderIn;
 use app\common\model\merchant\OrderOut;
 use app\common\model\merchant\OrderRequestLog;
+use app\common\service\HookService;
 use fast\Http;
 use think\Config;
 use think\Log;
@@ -263,9 +264,21 @@ class NPPayChannel implements ChannelInterface
         ];
     }
 
-    // getNotifyType
-    public function getNotifyType($params): string
+    /**
+     * getNotifyType 获取通知类型
+     */
+    public function getNotifyType($params) : string
     {
+        // 如果status 包含 payment 是代收， withdraw 是代付 其他是其他
+        if (isset($params['type'])) {
+            if (strpos($params['type'], 'IN') !== false) {
+                return HookService::NOTIFY_TYPE_IN;
+            }
+            if (strpos($params['type'], 'OUT') !== false) {
+                return HookService::NOTIFY_TYPE_OUT_PAY;
+            }
+        }
+
         return '';
     }
 
