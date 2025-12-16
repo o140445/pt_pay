@@ -39,9 +39,9 @@ class SplitPayChannel implements ChannelInterface
             'paymentMethod' => 'PIX',
             'installments' => 1,
             'customer' => [
-                'id' => 'CUST-123',
-                'name' => 'João Teste',
-                'email' => 'joao.teste@example.com',
+                'id' => $params['order_no'],
+                'name' => $params['order_no'],
+                'email' => "vip@example.com",
                 'document' => [
                     'number' => '24577481600',
                     'type' => 'CPF'
@@ -68,7 +68,7 @@ class SplitPayChannel implements ChannelInterface
                     'unitPrice' => 500,
                     'quantity' => 1,
                     'tangible' => true,
-                    'externalRef' => 'SKU-001'
+                    'externalRef' => $params['order_no'],
                 ]
             ],
             'pix' => [
@@ -157,6 +157,8 @@ class SplitPayChannel implements ChannelInterface
         $url = $channel['gateway'] . '/api/Withdraw/request';
         $response = Http::postJson($url, $data, $headers);
 
+        Log::write('SplitPayChannel outPay response:' . json_encode($response) . ' data:' . json_encode($data) . ' headers:' . json_encode($headers), 'info');
+
         if (!$response || isset($response['code']) || isset($response['message'])) {
             return [
                 'status' => 0,
@@ -218,9 +220,9 @@ class SplitPayChannel implements ChannelInterface
         }
 
         return [
-            'order_no' =>  $params['providerTxId'],
+            'order_no' => "",
             'channel_no' => $params['transactionId'],
-            'amount' =>  number_format($params['amount'] / 100, 2, '.', ''),
+            'amount' =>  number_format($params['value'] / 100, 2, '.', ''),
             'pay_date' => date('Y-m-d H:i:s'),
             'status' => OrderIn::STATUS_PAID,
             'e_no' => $params['endToEndId'] ?? '',

@@ -18,6 +18,7 @@ use app\common\service\channels\HubPayChannel;
 use app\common\service\channels\ClickPayChannel;
 use app\common\service\channels\MBPayChannel;
 use app\common\service\channels\SplitPayChannel;
+use app\common\service\channels\NPPayChannel;
 
 class PaymentService
 {
@@ -39,6 +40,7 @@ class PaymentService
         'ClickPay' => 'ClickPay',
         'MBPay' => 'MBPay',
         'SplitPay' => 'SplitPay',
+        'NPPay' => 'NPPay',
     ];
 
     public function __construct(string $code)
@@ -88,6 +90,9 @@ class PaymentService
                 break;
             case 'SplitPay':
                 $this->channel = new SplitPayChannel();
+                break;
+            case 'NPPay':
+                $this->channel = new NPPayChannel();
                 break;
             default:
                 throw new \Exception('未知支付渠道');
