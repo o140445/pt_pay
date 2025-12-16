@@ -198,18 +198,22 @@ class NPPayChannel implements ChannelInterface
             'ERROR' => OrderOut::STATUS_FAILED,
             'EXPIRED' => OrderOut::STATUS_FAILED,
             'REFUND' => OrderOut::STATUS_REFUND,
-            default => throw new \Exception('订单状态错误'),
+            default => OrderOut::STATUS_UNPAID,
         };
+
+        if ($status == OrderOut::STATUS_UNPAID) {
+            throw new \Exception('订单未处理');
+        }
 
         return [
             'order_no' => "",
             'channel_no' => $params['id'],
             'amount' =>  number_format($params['value'] / 100, 2, '.', ''),
-            'pay_date' => date('Y-m-d H:i:s'),
-            'status' => OrderIn::STATUS_PAID,
+            'pay_date' => $status == OrderOut::STATUS_PAID ? date('Y-m-d H:i:s') : '',
+            'status' => $status,
             'e_no' => $params['endToEndId'] ?? '',
             'data' => json_encode($params),
-            'msg' => 'success',
+            'msg' => $status == OrderOut::STATUS_PAID ? '' : 'fail',
         ];
 
     }

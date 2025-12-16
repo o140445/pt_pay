@@ -23,6 +23,18 @@ class SplitPayChannel implements ChannelInterface
                 'name' => '公司ID',
                 'key' => 'company_id',
                 'value' => '',
+            ],
+            //        $payer_name = $this->getExtraConfig($channel, 'bankName');
+            //        $payer_account = $this->getExtraConfig($channel, 'cnpj');
+            [
+                'name' => '银行名称',
+                'key' => 'bankName',
+                'value' => '',
+            ],
+            [
+                'name' => 'CNPJ',
+                'key' => 'cnpj',
+                'value' => '',
             ]
         ];
     }
@@ -105,7 +117,7 @@ class SplitPayChannel implements ChannelInterface
             'order_id' => $response['data']['id'],
             'e_no' => '',
             'msg' => '', // 消息
-            'pix_code' => $response['data']['pix']['brcode'] ?? '',
+            'pix_code' => $response['data']['pix']['qrcode'] ?? '',
             'request_data' => json_encode($data),
             'response_data' => json_encode($response),
         ];
@@ -215,6 +227,12 @@ class SplitPayChannel implements ChannelInterface
 
         // "processedAt": "2025-11-27T11:07:14.997603Z"
         // }
+
+        // 类型判断
+        if ($params['type'] != 'cashin') {
+            throw new \Exception('不是入款通知');
+        }
+
         if ($params['status'] != 'successful') {
             throw new \Exception('订单未支付');
         }
@@ -281,6 +299,12 @@ class SplitPayChannel implements ChannelInterface
         // "processedAt": "2025-11-27T00:00:00Z",
 
         // "metadata": null
+
+        // 类型判断
+        if ($params['type'] != 'cashout') {
+            throw new \Exception('不是出款通知');
+        }
+
         $status = OrderOut::STATUS_UNPAID;
         if ($params['status'] == 'successful') {
             $status = OrderOut::STATUS_PAID;
@@ -297,9 +321,9 @@ class SplitPayChannel implements ChannelInterface
             throw new \Exception('订单未支付');
 }
        return [
-            'order_no' => $params['providerTxId'],
+            'order_no' => '',
             'channel_no' => $params['withdrawId'] ?? '',
-            'amount' =>  number_format($params['amount'] / 100, 2, '.', ''),
+            'amount' =>  number_format($params['valueInCents'] / 100, 2, '.', ''),
             'pay_date' => date('Y-m-d H:i:s'),
             'status' => $status,
             'e_no' => $params['endToEndId'] ?? '',
@@ -377,11 +401,10 @@ class SplitPayChannel implements ChannelInterface
         //    "status": 200,
         //    "message":"Transa\u00e7\u00e3o
         //criada e registrada com sucesso."}
-
          // 使用 Endroid 6.x 生成二维码
          $builder = new Builder(
             writer: new PngWriter(),
-            data: $response_data['data']['pix']['brcode'],
+            data: $response_data['data']['pix']['qrcode'],
             size: 200,
             margin: 10
         );
@@ -394,7 +417,7 @@ class SplitPayChannel implements ChannelInterface
         return [
             'order_no' => $order['order_no'],
             'qrcode'=> $qrCodeBase64,
-            'pix_code' => $response_data['data']['pix']['brcode'],
+            'pix_code' => $response_data['data']['pix']['qrcode'],
         ];
     }
 
