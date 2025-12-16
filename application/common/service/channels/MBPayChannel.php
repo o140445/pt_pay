@@ -84,7 +84,7 @@ class MBPayChannel implements ChannelInterface
             ]
         );
 
-        Log::write('HubPay auth response: '.json_encode($res), 'info');
+        Log::write('MBPayChannel auth response: '.json_encode($res), 'info');
         //{
         //  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI...",
         //  "expires_in": 3600
@@ -103,7 +103,7 @@ class MBPayChannel implements ChannelInterface
         $token = $this->getToken($channel, $params);
         if (!$token) {
             return [
-                'code' => 0,
+                'status' => 0,
                 'msg' => 'get token failed',
             ];
         }
@@ -212,7 +212,7 @@ class MBPayChannel implements ChannelInterface
         $token = $this->getToken($channel, $params);
         if (!$token) {
             return [
-                'code' => 0,
+                'status' => 0,
                 'msg' => '获取token失败',
             ];
         }
