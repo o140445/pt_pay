@@ -192,14 +192,16 @@ class Pay extends Api
             $res = $orderService->requestChannel($order);
             Db::commit();
 
-            if (isset($res['msg'])){
-                $this->error($res['msg']); 
-            }
-
         }catch (\Exception $e) {
             Db::rollback();
             Log::write('代付请求失败：error' . $e->getMessage() .', data:' . json_encode($params), 'error');
             $this->error($e->getMessage());
+        }
+
+
+        if (isset($res['msg']) && $res['msg'] != '') {
+
+            $this->error($res['msg']);
         }
 
         $this->success('返回成功', $res);

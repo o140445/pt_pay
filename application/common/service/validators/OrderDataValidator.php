@@ -33,7 +33,8 @@ class OrderDataValidator implements ValidatorInterface
         }
 
         if ($order) {
-            $this->errorMessage = "Merchant Order No Exists";
+            // 订单号已存在
+            $this->errorMessage = "Order Already Exists";
             return false;
         }
 
