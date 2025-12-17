@@ -38,6 +38,8 @@ class NPPayChannel implements ChannelInterface
                 return $item['value'];
             }
         }
+
+        return '';
     }
     //function generateBasicAuth(credentials: string): string {
     //    const base64Credentials = Buffer.from(credentials).toString('base64');
@@ -157,6 +159,7 @@ class NPPayChannel implements ChannelInterface
         //     "bank": "BANCO SANTANDER",
         // }
 
+
         if ($params['status'] != 'COMPLETED' && $params['type'] != 'IN') {
             throw new \Exception('订单未支付');
         }
@@ -164,10 +167,10 @@ class NPPayChannel implements ChannelInterface
         return [
             'order_no' => "",
             'channel_no' => $params['id'],
-            'amount' => number_format($params['value'] / 100, 2, '.', ''),
+            'amount' => $params['value'],
             'pay_date' => date('Y-m-d H:i:s'),
             'status' => OrderIn::STATUS_PAID,
-            'e_no' => $params['endToEndId'],
+            'e_no' => $params['endToEndId'] ?? '',
             'data' => json_encode($params),
             'msg' => 'success',
         ];
@@ -208,7 +211,7 @@ class NPPayChannel implements ChannelInterface
         return [
             'order_no' => "",
             'channel_no' => $params['id'],
-            'amount' =>  number_format($params['value'] / 100, 2, '.', ''),
+            'amount' =>  $params['value'],
             'pay_date' => $status == OrderOut::STATUS_PAID ? date('Y-m-d H:i:s') : '',
             'status' => $status,
             'e_no' => $params['endToEndId'] ?? '',
@@ -292,4 +295,12 @@ class NPPayChannel implements ChannelInterface
         return   Config::get('pay_url').'/index/receipt/index?order_id='.$order['order_no'];
     }
 
+    //makeSign
+    public function makeSign(array $data, $secret): string
+    {
+        $request = request();
+        $rawBody = $request->getContent(); // 原始 JSON 字符串
+        $expectedSignature = hash_hmac('sha256', $rawBody, $secret);
+        return $expectedSignature;
+    }
 }
