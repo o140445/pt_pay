@@ -20,7 +20,7 @@ class ClearLogs extends Command
         $logDir = LOG_PATH; // 修改为你的日志目录
 
         // 保留多少天的日志
-        $daysToKeep = 5; // 修改为你需要保留的天数
+        $daysToKeep = 30; // 修改为你需要保留的天数
 
         // 获取日志文件列表
         $files = $this->getFiles($logDir);
