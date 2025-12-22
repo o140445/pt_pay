@@ -43,6 +43,9 @@ class MemberWalletModel extends Model
     // 15 提成退款
     const CHANGE_TYPE_COMMISSION_REFUND = 15;
 
+    // 16 代收退款
+    const CHANGE_TYPE_PAY_IN_REFUND = 16;
+
 
 
     //manual
@@ -77,6 +80,7 @@ class MemberWalletModel extends Model
         self::CHANGE_TYPE_PAY_SUB => '代付减少',
         self::CHANGE_TYPE_PAY_REFUND => '代付退款',
         self::CHANGE_TYPE_COMMISSION_REFUND => '提成退款',
+        self::CHANGE_TYPE_PAY_IN_REFUND => '代收退款',
     ];
 
     public function getChangeType($key='')

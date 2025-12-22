@@ -33,7 +33,7 @@ class OrderIn extends Model
     const STATUS_UNPAID = 1;
     const STATUS_PAID = 2;
     const STATUS_FAILED = 3;
-//    const STATUS_REFUND = 4;
+   const STATUS_REFUND = 4;
 
 
     
@@ -43,7 +43,7 @@ class OrderIn extends Model
             self::STATUS_UNPAID => __('Status unpaid'),
             self::STATUS_PAID => __('Status paid'),
             self::STATUS_FAILED => __('Status failed'),
-//            self::STATUS_REFUND => __('Status refund')
+           self::STATUS_REFUND => __('Status refund')
         ];
     }
 

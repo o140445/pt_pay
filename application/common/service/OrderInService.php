@@ -254,6 +254,60 @@ class OrderInService
     }
 
     /**
+     * 退款订单
+     * @param $order
+     * @param $data
+     */
+    public function refundOrder($order, $data)
+    {
+        $order->status = OrderIn::STATUS_REFUND;
+        $order->save();
+
+        // 退款
+        $memberWalletService = new MemberWalletService();
+        $memberWalletService->subBalanceByType($order->member_id, $order->actual_amount, MemberWalletModel::CHANGE_TYPE_PAY_IN_REFUND, $order->order_no, '代收退款');
+
+        // 退款提成
+        $this->refundCommission($order);
+        return true;
+    }
+
+    /**
+     * 退款提成
+     * @param $order
+     */
+    public function refundCommission($order)
+    {
+        $member = Member::where('status', OrderInService::STATUS_OPEN)->find($order->member_id);
+        if (!$member || !$member->agency_id){
+            return true;
+        }
+
+        $memberProjectChannel = MemberProjectChannel::where('status', OrderInService::STATUS_OPEN)
+            ->where('member_id', $member->agency_id)
+            ->where('project_id', $order->project_id)
+            ->where('channel_id', $order->channel_id)
+            ->where('type', 1)
+            ->where('status', OrderInService::STATUS_OPEN)
+            ->where('sub_member_id', $member->id)
+            ->find();
+
+        if (!$memberProjectChannel){
+            return true;
+        }
+
+        $amount = $order->true_amount * $memberProjectChannel->rate / 100 + $memberProjectChannel->fixed_rate;
+        if ($amount <= 0){
+            return true;
+        }
+
+        $walletService = new MemberWalletService();
+        $walletService->subBalanceByType($member->agency_id, $amount, MemberWalletModel::CHANGE_TYPE_COMMISSION_REFUND, $order->order_no, '代收退款提成');
+
+        return true;
+    }
+
+    /**
      * 计算手续费
      * @param $order
      */

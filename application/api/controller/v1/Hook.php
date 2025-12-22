@@ -68,4 +68,14 @@ class Hook extends Api
 
         $this->success($res['msg']);
     }
+
+    // set hook
+    public function set($code)
+    {
+        $type = $this->request->param('type');
+        $hookService = new HookService();
+        $res = $hookService->setHook($code, $type);
+        $this->success($res['msg']);
+       
+    }
 }

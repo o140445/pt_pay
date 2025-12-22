@@ -47,4 +47,17 @@ class HookService
             'msg' => $paymentService->response()
         ];
     }
+
+    // setHook
+    public function setHook($sign, $type)
+    {
+        $channel = Channel::where('status', OrderInService::STATUS_OPEN)->where('sign', $sign)->find();
+        if (!$channel) {
+            throw new \Exception('未知支付渠道');
+        }
+
+        $paymentService = new PaymentService($channel->code);
+        $res = $paymentService->setHook($channel, $type);
+        return $res;
+    }
 }

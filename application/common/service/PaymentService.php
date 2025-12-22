@@ -19,6 +19,7 @@ use app\common\service\channels\ClickPayChannel;
 use app\common\service\channels\MBPayChannel;
 use app\common\service\channels\SplitPayChannel;
 use app\common\service\channels\NPPayChannel;
+use app\common\service\channels\CooperChannel;
 
 class PaymentService
 {
@@ -41,6 +42,7 @@ class PaymentService
         'MBPay' => 'MBPay',
         'SplitPay' => 'SplitPay',
         'NPPay' => 'NPPay',
+        'CooperPay' => 'CooperPay',
     ];
 
     public function __construct(string $code)
@@ -93,6 +95,9 @@ class PaymentService
                 break;
             case 'NPPay':
                 $this->channel = new NPPayChannel();
+                break;
+            case 'CooperPay':
+                $this->channel = new CooperChannel();
                 break;
             default:
                 throw new \Exception('未知支付渠道');
@@ -163,5 +168,11 @@ class PaymentService
     public function queryOrder($channel, $channel_no)
     {
         return $this->channel->queryOrder($channel, $channel_no);
+    }
+
+    // setHook
+    public function setHook($channel, $type)
+    {
+        return $this->channel->setHook($channel, $type);
     }
 }
