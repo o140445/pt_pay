@@ -63,7 +63,7 @@ class CooperChannel implements ChannelInterface
             'order_id' => $response['id'],
             'e_no' => '',
             'msg' => '', // 消息
-            'pix_code' => $response['transaction']['transactionPix']['pixCopiaECola'] ?? '',
+            'pix_code' => $response['transaction']['transactionPix']['cobResponse']['pixCopiaECola'] ?? '',
             'request_data' => json_encode($data),
             'response_data' => json_encode($response),
         ];
@@ -75,9 +75,9 @@ class CooperChannel implements ChannelInterface
         $extra = json_decode($params['extra'], true);
 
         // 如果是电话号码 并且是电话号码没有+55
-        if ($extra['pix_type'] == 'PHONE' && strpos($extra['pix_key'], '+55') === false) {
-            $extra['pix_key'] = '+55'.$extra['pix_key'];
-        }
+//        if ($extra['pix_type'] == 'PHONE' && strpos($extra['pix_key'], '+55') === false) {
+//            $extra['pix_key'] = '+55'.$extra['pix_key'];
+//        }
 
         // 如果类型是CPF, 去除.-等特殊字符
         if ($extra['pix_type'] == 'CPF') {
@@ -103,8 +103,7 @@ class CooperChannel implements ChannelInterface
 
         $data = [
             'bankAccount' => [
-                'pixCPF'  => $keyType,
-                'document' => $extra['pix_key'],
+                $keyType => $extra['pix_key']
             ],
             'amount' => $params['amount'],
             'externalId' => $params['order_no'],
@@ -119,10 +118,10 @@ class CooperChannel implements ChannelInterface
         $response = Http::postJson($channel['gateway'] . '/pay/prd/transfer', $data, $headers);
         Log::write('CooperChannel outPay response:' . json_encode($response) . ' data:' . json_encode($data) . ' headers:' . json_encode($headers), 'info');
 
-        if (isset($response['transferId'])) {
+        if (!isset($response['transferId'])) {
             return [
                 'status' => 0,
-                'msg' =>  $response['message'] ?? $response['msg'] ?? $response['error'] ?? 'Excepção de pagamento, por favor tente de novo mais tarde',
+                'msg' =>   $response[0]['errorMessage'] ?? $response['msg'] ?? $response['error'] ?? 'Excepção de pagamento, por favor tente de novo mais tarde',
             ];
         }
 
@@ -147,27 +146,28 @@ class CooperChannel implements ChannelInterface
         // "installments": 1,
         // "typeOrder": "pix",
         // "status": "payed",
-        if ($params['status'] != 'payed' || $params['status'] != 'refunded') {
+
+        if ($params['status'] != '1' && $params['status'] != '5') {
             throw new \Exception('订单未支付');
         }
 
         $status = OrderIn::STATUS_UNPAID;
-        if ($params['status'] == 'payed') {
+        if ($params['status'] == '1') {
             $status = OrderIn::STATUS_PAID;
         }
-        if ($params['status'] == 'refunded') {
+        if ($params['status'] == '5') {
             $status = OrderIn::STATUS_REFUND;
         }
 
         return [
             'order_no' => '',
-            'channel_no' => $params['id'],
+            'channel_no' => $params['Id'],
             'amount' => $params['amountPayed'],
             'pay_date' => $status == OrderIn::STATUS_PAID ? date('Y-m-d H:i:s', time()) : '',
             'status' => $status,
-            'e_no' => $params['transaction']['transaction']['cobResponse']['pix'][0]['endToEndId'] ?? '',
+            'e_no' => $params['endToEndId'] ?? '',
             'data' => json_encode($params),
-            'msg' => '',
+            'msg' => $status == OrderIn::STATUS_PAID ? '' : $params['errorMessage'][0]['errorMessage'] ?? 'Excepção de pagamento, por favor tente de novo mais tarde',
 
         ];
     }
@@ -204,11 +204,11 @@ class CooperChannel implements ChannelInterface
         // 4 = refunded
 
         $status = match ($params['status']) {
-            'created' => OrderOut::STATUS_UNPAID,
-            'transferred' => OrderOut::STATUS_PAID,
-            'error' => OrderOut::STATUS_FAILED,
-            'scheduled' => OrderOut::STATUS_UNPAID,
-            'refunded' => OrderOut::STATUS_REFUND,
+            '0' => OrderOut::STATUS_UNPAID,
+            '1' => OrderOut::STATUS_PAID,
+            '2' => OrderOut::STATUS_FAILED,
+            '3' => OrderOut::STATUS_UNPAID,
+            '4' => OrderOut::STATUS_REFUND,
             default => OrderOut::STATUS_UNPAID,
         };
 
@@ -224,7 +224,7 @@ class CooperChannel implements ChannelInterface
             'status' => $status,
             'e_no' => $params['endToEndId'],
             'data' => json_encode($params),
-            'msg' => '',
+            'msg' => $status == OrderOut::STATUS_PAID ? '' : $params['errorMessage'][0]['errorMessage'] ?? 'Excepção de pagamento, por favor tente de novo mais tarde',
         ];
 
     }
@@ -255,8 +255,6 @@ class CooperChannel implements ChannelInterface
         // "expires": "2024-03-19T18:27:44.2186781Z"
         //}
 
-        $token = $response['token'];
-
         $time = strtotime($response['expires']) - time() > 0 ? strtotime($response['expires']) - time() : 3600;
 
         cache($key, $response['token'], $time - 60); // 提前60秒过期
@@ -280,7 +278,7 @@ class CooperChannel implements ChannelInterface
          // $response['transaction']['transactionPix']['pixCopiaECola']
          $builder = new Builder(
             writer: new PngWriter(),
-            data: $response_data['transaction']['transactionPix']['pixCopiaECola'],
+            data: $response_data['transaction']['transactionPix']['cobResponse']['pixCopiaECola'],
             size: 200,
             margin: 10
         );
@@ -293,7 +291,7 @@ class CooperChannel implements ChannelInterface
          return [
              'order_no' => $order['order_no'],
              'qrcode'=> $qrCodeBase64,
-             'pix_code' => $response_data['transaction']['transactionPix']['pixCopiaECola'],
+             'pix_code' => $response_data['transaction']['transactionPix']['cobResponse']['pixCopiaECola'],
          ];
      }
  
